@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Reference CLI: supports two explicitly authorized, read-only built-ins.
 // Other domains require a separately configured, trusted host capability.
-import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { runGateway } from '../src/gateway.mjs';
 import { issueUsageReceipt } from '../src/usage-receipts.mjs';
 
@@ -72,7 +73,7 @@ export async function main(args = process.argv.slice(2), input = readInput, outp
   if (['denied', 'provider_unavailable', 'unverified_execution', 'unsupported'].includes(response.status)) process.exitCode = 1;
   return response;
 }
-if (process.argv[1] && import.meta.url === new URL('file://' + process.argv[1]).href) {
+if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
   main().catch(() => {
     // Do not leak handler, token, prompt or filesystem secrets through exceptions.
     console.log(JSON.stringify({ status: 'invalid_request' }));
