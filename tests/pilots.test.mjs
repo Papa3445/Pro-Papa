@@ -143,7 +143,7 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
         'Software syntax does not establish that software runs',
         'Software syntax establishes full runtime correctness'),
     };
-    assert.throws(()=>auditDocumentGuide(source,alteredSources),/no longer supported/);
+    assert.throws(()=>auditDocumentGuide(source,alteredSources),/no longer matches reviewed base Git blob/);
     semanticRejects++;
     const reviewed=auditDocumentGuide(source,documentSources);
     assert.equal(reviewed.validatedSections,3);
