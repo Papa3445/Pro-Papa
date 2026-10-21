@@ -54,7 +54,7 @@ test('CLI rejects unrecognized flags, never accepts executable configuration or 
   assert.deepEqual(parseCli([]), {});
   assert.throws(() => parseCli(['--shell', 'rm -rf /']), /Unknown/);
   assert.deepEqual(parseCli(['--project', '/tmp']), { project: '/tmp' }); // No tracking without --durable
-  assert.throws(() => parseCli(['--durable']), /requires --project/);
+  assert.throws(() => parseCli(['--durable']), /require --project/);
   assert.deepEqual(parseCli(['--durable', '--project', '/safe']), { '--durable': true, project: '/safe' });
 });
 
