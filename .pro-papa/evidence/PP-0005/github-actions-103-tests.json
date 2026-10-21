@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0005",
+  "result": "pass",
+  "evidenceType": "observed-GitHub-Actions-test-run",
+  "repository": "Papa3445/Pro-Papa",
+  "sourceRef": "feature/pp-0005-gateway",
+  "headSha": "e63d7c63b37e1016e610d6d6eb9bbc5833a5ce68",
+  "runId": 39691557411,
+  "jobId": 119538710648,
+  "conclusion": "success",
+  "tests": 103,
+  "passed": 103,
+  "failed": 0,
+  "skipped": 0,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39691557411",
+  "scope": "Real npm check in GitHub Actions with 103 passing tests, five new independent-review regression cases, and genuine syntax:node adapter invocation.",
+  "limits": "Temporary adapter check appended to package.json at observed SHA and removed before final candidate. Final exact-head CI and independent renewed approval still required. Green tests do not independently establish quality/security."
+}
