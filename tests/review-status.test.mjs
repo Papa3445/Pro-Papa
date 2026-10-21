@@ -67,3 +67,13 @@ test('review event cannot initialize a pin for an already existing SHA',async()=
   assert.equal(r.verdict,'FAIL');assert.equal(f.posts.length,1);
   assert.equal(f.posts[0].context,REVIEW_CONTEXT);
 });
+
+test('non-default target branch cannot pass a gate that only monitors main pushes',async()=>{
+  const other=pull();
+  other.base.ref='release';
+  const f=mock({pr:other,pin:{...baseline,description:'base-ref=release;base-sha='+base}});
+  const r=await publishOneReviewStatus(repo,2,opts(f));
+  assert.equal(r.verdict,'FAIL');
+  assert.match(r.reason,/not monitored/);
+  assert.equal(f.posts.at(-1).state,'failure');
+});

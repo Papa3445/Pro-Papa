@@ -22,7 +22,9 @@ async function main() {
   }
   const allowInitialPin = event === 'pull_request_target' &&
     (action === 'opened' || action === 'synchronize');
-  const result = await publishOneReviewStatus(repo, Number(number), { allowInitialPin });
+  const result = await publishOneReviewStatus(repo, Number(number), {
+    allowInitialPin, allowedBaseRef: process.env.TRUSTED_BASE_BRANCH || 'main',
+  });
   console.log(JSON.stringify(result, null, 2));
   if (result.verdict !== 'PASS') process.exitCode = 1;
 }

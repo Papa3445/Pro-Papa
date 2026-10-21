@@ -80,7 +80,7 @@ async function postStatus(client, headSha, state, context, desc) {
 }
 
 export async function publishOneReviewStatus(repository, pullRequest, {
-  allowInitialPin = false, token, fetchImpl,
+  allowInitialPin = false, allowedBaseRef = 'main', token, fetchImpl,
 } = {}) {
   validateReviewTarget({ repository, pullRequest });
   const client = await makeGitHubClient(repository, { token, fetchImpl });
@@ -88,6 +88,10 @@ export async function publishOneReviewStatus(repository, pullRequest, {
   const first = identity(initial, repository, pullRequest);
   let final = { verdict: 'FAIL', reason: 'Unverified comparison', candidateSha: first.headSha };
   try {
+    // The push recheck currently monitors the protected default branch only.
+    // Other target branches must never get a strict PASS from an unmonitored base.
+    requireValid(first.baseRef === allowedBaseRef,
+      'Base branch is not monitored by strict review-status workflow');
     let pin = readPin(await statusHistory(client, first.headSha));
     if (!pin && allowInitialPin) {
       // Only opened/synchronize may initialize a new SHA. No re-pinning
@@ -126,7 +130,7 @@ export async function publishForBaseBranch(repository, baseRef, options = {}) {
     for (const pr of prs) {
       requireValid(Number.isSafeInteger(pr?.number) && pr.number > 0, 'Malformed PR listing');
       results.push(await publishOneReviewStatus(repository, pr.number, {
-        ...options, allowInitialPin: false,
+        ...options, allowedBaseRef: baseRef, allowInitialPin: false,
       }));
     }
     if (prs.length < 100) return results;

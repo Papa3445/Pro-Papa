@@ -32,6 +32,8 @@ The gate reads the PR and paginated reviews live from the fixed GitHub REST API 
 
 The default-branch `.github/workflows/review-gate.yml` uses `bin/review-status.mjs` with a GitHub Actions token granted `contents: read`, `pull-requests: read`, and `statuses: write`. It checks out **only the trusted default-branch source**, never PR-controlled code.
 
+This version issues a strict PASS **only** for PRs targeting the configured default branch (currently `main`). Other PR bases fail closed because their pushes are not monitored. To protect other target branches, extend the trusted branch push trigger and status runner together before enabling strict checks there.
+
 For every new PR head SHA, the trusted `pull_request_target.opened/synchronize` workflow records a GitHub commit status in context `pro-papa/base-pin`, encoding the original base ref and full base SHA. Only the **first status** for that head is recognized; later repinning does not replace it. The status must come from GitHub's `github-actions[bot]` account. Approvals must be submitted **after** the baseline was recorded.
 
 Review submissions/dismissals and PR `edited` events re-evaluate the original pin. A `push` on `main` scans open pull requests targeting `main`, re-evaluates the same trusted pin, and publishes a new result to their **PR head SHA**, not merely to the base-branch workflow run. New head SHA after synchronize gets a fresh pin and must receive fresh review.
