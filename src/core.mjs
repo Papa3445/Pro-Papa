@@ -228,7 +228,7 @@ export function taskHandoff(task, profiles) {
     `Objective: ${task.objective}`,
     'Acceptance:',
     ...task.acceptance.map(text => `- ${text}`),
-    `Required evidence: ${required.join(', ')`,
+    `Required evidence: ${required.join(', ')}`,
     'Workflow: inspect → plan → implement → test → inspect actual output → independent review → record proof → close.',
     'Do not substitute claims or CI green status for actual artifact/content review.',
     'Report external dependencies; do not invent work, tool access, proof or success.',
