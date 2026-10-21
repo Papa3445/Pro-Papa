@@ -432,6 +432,47 @@
             "path": "src/gateway.mjs",
             "sha256": "d313a6e9c07d78f89b4405f9e29aa9385b49d0cf567642bdd82cc0f6a612443c"
           }
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "GitHub provider-read updated lossless JSON gateway source; exact source SHA-256 checked against actual adapter CI output; blob e2c864cd98008bd10458ad55db26c5e4a6082edd",
+          "path": "src/gateway.mjs",
+          "sha256": "24a84741e5c0cbfccd015b1f5e0435d7fadeb367d80424cf62ed493612ea3e28",
+          "recordedAt": "2026-10-21T23:29:52.171Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "GitHub Actions run 39693487152 job 119545118986 passed 110/110 actual tests (including seven additional security output regressions) on source commit a9beac2.",
+          "path": ".pro-papa/evidence/PP-0005/github-actions-110-tests.json",
+          "sha256": "6c3476ff4444bc145eb9596ef99c3f88e4ee8c4901995ef2f6253c910ee98562",
+          "recordedAt": "2026-10-21T23:29:52.171Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Implementer assessment of independent CHANGES_REQUESTED review #5607435042 and detached lossless JSON output correction; successful observed tests, still awaiting exact-head independent approval.",
+          "path": ".pro-papa/evidence/PP-0005/acceptance-validation.md",
+          "sha256": "e10df493794f4e4349cb08a93a5282bf7f4c4d15fcba59c07895b67afcb437ea",
+          "recordedAt": "2026-10-21T23:29:52.171Z"
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual built-in syntax:node adapter-check executed by GitHub Actions 39693487152 job 119545118986 against source digest 24a84741e5c0cbfccd015b1f5e0435d7fadeb367d80424cf62ed493612ea3e28",
+          "path": ".pro-papa/evidence/PP-0005/software-5c76dbd2-93af-4481-b2ca-ff70bd1d4527.json",
+          "sha256": "9be34f9bcccf5b43c966728dafbba194ca68a5944051db6ad676ff6ffcbf98e8",
+          "recordedAt": "2026-10-21T23:29:52.171Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/gateway.mjs",
+            "sha256": "24a84741e5c0cbfccd015b1f5e0435d7fadeb367d80424cf62ed493612ea3e28"
+          }
         }
       ],
       "requiresAdapter": true,
@@ -483,5 +524,5 @@
       "evidence": []
     }
   ],
-  "revision": 27
+  "revision": 28
 }
