@@ -53,7 +53,7 @@ test('actual read-only CLI handlers return observable computations', async () =>
 test('CLI rejects unrecognized flags, never accepts executable configuration or prompt args', () => {
   assert.deepEqual(parseCli([]), {});
   assert.throws(() => parseCli(['--shell', 'rm -rf /']), /Unknown/);
-  assert.throws(() => parseCli(['--project', '/tmp']), /Missing|Unknown/); // project alone must not start durable execution
+  assert.deepEqual(parseCli(['--project', '/tmp']), { project: '/tmp' }); // No tracking without --durable
   assert.throws(() => parseCli(['--durable']), /requires --project/);
   assert.deepEqual(parseCli(['--durable', '--project', '/safe']), { '--durable': true, project: '/safe' });
 });
