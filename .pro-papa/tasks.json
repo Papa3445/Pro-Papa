@@ -308,7 +308,66 @@
         "baseRef": "main",
         "baseSha": "e5dbd9d4c414aab50d0940c282367f264563bbab"
       }
+    },
+    {
+      "id": "PP-0005",
+      "title": "Build universal request-routing and execution gateway",
+      "objective": "Deliver a runnable host-invoked gateway that maps arbitrary user objectives to bounded tool capabilities and either ephemeral work or durable Pro-Papa tasks, with honest receipts and permissions; never claim automatic ChatGPT interception.",
+      "profile": "software",
+      "acceptance": [
+        "A documented, runnable entry point accepts arbitrary general user objectives, maps supported needs to typed/capability-scoped handlers or general fallback, and selects ephemeral vs tracked execution without adding routine requests to the framework roadmap",
+        "Untrusted task text and external data cannot authorize shell commands, new tools, credentials, publishing, destructive actions, or unapproved side effects; tool/action authorization is explicit and tested",
+        "Execution emits structured outcomes, genuine tool-operation provenance, truthful failure/resume state, and opt-in private usage receipts via existing PP-0004 contract; receipt issuance never stands in for actual task execution",
+        "Negative and integration tests cover unknown domains, duplicate requests/retries, unavailable tool providers, unauthorized actions, privacy, receipt failures, and durable task-state isolation"
+      ],
+      "dependsOn": [
+        "PP-0004"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": [],
+      "requiresAdapter": true
+    },
+    {
+      "id": "PP-0006",
+      "title": "Deliver a real host integration with enforced audit gates",
+      "objective": "Connect the gateway to an executable host with clearly permissioned tools so every request submitted through that host is actually routed and independently observable; do not imply native ChatGPT Project messages are intercepted.",
+      "profile": "software",
+      "acceptance": [
+        "A supported, runnable reference host accepts user requests, invokes the gateway and configured authorized handlers, returns results and preserves per-project state when tracking is needed",
+        "When private auditing is enabled for gateway traffic, the host records the live repository read and verifiable receipt or clearly fails/reports degraded mode; it cannot claim a verified receipt without a matching private GitHub commit and readback",
+        "Document supported integration surfaces and whether current ChatGPT Projects can actually invoke this host; if native turn interception is unavailable, demonstrate the independent app/runner path instead of claiming universal enforcement in ChatGPT",
+        "Demonstrate real authorized tool execution and private-audit smoke tests plus adversarial tests for permissions, failures, partial writes, concurrent requests, idempotent resume and no sensitive prompt logging"
+      ],
+      "dependsOn": [
+        "PP-0005"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": [],
+      "requiresAdapter": true
+    },
+    {
+      "id": "PP-0007",
+      "title": "Validate cross-domain outcomes and benchmark workflow overhead",
+      "objective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+      "profile": "general",
+      "acceptance": [
+        "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
+        "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
+        "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
+        "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness"
+      ],
+      "dependsOn": [
+        "PP-0006"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
     }
   ],
-  "revision": 21
+  "revision": 22
 }
