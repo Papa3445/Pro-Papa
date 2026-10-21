@@ -1,0 +1,32 @@
+# PP-0005 — Acceptance and adversarial self-validation (implementation candidate)
+
+## Scope and evidence
+
+Framework base: merge commit 581c7f53d05061a2c10e1968b94d1acbf539206e (PP-0004 verified).
+Task: PP-0005, software profile. This is an implementer assessment, **not** independent approval.
+
+- Real code: src/gateway.mjs and bin/gateway.mjs on the PP-0005 branch.
+- Real integration/adversarial tests: tests/gateway.test.mjs and tests/gateway-cli.test.mjs.
+- GitHub Actions [run 39681926039](https://github.com/Papa3445/Pro-Papa/actions/runs/39681926039), job 119506291353: 98/98 tests passed; includes the temporary, actual built-in adapter-check on src/gateway.mjs.
+- The adapter's exact report was committed to .pro-papa/evidence/PP-0005/software-f7ff123c-52e9-477e-8855-a1bfd4f2bd2c.json with SHA-256 bc8ce90768eab631d69d9b627e09ff4efd21be3d40832e6a9470f4e82f0d1979; source SHA-256 96277c35d9fe978db08d090eea81957e38f1c47d6d9938bf7959f8af1af24a88.
+
+## Acceptance assessment
+
+1. **Runnable arbitrary-objective entry point:** JSON-stdin CLI accepts arbitrary nonempty objective strings and maps to a fixed set of recognized routes; two real read-only handlers execute deterministic calculations. Other domains require an explicitly configured host provider or return unsupported. Routines stay ephemeral; durable mode requires host flag/permission and an initialized user project. It does not silently add tasks to the framework roadmap. Supported with the stated host-only limitation.
+2. **Untrusted-data authority boundary:** No shell dispatch or plugin install route exists. Task hints cannot register handlers or grant permissions. The trusted host owns capability handlers, grant lists, approved external effects, and task-write authorization. Adversarial tests cover injected shell text, missing permissions, missing effect approval, invalid source selectors and malformed CLI input. Supported within a trusted-host boundary.
+3. **Outcomes, provenance and receipts:** The gateway reports completed, denied, unsupported, unavailable and ambiguous outcomes separately. Validated provider-asserted operation metadata accompanies a successful handler result. PP-0004 issuance is opt-in from the host; failure is reported separately and cannot make an unsuccessful tool operation appear complete. A receipt alone does not certify the handler or output. Supported, but third-party provider truth remains host-dependent.
+4. **Negative/resume/isolation:** Tests cover unknown routes, malformed proof responses, duplicate request IDs, reused IDs with different inputs, handler errors, authorized read-only retry, blocked ambiguous retry, concurrent same-ID calls, queued work behind active projects, source prompt omission from saved project state, and explicit project-root separation. Supported at tested boundaries.
+
+## Risks and deliberate limits
+
+- All external handlers are injected by an authorized host, whose permission enforcement and provenance truth must be verified separately. A malicious trusted host can lie or perform an undisclosed side effect.
+- The reference CLI only provides math.sum and text.metrics. A production multi-provider app or automatic ChatGPT interception is **PP-0006**, not this implementation.
+- Classification by regex hints is shallow. An unrecognized objective falls back to general only when that trusted handler is installed and granted; otherwise it honestly returns unsupported.
+- Reservation-before-execution and HMAC idempotency are not distributed transactions. A host crash during an external effect yields needs_reconciliation and must not trigger automatic re-execution.
+- Secrets, request text, and outputs are not persisted by the gateway task record. Private operations still depend on the security and confidentiality of the host, the user project, and the GitHub audit repository.
+- Passing tests and syntax checks are not independent security assurance or domain-quality assessment.
+- No formal closeout until the final four-domain acceptance is independently challenged on the exact PR head, exact-head CI is green, and all required evidence including real GitHub independent review is recorded.
+
+## Provisional result
+
+**Implementer validation: pass for the documented PP-0005 gateway/CLI contract. Independent review outstanding.**
