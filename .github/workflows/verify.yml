@@ -13,8 +13,3 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
-      - name: PP-0004 temporary trusted close verification
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pp-0004-evidence-closeout'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node bin/pro-papa.mjs close --id PP-0004
