@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "source": "GitHub REST API",
+  "repository": "Papa3445/Pro-Papa",
+  "prNumber": 3,
+  "review": {
+    "id": 5598915445,
+    "actor": "papa4568",
+    "userId": 196889071,
+    "state": "APPROVED",
+    "submittedAt": "2026-10-21T11:24:25Z",
+    "sha": "e72a8fa9937cba0de74c020dd084f702ab0cdb53",
+    "url": "https://github.com/Papa3445/Pro-Papa/pull/3#pullrequestreview-5598915445"
+  },
+  "pr": {
+    "baseRef": "main",
+    "baseSha": "a72fa597494cadf54cb3c813f3bd9c6f5da39b23",
+    "headSha": "e72a8fa9937cba0de74c020dd084f702ab0cdb53",
+    "merged": true,
+    "mergeSha": "118487261e5eabf3e236e4c37bdec7f9f5efe712"
+  },
+  "ci": {
+    "runId": 39590942728,
+    "conclusion": "success",
+    "headSha": "e72a8fa9937cba0de74c020dd084f702ab0cdb53",
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39590942728"
+  },
+  "remarks": "Recorded from provider account and current PR state after squash merge. No claim of reviewer's real-world independent identity or guarantee of atomic merge."
+}

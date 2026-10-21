@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "description": "Bounded instrumented tool-assisted development session, not total implementation effort.",
+  "start": {
+    "commentId": 6314525827,
+    "createdAt": "2026-10-21T11:12:56Z",
+    "url": "https://github.com/Papa3445/Pro-Papa/pull/3#issuecomment-6314525827"
+  },
+  "end": {
+    "commentId": 6314553873,
+    "createdAt": "2026-10-21T11:14:34Z",
+    "url": "https://github.com/Papa3445/Pro-Papa/pull/3#issuecomment-6314553873"
+  },
+  "elapsedSeconds": 98,
+  "insideCommits": [
+    "e6cc1c391e1a057d43bf080a4aa89c3f186b442f",
+    "a95da07082c317fce9ecc71104230d1982a30607"
+  ],
+  "limitations": [
+    "GitHub connector and network latency included",
+    "Does not measure all original development effort",
+    "Does not independently certify exclusive keyboard or model reasoning time",
+    "CI test durations and subsequent fixes are not charged as active time"
+  ]
+}

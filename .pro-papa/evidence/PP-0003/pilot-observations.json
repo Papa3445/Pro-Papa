@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "source": "GitHub Actions job 119191431727 on exact PR head",
+  "runId": 39590942728,
+  "reviewedHead": "e72a8fa9937cba0de74c020dd084f702ab0cdb53",
+  "passedTests": 69,
+  "failedTests": 0,
+  "pilotMetrics": {
+    "pilots": [
+      {
+        "profile": "software",
+        "adapterAttempts": 2,
+        "failedAdapterAttempts": 1,
+        "reworks": 1,
+        "runtimeAssertions": 9,
+        "requiredEvidence": [
+          "artifact",
+          "test",
+          "validation",
+          "review",
+          "adapter"
+        ],
+        "closed": true,
+        "elapsedMs": 82
+      },
+      {
+        "profile": "research",
+        "adapterAttempts": 3,
+        "failedAdapterAttempts": 1,
+        "semanticAuditRejects": 1,
+        "reworks": 2,
+        "sourceDocuments": 2,
+        "checkedClaims": 3,
+        "requiredEvidence": [
+          "artifact",
+          "sources",
+          "validation",
+          "review",
+          "adapter"
+        ],
+        "closed": true,
+        "elapsedMs": 23
+      },
+      {
+        "profile": "document",
+        "adapterAttempts": 3,
+        "failedAdapterAttempts": 1,
+        "semanticAuditRejects": 3,
+        "reworks": 2,
+        "reviewedContentRequirements": 3,
+        "requiredEvidence": [
+          "artifact",
+          "validation",
+          "review",
+          "adapter"
+        ],
+        "closed": true,
+        "elapsedMs": 27
+      }
+    ],
+    "completed": 3,
+    "adapterFailuresRecovered": 3,
+    "semanticAuditRejects": 4,
+    "sourceAuditClaims": 3,
+    "sourceAuditDocuments": 2,
+    "limitations": [
+      "Adapter checks are structural",
+      "Research audit accepts only three fixed reviewed propositions with exact supporting excerpts, not arbitrary new claims",
+      "Document audit uses a curated complete-section rubric, not generic language comprehension",
+      "Review identities in pilot fixtures are simulated, not independently authenticated",
+      "Source texts are checked-out primary documentation, not fetched from network",
+      "Runtime duration is environment-dependent"
+    ]
+  },
+  "limitations": "Fixture review actors are simulated; independent reviewer approved only at PR #3."
+}

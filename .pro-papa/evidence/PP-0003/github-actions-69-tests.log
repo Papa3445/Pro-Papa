@@ -1,0 +1,597 @@
+﻿2026-10-21T11:18:16.1525598Z Current runner version: '2.338.0'
+2026-10-21T11:18:16.1547925Z ##[group]Runner Image Provisioner
+2026-10-21T11:18:16.1548717Z Hosted Compute Agent
+2026-10-21T11:18:16.1549473Z Version: 20261012.601
+2026-10-21T11:18:16.1550048Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-21T11:18:16.1550559Z Build Date: 2026-10-12T17:48:21Z
+2026-10-21T11:18:16.1551202Z Worker ID: {52118c34-b2cd-4a6d-8367-18761ad053e9}
+2026-10-21T11:18:16.1551668Z Region: westus3
+2026-10-21T11:18:16.1552113Z Cloud: Azure
+2026-10-21T11:18:16.1552509Z ##[endgroup]
+2026-10-21T11:18:16.1553521Z ##[group]Operating System
+2026-10-21T11:18:16.1553964Z Ubuntu
+2026-10-21T11:18:16.1554358Z 24.04.5
+2026-10-21T11:18:16.1554793Z LTS
+2026-10-21T11:18:16.1555189Z ##[endgroup]
+2026-10-21T11:18:16.1555578Z ##[group]Runner Image
+2026-10-21T11:18:16.1556032Z Image: ubuntu-24.04
+2026-10-21T11:18:16.1556430Z Version: 20261012.334.1
+2026-10-21T11:18:16.1557582Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-21T11:18:16.1558617Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-21T11:18:16.1559298Z ##[endgroup]
+2026-10-21T11:18:16.1560120Z ##[group]GITHUB_TOKEN Permissions
+2026-10-21T11:18:16.1561828Z Contents: read
+2026-10-21T11:18:16.1562210Z Metadata: read
+2026-10-21T11:18:16.1562571Z ##[endgroup]
+2026-10-21T11:18:16.1564402Z Secret source: Actions
+2026-10-21T11:18:16.1565103Z Cache mode: write
+2026-10-21T11:18:16.1565803Z Prepare workflow directory
+2026-10-21T11:18:16.1822859Z Prepare all required actions
+2026-10-21T11:18:16.1860948Z Getting action download info
+2026-10-21T11:18:16.6711208Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-21T11:18:17.0989203Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-21T11:18:17.3149068Z Complete job name: check
+2026-10-21T11:18:17.3695861Z ##[group]Run actions/checkout@v4
+2026-10-21T11:18:17.3696395Z with:
+2026-10-21T11:18:17.3696695Z   repository: Papa3445/Pro-Papa
+2026-10-21T11:18:17.3699433Z   token: ***
+2026-10-21T11:18:17.3699699Z   ssh-strict: true
+2026-10-21T11:18:17.3699979Z   ssh-user: git
+2026-10-21T11:18:17.3700251Z   persist-credentials: true
+2026-10-21T11:18:17.3700557Z   clean: true
+2026-10-21T11:18:17.3700835Z   sparse-checkout-cone-mode: true
+2026-10-21T11:18:17.3701155Z   fetch-depth: 1
+2026-10-21T11:18:17.3701433Z   fetch-tags: false
+2026-10-21T11:18:17.3701706Z   show-progress: true
+2026-10-21T11:18:17.3701989Z   lfs: false
+2026-10-21T11:18:17.3702258Z   submodules: false
+2026-10-21T11:18:17.3702536Z   set-safe-directory: true
+2026-10-21T11:18:17.3702852Z   allow-unsafe-pr-checkout: false
+2026-10-21T11:18:17.3703266Z ##[endgroup]
+2026-10-21T11:18:17.4436417Z Syncing repository: Papa3445/Pro-Papa
+2026-10-21T11:18:17.4438076Z ##[group]Getting Git version info
+2026-10-21T11:18:17.4438697Z Working directory is '/home/runner/work/Pro-Papa/Pro-Papa'
+2026-10-21T11:18:17.4439465Z [command]/usr/bin/git version
+2026-10-21T11:18:17.5486221Z git version 2.55.0
+2026-10-21T11:18:17.5499826Z ##[endgroup]
+2026-10-21T11:18:17.5511197Z Temporarily overriding HOME='/home/runner/work/_temp/1fde5a21-7ac7-4846-87bb-a24286a72be4' before making global git config changes
+2026-10-21T11:18:17.5512558Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-21T11:18:17.5516428Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Pro-Papa/Pro-Papa
+2026-10-21T11:18:17.5745878Z Deleting the contents of '/home/runner/work/Pro-Papa/Pro-Papa'
+2026-10-21T11:18:17.5750140Z ##[group]Initializing the repository
+2026-10-21T11:18:17.5753941Z [command]/usr/bin/git init /home/runner/work/Pro-Papa/Pro-Papa
+2026-10-21T11:18:17.6220741Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-21T11:18:17.6221981Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-21T11:18:17.6222980Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-21T11:18:17.6223575Z hint: call:
+2026-10-21T11:18:17.6223959Z hint:
+2026-10-21T11:18:17.6224683Z hint: 	git config --global init.defaultBranch <name>
+2026-10-21T11:18:17.6225414Z hint:
+2026-10-21T11:18:17.6225812Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-21T11:18:17.6226752Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-21T11:18:17.6227248Z hint:
+2026-10-21T11:18:17.6227739Z hint: 	git branch -m <name>
+2026-10-21T11:18:17.6228054Z hint:
+2026-10-21T11:18:17.6228443Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-21T11:18:17.6229055Z Initialized empty Git repository in /home/runner/work/Pro-Papa/Pro-Papa/.git/
+2026-10-21T11:18:17.6231671Z [command]/usr/bin/git remote add origin https://github.com/Papa3445/Pro-Papa
+2026-10-21T11:18:17.6456452Z ##[endgroup]
+2026-10-21T11:18:17.6457094Z ##[group]Disabling automatic garbage collection
+2026-10-21T11:18:17.6459472Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-21T11:18:17.6492790Z ##[endgroup]
+2026-10-21T11:18:17.6493362Z ##[group]Setting up auth
+2026-10-21T11:18:17.6498564Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T11:18:17.6533537Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T11:18:17.8410258Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T11:18:17.8448444Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T11:18:17.8650991Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T11:18:17.8689871Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T11:18:17.8891207Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-21T11:18:17.8978579Z ##[endgroup]
+2026-10-21T11:18:17.8979764Z ##[group]Fetching the repository
+2026-10-21T11:18:17.8986066Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +274fecdda8d821f78a2a595a3bd071b640695b67:refs/remotes/pull/3/merge
+2026-10-21T11:18:18.5151944Z From https://github.com/Papa3445/Pro-Papa
+2026-10-21T11:18:18.5153414Z  * [new ref]         274fecdda8d821f78a2a595a3bd071b640695b67 -> pull/3/merge
+2026-10-21T11:18:18.5156829Z ##[endgroup]
+2026-10-21T11:18:18.5158328Z ##[group]Determining the checkout info
+2026-10-21T11:18:18.5159893Z ##[endgroup]
+2026-10-21T11:18:18.5161733Z [command]/usr/bin/git sparse-checkout disable
+2026-10-21T11:18:18.5318968Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-21T11:18:18.5352438Z ##[group]Checking out the ref
+2026-10-21T11:18:18.5356629Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/3/merge
+2026-10-21T11:18:18.5433923Z Note: switching to 'refs/remotes/pull/3/merge'.
+2026-10-21T11:18:18.5434892Z 
+2026-10-21T11:18:18.5435613Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-21T11:18:18.5437268Z changes and commit them, and you can discard any commits you make in this
+2026-10-21T11:18:18.5439192Z state without impacting any branches by switching back to a branch.
+2026-10-21T11:18:18.5440147Z 
+2026-10-21T11:18:18.5440772Z If you want to create a new branch to retain commits you create, you may
+2026-10-21T11:18:18.5442494Z do so (now or later) by using -c with the switch command. Example:
+2026-10-21T11:18:18.5443752Z 
+2026-10-21T11:18:18.5444289Z   git switch -c <new-branch-name>
+2026-10-21T11:18:18.5444939Z 
+2026-10-21T11:18:18.5445547Z Or undo this operation with:
+2026-10-21T11:18:18.5446209Z 
+2026-10-21T11:18:18.5446594Z   git switch -
+2026-10-21T11:18:18.5447043Z 
+2026-10-21T11:18:18.5447930Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-21T11:18:18.5448930Z 
+2026-10-21T11:18:18.5450159Z HEAD is now at 274fecd Merge e72a8fa9937cba0de74c020dd084f702ab0cdb53 into a72fa597494cadf54cb3c813f3bd9c6f5da39b23
+2026-10-21T11:18:18.5453691Z ##[endgroup]
+2026-10-21T11:18:18.5489128Z [command]/usr/bin/git log -1 --format=%H
+2026-10-21T11:18:18.5515672Z 274fecdda8d821f78a2a595a3bd071b640695b67
+2026-10-21T11:18:18.5814508Z ##[group]Run actions/setup-node@v4
+2026-10-21T11:18:18.5815274Z with:
+2026-10-21T11:18:18.5815846Z   node-version: 22
+2026-10-21T11:18:18.5816419Z   always-auth: false
+2026-10-21T11:18:18.5817039Z   check-latest: false
+2026-10-21T11:18:18.5823054Z   token: ***
+2026-10-21T11:18:18.5823597Z ##[endgroup]
+2026-10-21T11:18:18.7175364Z Found in cache @ /opt/hostedtoolcache/node/22.23.3/x64
+2026-10-21T11:18:18.7180034Z (node:2227) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T11:18:18.7181904Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T11:18:18.7183977Z ##[group]Environment details
+2026-10-21T11:18:21.2425552Z node: v22.23.3
+2026-10-21T11:18:21.2425854Z npm: 10.9.9
+2026-10-21T11:18:21.2426012Z yarn: 1.22.22
+2026-10-21T11:18:21.2426953Z ##[endgroup]
+2026-10-21T11:18:21.2592131Z ##[group]Run npm run check
+2026-10-21T11:18:21.2592412Z [36;1mnpm run check[0m
+2026-10-21T11:18:21.3942075Z shell: /usr/bin/bash -e {0}
+2026-10-21T11:18:21.3942388Z ##[endgroup]
+2026-10-21T11:18:21.5325311Z 
+2026-10-21T11:18:21.5331847Z > pro-papa@0.1.0 check
+2026-10-21T11:18:21.5332766Z > node --check src/core.mjs && node --check src/adapters.mjs && node --check src/review-github.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .
+2026-10-21T11:18:21.5333169Z 
+2026-10-21T11:18:21.8380318Z 
+2026-10-21T11:18:21.8381087Z > pro-papa@0.1.0 test
+2026-10-21T11:18:21.8381464Z > node --test
+2026-10-21T11:18:21.8381609Z 
+2026-10-21T11:18:21.9196586Z TAP version 13
+2026-10-21T11:18:21.9701985Z # Subtest: built-in adapter registry is finite and policy cannot add commands or capabilities
+2026-10-21T11:18:21.9719279Z ok 1 - built-in adapter registry is finite and policy cannot add commands or capabilities
+2026-10-21T11:18:21.9720279Z   ---
+2026-10-21T11:18:21.9720943Z   duration_ms: 1.989992
+2026-10-21T11:18:21.9721468Z   type: 'test'
+2026-10-21T11:18:21.9721987Z   ...
+2026-10-21T11:18:22.0280078Z # Subtest: software adapter parses JavaScript without executing side effects
+2026-10-21T11:18:22.0280898Z ok 2 - software adapter parses JavaScript without executing side effects
+2026-10-21T11:18:22.0281293Z   ---
+2026-10-21T11:18:22.0281532Z   duration_ms: 61.24981
+2026-10-21T11:18:22.0281763Z   type: 'test'
+2026-10-21T11:18:22.0282065Z   ...
+2026-10-21T11:18:22.0799189Z # Subtest: software adapter fails syntax errors and unsupported file types
+2026-10-21T11:18:22.0803354Z ok 3 - software adapter fails syntax errors and unsupported file types
+2026-10-21T11:18:22.0809412Z   ---
+2026-10-21T11:18:22.0810127Z   duration_ms: 53.204067
+2026-10-21T11:18:22.0810591Z   type: 'test'
+2026-10-21T11:18:22.0811026Z   ...
+2026-10-21T11:18:22.1089135Z # Subtest: research adapter enforces citation references but makes no truth claims
+2026-10-21T11:18:22.1090836Z ok 4 - research adapter enforces citation references but makes no truth claims
+2026-10-21T11:18:22.1091685Z   ---
+2026-10-21T11:18:22.1092112Z   duration_ms: 28.71373
+2026-10-21T11:18:22.1092496Z   type: 'test'
+2026-10-21T11:18:22.1093431Z   ...
+2026-10-21T11:18:22.1321057Z # Subtest: document adapter validates structure and rejects placeholders
+2026-10-21T11:18:22.1331965Z ok 5 - document adapter validates structure and rejects placeholders
+2026-10-21T11:18:22.1332385Z   ---
+2026-10-21T11:18:22.1332611Z   duration_ms: 22.636397
+2026-10-21T11:18:22.1333189Z   type: 'test'
+2026-10-21T11:18:22.1333317Z   ...
+2026-10-21T11:18:22.1437178Z # Subtest: denied policy, false actor and symlink escape fail closed
+2026-10-21T11:18:22.1438329Z ok 6 - denied policy, false actor and symlink escape fail closed
+2026-10-21T11:18:22.1438830Z   ---
+2026-10-21T11:18:22.1439062Z   duration_ms: 9.989762
+2026-10-21T11:18:22.1439470Z   type: 'test'
+2026-10-21T11:18:22.1439722Z   ...
+2026-10-21T11:18:22.1526199Z # Subtest: untrusted task text cannot supply an arbitrary shell command
+2026-10-21T11:18:22.1527225Z ok 7 - untrusted task text cannot supply an arbitrary shell command
+2026-10-21T11:18:22.1527984Z   ---
+2026-10-21T11:18:22.1528505Z   duration_ms: 8.154972
+2026-10-21T11:18:22.1528869Z   type: 'test'
+2026-10-21T11:18:22.1529200Z   ...
+2026-10-21T11:18:22.2015114Z # Subtest: adapter report digest and independent review remain required to close
+2026-10-21T11:18:22.2016046Z ok 8 - adapter report digest and independent review remain required to close
+2026-10-21T11:18:22.2018532Z   ---
+2026-10-21T11:18:22.2022519Z   duration_ms: 51.673757
+2026-10-21T11:18:22.2023486Z   type: 'test'
+2026-10-21T11:18:22.2024239Z   ...
+2026-10-21T11:18:22.2090419Z # Subtest: input size limit prevents oversized adapter execution
+2026-10-21T11:18:22.2092299Z ok 9 - input size limit prevents oversized adapter execution
+2026-10-21T11:18:22.2093428Z   ---
+2026-10-21T11:18:22.2093876Z   duration_ms: 7.119791
+2026-10-21T11:18:22.2094430Z   type: 'test'
+2026-10-21T11:18:22.2095239Z   ...
+2026-10-21T11:18:22.3215038Z # Subtest: stale source after successful adapter check cannot close the task
+2026-10-21T11:18:22.3216544Z ok 10 - stale source after successful adapter check cannot close the task
+2026-10-21T11:18:22.3216927Z   ---
+2026-10-21T11:18:22.3217149Z   duration_ms: 112.047118
+2026-10-21T11:18:22.3217715Z   type: 'test'
+2026-10-21T11:18:22.3217925Z   ...
+2026-10-21T11:18:22.3600804Z # Subtest: failed adapter check cannot be replaced by a fake manual passing proof
+2026-10-21T11:18:22.3602234Z ok 11 - failed adapter check cannot be replaced by a fake manual passing proof
+2026-10-21T11:18:22.3603134Z   ---
+2026-10-21T11:18:22.3603922Z   duration_ms: 39.180743
+2026-10-21T11:18:22.3608465Z   type: 'test'
+2026-10-21T11:18:22.3609330Z   ...
+2026-10-21T11:18:22.3732485Z # Subtest: protected evidence must include its source metadata, even in saved state
+2026-10-21T11:18:22.3735116Z ok 12 - protected evidence must include its source metadata, even in saved state
+2026-10-21T11:18:22.3735956Z   ---
+2026-10-21T11:18:22.3736414Z   duration_ms: 11.421863
+2026-10-21T11:18:22.3736790Z   type: 'test'
+2026-10-21T11:18:22.3738526Z   ...
+2026-10-21T11:18:22.3857166Z # Subtest: document headings and padding hidden inside fenced code cannot pass
+2026-10-21T11:18:22.3889034Z ok 13 - document headings and padding hidden inside fenced code cannot pass
+2026-10-21T11:18:22.3889851Z   ---
+2026-10-21T11:18:22.3890383Z   duration_ms: 11.259355
+2026-10-21T11:18:22.3890681Z   type: 'test'
+2026-10-21T11:18:22.3890887Z   ...
+2026-10-21T11:18:22.4158824Z # Subtest: a mutation during validation fails closed rather than accepting mixed snapshots
+2026-10-21T11:18:22.4163949Z ok 14 - a mutation during validation fails closed rather than accepting mixed snapshots
+2026-10-21T11:18:22.4164662Z   ---
+2026-10-21T11:18:22.4165039Z   duration_ms: 32.57958
+2026-10-21T11:18:22.4165423Z   type: 'test'
+2026-10-21T11:18:22.4165817Z   ...
+2026-10-21T11:18:22.4534387Z # Subtest: source retargeting to outside project during validation fails closed
+2026-10-21T11:18:22.4539001Z ok 15 - source retargeting to outside project during validation fails closed
+2026-10-21T11:18:22.4539680Z   ---
+2026-10-21T11:18:22.4540146Z   duration_ms: 37.243144
+2026-10-21T11:18:22.4540759Z   type: 'test'
+2026-10-21T11:18:22.4541013Z   ...
+2026-10-21T11:18:22.4637239Z # Subtest: legacy v0.1 task proofs remain loadable and verified after upgrade
+2026-10-21T11:18:22.4640226Z ok 16 - legacy v0.1 task proofs remain loadable and verified after upgrade
+2026-10-21T11:18:22.4642233Z   ---
+2026-10-21T11:18:22.4645234Z   duration_ms: 10.586541
+2026-10-21T11:18:22.4646722Z   type: 'test'
+2026-10-21T11:18:22.4651024Z   ...
+2026-10-21T11:18:22.5241412Z # Subtest: historical built-in proof remains readable but cannot replace a real test in upgraded task
+2026-10-21T11:18:22.5244351Z ok 17 - historical built-in proof remains readable but cannot replace a real test in upgraded task
+2026-10-21T11:18:22.5244817Z   ---
+2026-10-21T11:18:22.5245037Z   duration_ms: 60.043952
+2026-10-21T11:18:22.5245310Z   type: 'test'
+2026-10-21T11:18:22.5245495Z   ...
+2026-10-21T11:18:22.5613078Z # Subtest: adapter failure stays binding despite a later manual test pass
+2026-10-21T11:18:22.5614358Z ok 18 - adapter failure stays binding despite a later manual test pass
+2026-10-21T11:18:22.5615031Z   ---
+2026-10-21T11:18:22.5615410Z   duration_ms: 37.069739
+2026-10-21T11:18:22.5615813Z   type: 'test'
+2026-10-21T11:18:22.5616164Z   ...
+2026-10-21T11:18:22.5640447Z # Subtest: new tasks demand adapter proof; legacy unfinished tasks remain operable
+2026-10-21T11:18:22.5645873Z ok 19 - new tasks demand adapter proof; legacy unfinished tasks remain operable
+2026-10-21T11:18:22.5646608Z   ---
+2026-10-21T11:18:22.5646980Z   duration_ms: 3.37542
+2026-10-21T11:18:22.5647536Z   type: 'test'
+2026-10-21T11:18:22.5647898Z   ...
+2026-10-21T11:18:22.7909204Z # Pro-Papa: unknown command nope
+2026-10-21T11:18:22.7909698Z # Pro-Papa: --title requires a value
+2026-10-21T11:18:22.7918082Z # Subtest: CLI init, add, select, start, record, close and status
+2026-10-21T11:18:22.7918669Z ok 20 - CLI init, add, select, start, record, close and status
+2026-10-21T11:18:22.7919216Z   ---
+2026-10-21T11:18:22.7919421Z   duration_ms: 512.825078
+2026-10-21T11:18:22.7919640Z   type: 'test'
+2026-10-21T11:18:22.7919828Z   ...
+2026-10-21T11:18:22.7920178Z # Subtest: CLI refuses out-of-order flags and unrecognized command
+2026-10-21T11:18:22.7920674Z ok 21 - CLI refuses out-of-order flags and unrecognized command
+2026-10-21T11:18:22.7920996Z   ---
+2026-10-21T11:18:22.7921191Z   duration_ms: 87.443988
+2026-10-21T11:18:22.7921435Z   type: 'test'
+2026-10-21T11:18:22.7921629Z   ...
+2026-10-21T11:18:22.7922036Z # Subtest: CLI adapter-check records truthful failing proof and exits nonzero
+2026-10-21T11:18:22.7922771Z ok 22 - CLI adapter-check records truthful failing proof and exits nonzero
+2026-10-21T11:18:22.7923116Z   ---
+2026-10-21T11:18:22.7923303Z   duration_ms: 242.247654
+2026-10-21T11:18:22.7923525Z   type: 'test'
+2026-10-21T11:18:22.7923705Z   ...
+2026-10-21T11:18:22.9829698Z # Pro-Papa: adapter evidence requires built-in validator source provenance
+2026-10-21T11:18:23.0216374Z # Subtest: CLI cannot replace an adapter failure with a fake manual passing proof
+2026-10-21T11:18:23.0217175Z ok 23 - CLI cannot replace an adapter failure with a fake manual passing proof
+2026-10-21T11:18:23.0219867Z   ---
+2026-10-21T11:18:23.0220082Z   duration_ms: 230.819135
+2026-10-21T11:18:23.0220315Z   type: 'test'
+2026-10-21T11:18:23.0220499Z   ...
+2026-10-21T11:18:23.0286797Z # Subtest: initialization produces portable empty project, no destructive overwrite
+2026-10-21T11:18:23.0287608Z ok 24 - initialization produces portable empty project, no destructive overwrite
+2026-10-21T11:18:23.0288533Z   ---
+2026-10-21T11:18:23.0288738Z   duration_ms: 9.453919
+2026-10-21T11:18:23.0288976Z   type: 'test'
+2026-10-21T11:18:23.0289155Z   ...
+2026-10-21T11:18:23.0289497Z # Subtest: dependency order, resume, blockers and scope
+2026-10-21T11:18:23.0289981Z ok 25 - dependency order, resume, blockers and scope
+2026-10-21T11:18:23.0290269Z   ---
+2026-10-21T11:18:23.0290454Z   duration_ms: 5.730292
+2026-10-21T11:18:23.0290691Z   type: 'test'
+2026-10-21T11:18:23.0290892Z   ...
+2026-10-21T11:18:23.0291894Z # Subtest: cycle, duplicate dependency and invalid proof profile rejected
+2026-10-21T11:18:23.0292571Z ok 26 - cycle, duplicate dependency and invalid proof profile rejected
+2026-10-21T11:18:23.0292993Z   ---
+2026-10-21T11:18:23.0293203Z   duration_ms: 2.928579
+2026-10-21T11:18:23.0293441Z   type: 'test'
+2026-10-21T11:18:23.0294115Z   ...
+2026-10-21T11:18:23.0294484Z # Subtest: cannot close with missing, failed or self-reviewed proof
+2026-10-21T11:18:23.0294993Z ok 27 - cannot close with missing, failed or self-reviewed proof
+2026-10-21T11:18:23.0295355Z   ---
+2026-10-21T11:18:23.0295555Z   duration_ms: 10.531801
+2026-10-21T11:18:23.0295792Z   type: 'test'
+2026-10-21T11:18:23.0295986Z   ...
+2026-10-21T11:18:23.0296424Z # Subtest: changed evidence contents invalidate closure, no stale proof credit
+2026-10-21T11:18:23.0297028Z ok 28 - changed evidence contents invalidate closure, no stale proof credit
+2026-10-21T11:18:23.0298277Z   ---
+2026-10-21T11:18:23.0298478Z   duration_ms: 9.485737
+2026-10-21T11:18:23.0298700Z   type: 'test'
+2026-10-21T11:18:23.0298895Z   ...
+2026-10-21T11:18:23.0299184Z # Subtest: symlink escape from project is refused
+2026-10-21T11:18:23.0299577Z ok 29 - symlink escape from project is refused
+2026-10-21T11:18:23.0299870Z   ---
+2026-10-21T11:18:23.0300061Z   duration_ms: 9.09429
+2026-10-21T11:18:23.0300298Z   type: 'test'
+2026-10-21T11:18:23.0300498Z   ...
+2026-10-21T11:18:23.0300910Z # Subtest: state save and reload persists task progress and evidence integrity
+2026-10-21T11:18:23.0301552Z ok 30 - state save and reload persists task progress and evidence integrity
+2026-10-21T11:18:23.0301915Z   ---
+2026-10-21T11:18:23.0302119Z   duration_ms: 11.70306
+2026-10-21T11:18:23.0302341Z   type: 'test'
+2026-10-21T11:18:23.0302538Z   ...
+2026-10-21T11:18:23.0303305Z # Subtest: optimistic revision blocks a stale writer from overwriting newer task state
+2026-10-21T11:18:23.0303953Z ok 31 - optimistic revision blocks a stale writer from overwriting newer task state
+2026-10-21T11:18:23.0304348Z   ---
+2026-10-21T11:18:23.0304537Z   duration_ms: 9.396787
+2026-10-21T11:18:23.0304757Z   type: 'test'
+2026-10-21T11:18:23.0304943Z   ...
+2026-10-21T11:18:23.0305324Z # Subtest: init --guide does not partially initialize when AGENTS.md exists
+2026-10-21T11:18:23.0305855Z ok 32 - init --guide does not partially initialize when AGENTS.md exists
+2026-10-21T11:18:23.0306211Z   ---
+2026-10-21T11:18:23.0306402Z   duration_ms: 1.589713
+2026-10-21T11:18:23.0306624Z   type: 'test'
+2026-10-21T11:18:23.0306819Z   ...
+2026-10-21T11:18:23.0307181Z # Subtest: an edited verified state cannot omit proof of completion
+2026-10-21T11:18:23.0307842Z ok 33 - an edited verified state cannot omit proof of completion
+2026-10-21T11:18:23.0308168Z   ---
+2026-10-21T11:18:23.0308359Z   duration_ms: 2.342381
+2026-10-21T11:18:23.0308626Z   type: 'test'
+2026-10-21T11:18:23.0308820Z   ...
+2026-10-21T11:18:23.0314868Z # PP0003_PILOT_REPORT {"pilots":[{"profile":"software","adapterAttempts":2,"failedAdapterAttempts":1,"reworks":1,"runtimeAssertions":9,"requiredEvidence":["artifact","test","validation","review","adapter"],"closed":true,"elapsedMs":82},{"profile":"research","adapterAttempts":3,"failedAdapterAttempts":1,"semanticAuditRejects":1,"reworks":2,"sourceDocuments":2,"checkedClaims":3,"requiredEvidence":["artifact","sources","validation","review","adapter"],"closed":true,"elapsedMs":23},{"profile":"document","adapterAttempts":3,"failedAdapterAttempts":1,"semanticAuditRejects":3,"reworks":2,"reviewedContentRequirements":3,"requiredEvidence":["artifact","validation","review","adapter"],"closed":true,"elapsedMs":27}],"completed":3,"adapterFailuresRecovered":3,"semanticAuditRejects":4,"sourceAuditClaims":3,"sourceAuditDocuments":2,"limitations":["Adapter checks are structural","Research audit accepts only three fixed reviewed propositions with exact supporting excerpts, not arbitrary new claims","Document audit uses a curated complete-section rubric, not generic language comprehension","Review identities in pilot fixtures are simulated, not independently authenticated","Source texts are checked-out primary documentation, not fetched from network","Runtime duration is environment-dependent"]}
+2026-10-21T11:18:23.0319911Z # Subtest: PP-0003: reproducible software, sourced research, and document lifecycles
+2026-10-21T11:18:23.0320450Z ok 34 - PP-0003: reproducible software, sourced research, and document lifecycles
+2026-10-21T11:18:23.0320992Z   ---
+2026-10-21T11:18:23.0321185Z   duration_ms: 161.502717
+2026-10-21T11:18:23.0321359Z   type: 'test'
+2026-10-21T11:18:23.0321479Z   ...
+2026-10-21T11:18:23.0321809Z # Subtest: PP-0003 pinned primary sources detect tampering and duplicate declarations
+2026-10-21T11:18:23.0322389Z ok 35 - PP-0003 pinned primary sources detect tampering and duplicate declarations
+2026-10-21T11:18:23.0322661Z   ---
+2026-10-21T11:18:23.0322789Z   duration_ms: 2.296081
+2026-10-21T11:18:23.0322930Z   type: 'test'
+2026-10-21T11:18:23.0323050Z   ...
+2026-10-21T11:18:23.0323303Z # Subtest: fixed review target rejects URL, injection, unknown fields and wrong type
+2026-10-21T11:18:23.0323671Z ok 36 - fixed review target rejects URL, injection, unknown fields and wrong type
+2026-10-21T11:18:23.0324029Z   ---
+2026-10-21T11:18:23.0324211Z   duration_ms: 2.915981
+2026-10-21T11:18:23.0324424Z   type: 'test'
+2026-10-21T11:18:23.0324602Z   ...
+2026-10-21T11:18:23.0324932Z # Subtest: real separate GitHub identity and current SHA approve
+2026-10-21T11:18:23.0325410Z ok 37 - real separate GitHub identity and current SHA approve
+2026-10-21T11:18:23.0325685Z   ---
+2026-10-21T11:18:23.0325806Z   duration_ms: 0.95446
+2026-10-21T11:18:23.0325943Z   type: 'test'
+2026-10-21T11:18:23.0326063Z   ...
+2026-10-21T11:18:23.0326242Z # Subtest: old SHA and PR author approval are rejected
+2026-10-21T11:18:23.0326634Z ok 38 - old SHA and PR author approval are rejected
+2026-10-21T11:18:23.0326817Z   ---
+2026-10-21T11:18:23.0326941Z   duration_ms: 0.256034
+2026-10-21T11:18:23.0327075Z   type: 'test'
+2026-10-21T11:18:23.0327195Z   ...
+2026-10-21T11:18:23.0327585Z # Subtest: failed review blocks until same reviewer approves current head
+2026-10-21T11:18:23.0328061Z ok 39 - failed review blocks until same reviewer approves current head
+2026-10-21T11:18:23.0328336Z   ---
+2026-10-21T11:18:23.0328459Z   duration_ms: 0.244006
+2026-10-21T11:18:23.0328598Z   type: 'test'
+2026-10-21T11:18:23.0328720Z   ...
+2026-10-21T11:18:23.0328921Z # Subtest: other reviewer cannot override outstanding changes
+2026-10-21T11:18:23.0329195Z ok 40 - other reviewer cannot override outstanding changes
+2026-10-21T11:18:23.0329384Z   ---
+2026-10-21T11:18:23.0329504Z   duration_ms: 0.357676
+2026-10-21T11:18:23.0329639Z   type: 'test'
+2026-10-21T11:18:23.0329756Z   ...
+2026-10-21T11:18:23.0330143Z # Subtest: commented or dismissed review record does not count as an approval
+2026-10-21T11:18:23.0330651Z ok 41 - commented or dismissed review record does not count as an approval
+2026-10-21T11:18:23.0330918Z   ---
+2026-10-21T11:18:23.0331069Z   duration_ms: 0.257636
+2026-10-21T11:18:23.0331260Z   type: 'test'
+2026-10-21T11:18:23.0331444Z   ...
+2026-10-21T11:18:23.0331703Z # Subtest: wrong repository, PR number and bad SHA reject provider identity
+2026-10-21T11:18:23.0332226Z ok 42 - wrong repository, PR number and bad SHA reject provider identity
+2026-10-21T11:18:23.0332491Z   ---
+2026-10-21T11:18:23.0332654Z   duration_ms: 0.191287
+2026-10-21T11:18:23.0332817Z   type: 'test'
+2026-10-21T11:18:23.0333005Z   ...
+2026-10-21T11:18:23.0333295Z # Subtest: read-only authenticated GitHub API, no arbitrary hosts
+2026-10-21T11:18:23.0333665Z ok 43 - read-only authenticated GitHub API, no arbitrary hosts
+2026-10-21T11:18:23.0334008Z   ---
+2026-10-21T11:18:23.0334134Z   duration_ms: 0.94733
+2026-10-21T11:18:23.0334303Z   type: 'test'
+2026-10-21T11:18:23.0334458Z   ...
+2026-10-21T11:18:23.0334748Z # Subtest: API errors and incomplete reviews fail closed
+2026-10-21T11:18:23.0335084Z ok 44 - API errors and incomplete reviews fail closed
+2026-10-21T11:18:23.0335267Z   ---
+2026-10-21T11:18:23.0335442Z   duration_ms: 1.061191
+2026-10-21T11:18:23.0335649Z   type: 'test'
+2026-10-21T11:18:23.0335822Z   ...
+2026-10-21T11:18:23.0336149Z # Subtest: manual review cannot close without current real approval
+2026-10-21T11:18:23.0336628Z ok 45 - manual review cannot close without current real approval
+2026-10-21T11:18:23.0336943Z   ---
+2026-10-21T11:18:23.0337128Z   duration_ms: 23.986911
+2026-10-21T11:18:23.0337681Z   type: 'test'
+2026-10-21T11:18:23.0337858Z   ...
+2026-10-21T11:18:23.0338178Z # Subtest: recorded reviewer actor must match provider identity
+2026-10-21T11:18:23.0338629Z ok 46 - recorded reviewer actor must match provider identity
+2026-10-21T11:18:23.0338938Z   ---
+2026-10-21T11:18:23.0339118Z   duration_ms: 7.847883
+2026-10-21T11:18:23.0339325Z   type: 'test'
+2026-10-21T11:18:23.0339499Z   ...
+2026-10-21T11:18:23.0339874Z # Subtest: trusted approval enables closure, with provider-candidate details
+2026-10-21T11:18:23.0340419Z ok 47 - trusted approval enables closure, with provider-candidate details
+2026-10-21T11:18:23.0340763Z   ---
+2026-10-21T11:18:23.0340939Z   duration_ms: 6.708414
+2026-10-21T11:18:23.0341148Z   type: 'test'
+2026-10-21T11:18:23.0341335Z   ...
+2026-10-21T11:18:23.0341698Z # Subtest: historical tasks remain valid without new review requirements
+2026-10-21T11:18:23.0342227Z ok 48 - historical tasks remain valid without new review requirements
+2026-10-21T11:18:23.0342550Z   ---
+2026-10-21T11:18:23.0342728Z   duration_ms: 16.490446
+2026-10-21T11:18:23.0342911Z   type: 'test'
+2026-10-21T11:18:23.0343035Z   ...
+2026-10-21T11:18:23.0343284Z # Subtest: old-head changes requested stays blocking after newer reviewer approval
+2026-10-21T11:18:23.0343650Z ok 49 - old-head changes requested stays blocking after newer reviewer approval
+2026-10-21T11:18:23.0343878Z   ---
+2026-10-21T11:18:23.0343996Z   duration_ms: 0.635142
+2026-10-21T11:18:23.0344304Z   type: 'test'
+2026-10-21T11:18:23.0344426Z   ...
+2026-10-21T11:18:23.0344664Z # Subtest: formal dismissal updates the SAME review ID and cannot itself approve
+2026-10-21T11:18:23.0345020Z ok 50 - formal dismissal updates the SAME review ID and cannot itself approve
+2026-10-21T11:18:23.0345245Z   ---
+2026-10-21T11:18:23.0345361Z   duration_ms: 0.123015
+2026-10-21T11:18:23.0345496Z   type: 'test'
+2026-10-21T11:18:23.0345617Z   ...
+2026-10-21T11:18:23.0345865Z # Subtest: dismissal of a DIFFERENT review ID cannot clear a still-requested change
+2026-10-21T11:18:23.0346229Z ok 51 - dismissal of a DIFFERENT review ID cannot clear a still-requested change
+2026-10-21T11:18:23.0346454Z   ---
+2026-10-21T11:18:23.0346569Z   duration_ms: 0.117286
+2026-10-21T11:18:23.0346705Z   type: 'test'
+2026-10-21T11:18:23.0346828Z   ...
+2026-10-21T11:18:23.0347085Z # Subtest: dismissal removes only the specific approval review, not approvals by others
+2026-10-21T11:18:23.0347820Z ok 52 - dismissal removes only the specific approval review, not approvals by others
+2026-10-21T11:18:23.0348062Z   ---
+2026-10-21T11:18:23.0348178Z   duration_ms: 0.087181
+2026-10-21T11:18:23.0348312Z   type: 'test'
+2026-10-21T11:18:23.0348434Z   ...
+2026-10-21T11:18:23.0348669Z # Subtest: duplicate review ID with conflicting states fails closed
+2026-10-21T11:18:23.0348971Z ok 53 - duplicate review ID with conflicting states fails closed
+2026-10-21T11:18:23.0349170Z   ---
+2026-10-21T11:18:23.0349287Z   duration_ms: 0.142434
+2026-10-21T11:18:23.0349426Z   type: 'test'
+2026-10-21T11:18:23.0349547Z   ...
+2026-10-21T11:18:23.0349746Z # Subtest: changed PR head while paginating reviews fails closed
+2026-10-21T11:18:23.0350033Z ok 54 - changed PR head while paginating reviews fails closed
+2026-10-21T11:18:23.0350226Z   ---
+2026-10-21T11:18:23.0350342Z   duration_ms: 0.235453
+2026-10-21T11:18:23.0350482Z   type: 'test'
+2026-10-21T11:18:23.0350622Z   ...
+2026-10-21T11:18:23.0350786Z # Subtest: stable PR head recheck still passes
+2026-10-21T11:18:23.0351015Z ok 55 - stable PR head recheck still passes
+2026-10-21T11:18:23.0351181Z   ---
+2026-10-21T11:18:23.0351297Z   duration_ms: 0.171827
+2026-10-21T11:18:23.0351430Z   type: 'test'
+2026-10-21T11:18:23.0351545Z   ...
+2026-10-21T11:18:23.0351768Z # Subtest: changed PR author identity while paginating reviews fails closed
+2026-10-21T11:18:23.0352099Z ok 56 - changed PR author identity while paginating reviews fails closed
+2026-10-21T11:18:23.0352314Z   ---
+2026-10-21T11:18:23.0352429Z   duration_ms: 0.202293
+2026-10-21T11:18:23.0352685Z   type: 'test'
+2026-10-21T11:18:23.0352801Z   ...
+2026-10-21T11:18:23.0353043Z # Subtest: review history changes during lookup fail closed without PR head change
+2026-10-21T11:18:23.0353423Z ok 57 - review history changes during lookup fail closed without PR head change
+2026-10-21T11:18:23.0353652Z   ---
+2026-10-21T11:18:23.0353766Z   duration_ms: 0.325938
+2026-10-21T11:18:23.0353901Z   type: 'test'
+2026-10-21T11:18:23.0354019Z   ...
+2026-10-21T11:18:23.0354235Z # Subtest: review state update or dismissal during lookup fails closed
+2026-10-21T11:18:23.0354549Z ok 58 - review state update or dismissal during lookup fails closed
+2026-10-21T11:18:23.0354754Z   ---
+2026-10-21T11:18:23.0354870Z   duration_ms: 0.181222
+2026-10-21T11:18:23.0355004Z   type: 'test'
+2026-10-21T11:18:23.0355121Z   ...
+2026-10-21T11:18:23.0355353Z # Subtest: new change request on second page cannot bypass snapshot comparison
+2026-10-21T11:18:23.0355748Z ok 59 - new change request on second page cannot bypass snapshot comparison
+2026-10-21T11:18:23.0355995Z   ---
+2026-10-21T11:18:23.0356127Z   duration_ms: 0.572508
+2026-10-21T11:18:23.0356279Z   type: 'test'
+2026-10-21T11:18:23.0356399Z   ...
+2026-10-21T11:18:23.0356671Z # Subtest: A-B-A approvals select latest submission rather than Map insertion
+2026-10-21T11:18:23.0357027Z ok 60 - A-B-A approvals select latest submission rather than Map insertion
+2026-10-21T11:18:23.0357268Z   ---
+2026-10-21T11:18:23.0357576Z   duration_ms: 0.165378
+2026-10-21T11:18:23.0357943Z   type: 'test'
+2026-10-21T11:18:23.0358152Z   ...
+2026-10-21T11:18:23.0358576Z # Subtest: task closure accepts any matching GitHub approver on exact head
+2026-10-21T11:18:23.0359008Z ok 61 - task closure accepts any matching GitHub approver on exact head
+2026-10-21T11:18:23.0359243Z   ---
+2026-10-21T11:18:23.0359381Z   duration_ms: 11.114658
+2026-10-21T11:18:23.0359521Z   type: 'test'
+2026-10-21T11:18:23.0359657Z   ...
+2026-10-21T11:18:23.0359912Z # Subtest: malformed unresolved changes requests fail closed before reviewer filtering
+2026-10-21T11:18:23.0360321Z ok 62 - malformed unresolved changes requests fail closed before reviewer filtering
+2026-10-21T11:18:23.0360585Z   ---
+2026-10-21T11:18:23.0360718Z   duration_ms: 0.473309
+2026-10-21T11:18:23.0360871Z   type: 'test'
+2026-10-21T11:18:23.0360993Z   ...
+2026-10-21T11:18:23.0361234Z # Subtest: stable double snapshot cannot hide a malformed change request
+2026-10-21T11:18:23.0361592Z ok 63 - stable double snapshot cannot hide a malformed change request
+2026-10-21T11:18:23.0361803Z   ---
+2026-10-21T11:18:23.0361950Z   duration_ms: 0.546329
+2026-10-21T11:18:23.0362086Z   type: 'test'
+2026-10-21T11:18:23.0362222Z   ...
+2026-10-21T11:18:23.0362461Z # Subtest: invalid approval is not ignored to pass using another reviewer
+2026-10-21T11:18:23.0362821Z ok 64 - invalid approval is not ignored to pass using another reviewer
+2026-10-21T11:18:23.0363053Z   ---
+2026-10-21T11:18:23.0363189Z   duration_ms: 0.178919
+2026-10-21T11:18:23.0363327Z   type: 'test'
+2026-10-21T11:18:23.0363462Z   ...
+2026-10-21T11:18:23.0363707Z # Subtest: base branch retarget between initial and middle reads fails closed
+2026-10-21T11:18:23.0364060Z ok 65 - base branch retarget between initial and middle reads fails closed
+2026-10-21T11:18:23.0364295Z   ---
+2026-10-21T11:18:23.0364424Z   duration_ms: 0.209434
+2026-10-21T11:18:23.0364560Z   type: 'test'
+2026-10-21T11:18:23.0364691Z   ...
+2026-10-21T11:18:23.0364928Z # Subtest: base SHA advances during later PR read but head remains stable
+2026-10-21T11:18:23.0365269Z ok 66 - base SHA advances during later PR read but head remains stable
+2026-10-21T11:18:23.0365507Z   ---
+2026-10-21T11:18:23.0365622Z   duration_ms: 0.188172
+2026-10-21T11:18:23.0365776Z   type: 'test'
+2026-10-21T11:18:23.0365906Z   ...
+2026-10-21T11:18:23.0366139Z # Subtest: pinned base ref and SHA reject stable retarget or advancement
+2026-10-21T11:18:23.0366476Z ok 67 - pinned base ref and SHA reject stable retarget or advancement
+2026-10-21T11:18:23.0366701Z   ---
+2026-10-21T11:18:23.0366816Z   duration_ms: 0.430195
+2026-10-21T11:18:23.0367088Z   type: 'test'
+2026-10-21T11:18:23.0367222Z   ...
+2026-10-21T11:18:23.0367664Z # Subtest: base and review state must have valid identity
+2026-10-21T11:18:23.0367946Z ok 68 - base and review state must have valid identity
+2026-10-21T11:18:23.0368146Z   ---
+2026-10-21T11:18:23.0368261Z   duration_ms: 0.190456
+2026-10-21T11:18:23.0368395Z   type: 'test'
+2026-10-21T11:18:23.0368512Z   ...
+2026-10-21T11:18:23.0368741Z # Subtest: CI contains no privileged review or custom status-writing workflow
+2026-10-21T11:18:23.0369093Z ok 69 - CI contains no privileged review or custom status-writing workflow
+2026-10-21T11:18:23.0369309Z   ---
+2026-10-21T11:18:23.0369425Z   duration_ms: 3.834587
+2026-10-21T11:18:23.0369560Z   type: 'test'
+2026-10-21T11:18:23.0369746Z   ...
+2026-10-21T11:18:23.0369905Z 1..69
+2026-10-21T11:18:23.0371265Z # tests 69
+2026-10-21T11:18:23.0371406Z # suites 0
+2026-10-21T11:18:23.0371536Z # pass 69
+2026-10-21T11:18:23.0371667Z # fail 0
+2026-10-21T11:18:23.0371809Z # cancelled 0
+2026-10-21T11:18:23.0371934Z # skipped 0
+2026-10-21T11:18:23.0372050Z # todo 0
+2026-10-21T11:18:23.0372204Z # duration_ms 1144.56352
+2026-10-21T11:18:23.0755861Z {"valid":true,"project":"Pro-Papa framework","tasks":3}
+2026-10-21T11:18:23.0962376Z Post job cleanup.
+2026-10-21T11:18:23.1876148Z (node:2778) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T11:18:23.1876687Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T11:18:23.2099555Z Post job cleanup.
+2026-10-21T11:18:23.2797755Z [command]/usr/bin/git version
+2026-10-21T11:18:23.2837868Z git version 2.55.0
+2026-10-21T11:18:23.2869328Z Temporarily overriding HOME='/home/runner/work/_temp/a79c6e13-1c70-4595-b30f-e137ff59aa78' before making global git config changes
+2026-10-21T11:18:23.2870322Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-21T11:18:23.2874717Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Pro-Papa/Pro-Papa
+2026-10-21T11:18:23.2920498Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T11:18:23.2962473Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T11:18:23.3193290Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T11:18:23.3223407Z http.https://github.com/.extraheader
+2026-10-21T11:18:23.3233920Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-21T11:18:23.3277104Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T11:18:23.3503874Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T11:18:23.3540279Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T11:18:23.3878858Z Cleaning up orphan processes
+2026-10-21T11:18:23.4113239Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
