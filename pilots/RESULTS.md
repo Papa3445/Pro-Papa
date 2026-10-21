@@ -1,33 +1,47 @@
-# PP-0003 pilot results — actual GitHub Actions execution
+# PP-0003 — observed cross-domain pilot evidence
 
-**Observed run:** [Verify Pro-Papa #39579645690](https://github.com/Papa3445/Pro-Papa/actions/runs/39579645690), job `119153782678`. **Commit:** `70b1986d854b185b3f884b0545d2ea4efbf3e413`. Node 22 on GitHub Actions. `npm run check` completed with **68 tests passed, 0 failed, 0 skipped**, and repository state validation passed.
+## GitHub Actions execution provenance
 
-## End-to-end outcomes
+All values below are taken from **actual completed GitHub Actions test logs**, not projected timings or estimated developer effort.
 
-| Domain | Actual runtime | Adapter attempts | Adapter failures recovered | Domain-specific evidence | Lifecycle |
-|---|---:|---:|---:|---|---|
-| Software | 102 ms | 2 | 1 | 8 truth-table assertions, invalid-type rejection, real code execution | Verified in temporary project |
-| Research | 28 ms | 2 | 1 | 3 claims checked against 2 checked-out primary repository documents | Verified in temporary project |
-| Document | 20 ms | 2 | 1 | 4 substantive content assertions and structural Markdown validation | Verified in temporary project |
+| Executed candidate | GitHub Actions PR run | Software duration | Research duration | Document duration | Tests |
+|---|---|---:|---:|---:|---|
+| First implementation `70b1986` | [39579645690](https://github.com/Papa3445/Pro-Papa/actions/runs/39579645690) (push) | 102 ms | 28 ms | 20 ms | 68 passed |
+| Original reviewed head `1bf95c6` | [39580091537](https://github.com/Papa3445/Pro-Papa/actions/runs/39580091537) | 67 ms | 16 ms | 11 ms | 68 passed |
+| Corrected audited pilot `99dff88` | [39588408511](https://github.com/Papa3445/Pro-Papa/actions/runs/39588408511), job `119182963457` | 105 ms | 34 ms | 28 ms | 68 passed, 0 failed |
 
-These times are **test execution durations** from the actual CI job, not estimates of human or AI implementation effort. The first implementation comprised five new pilot artifact/test/methodology files and a roadmap status update, followed by this results report.
+The PR also had a **real failed CI run** on interim commit `5116b1f` ([run 39587798345](https://github.com/Papa3445/Pro-Papa/actions/runs/39587798345)), because the harness still expected two adapter attempts even though the revised research and document examples each had three. The harness was corrected and rerun; that failure must not be omitted from the rework history. These millisecond figures represent **test execution only**, not task authoring effort.
 
-**Measured implementation footprint (snapshot at commit `f704027a93eaee5bf1a2d165a433aeada3121571`):** 7 changed files, **240 added lines and 3 removed lines**, across the first 2 commits. Later documentation-only commits are excluded from these snapshot figures. The first two commit timestamps are `2026-10-21T09:47:08Z` and `2026-10-21T09:48:43Z` (95 seconds apart). This is **commit-history elapsed time only**, not measured active engineer/model effort; the true authoring effort remains unknown.
+## Pilot outcomes — corrected run
 
-## What the test actually proved
+| Domain | Adapter attempts | Structural failures corrected | Substantive audit rejections | Revisions of adapter input | Genuine verification |
+|---|---:|---:|---:|---:|---|
+| Software | 2 | 1 | 0 | 1 | Eight truth-table combinations, one invalid-type rejection, actual imported function execution |
+| Research | 3 | 1 | 1 | 2 | Three **specific propositions**, matched to supporting excerpts in two checked-out primary sources; a false claim with valid citation IDs was rejected by the substantive audit although the structure adapter passed |
+| Document | 3 | 1 | 3 | 2 | Three complete curated sections, each bound to explicit supporting source excerpts; contradictory prose, keyword-padding, and altered primary-source evidence were rejected by the substantive audit |
 
-The new `tests/pilots.test.mjs` created a fresh project and three dependency-ordered tasks, rejected premature starts, called each real built-in adapter with invalid and corrected inputs, recorded separate artifact/domain/validation/review-role evidence, verified that missing evidence blocks closure, closed each task, saved state, and reloaded it. All three states persisted as `verified`. The research pilot verified the content of its source claims against repository documents in the checked-out tree, without claiming live internet retrieval. The software pilot executed an imported pure function and asserted all 8 boolean combinations plus invalid-input rejection.
+**Three domain lifecycles completed, three adapter failures recovered, four substantive audit negative cases rejected.** Each domain task was created, assigned dependencies, started, checked, corrected, given separately recorded domain evidence, closed and round-tripped through persisted state. Reopened state verifies **every proof file SHA-256**, preventing later test stages from silently overwriting an earlier task's evidence.
 
-The three deliberate bad inputs were an invalid JavaScript export, a broken research source reference, and a Markdown placeholder. Each produced a recorded failure, then a passing replacement. **Three reworks were measured**, one per domain.
+The research audit is deliberately small and transparent. `pilots/validation/content-audits.mjs` requires **exact wording for three reviewed assertions**, a fixed citation mapping, the correct pinned source URLs, and explicit supporting excerpts in the actual checked-out `docs/ADAPTERS.md` / `docs/SECURITY.md`. An unapproved false claim cannot pass merely by citing a real source ID. This does not fact-check arbitrary new prose or fetch current external URLs.
 
-## Demonstrated limits and priority
+The document audit uses an explicit complete-section editorial rubric, verifies factual/supporting excerpts for each section against those two source documents, and rejects contradictory or additional unapproved guidance. It is a **bounded golden editorial contract**, not a general natural-language understanding or quality assessment. The Markdown adapter remains a separate structural check.
 
-- **Review independence:** The fixture uses a separate reviewer *name* only to test the lifecycle, not an authenticated second account. The actual PP-0003 PR still requires a fresh, independently authenticated review before acceptance.
-- **Research accuracy:** The primary sources are the project's own checked-out documentation. The pilot confirms consistency with those two sources, not independent real-world truth or live URL fetches.
-- **Adapter scope:** Software syntax alone is not a runtime test; citations alone are not a factual audit; headings alone are not substantive document quality. Domain proofs are recorded separately.
-- **Implementation effort:** CI durations are not a proxy for engineer/model effort. No credible effort-hours metric was collected; future pilots should record actual operator time if that is a decision criterion.
-- **Failure analysis:** No framework defects were observed in this execution, so none were altered speculatively. New defects found in independent review must be reproduced and fixed before closure.
+The sample `review` evidence uses a **simulated reviewer name** exclusively to exercise the untrusted local state-machine role separation. It does not certify authenticated independent review. Real independent GitHub review is still required for the top-level PP-0003 PR.
 
-## Reproduce
+## Implementation effort and review rework
 
-Run `npm run check` from repository root. The test emits a machine-readable line starting with `PP0003_PILOT_REPORT` containing per-domain counts, runtime, rework, source coverage and declared limitations. See `pilots/README.md` for test design.
+**Measured review-remediation session:** The tool-driven correction session started at `2026-10-21T10:49:28.337934190Z` (an explicit terminal clock read when work began) and the first green run containing the final substantive source-backed audits logged the completed pilot observation at `2026-10-21T10:57:55.6613335Z`. Difference: **507.323 seconds, approximately 8 minutes 27 seconds**. This is a bounded wall-clock **implementation/verification session interval**, including code work, GitHub tool overhead and CI queue/test waits. It is **not** active hands-on or billable engineering time. The earlier initial implementation session was not instrumented, so complete lifetime person/model hours remain **unknown**, explicitly rather than guessed.
+
+**Measured PR implementation footprint at commit `99dff88e29c9c02e23a5f76e5347a9873db518b7`:** eight changed files, **439 additions and three deletions**, across eight commits. These figures are a GitHub diff snapshot, not a conversion to labor hours. Reviewer-triggered rework includes new substantive audit rules, valid-citation falsehood and wrong-document negative tests, evidence-filename isolation and post-reload digest verification, plus the fixed interim CI regression. The per-domain adapter revision counts are instrumented in the test rather than copied from a proposed plan.
+
+## Limitations and next decision
+
+- **Accuracy:** Only three predefined claims and a curated guidance document have substantive bounded checks. The same validators are not safe to reuse as a generic fact checker.
+- **Source independence:** Primary source materials are this repository's pinned documentation, not independent third-party evidence. No network source retrieval occurred in the pilot.
+- **Review authentication:** Inner fixtures simulate the review role; PP-0003 itself is still awaiting a real, external GitHub review of the final PR head.
+- **Effort measurement:** A genuine correction interval was captured; full initial authoring effort remains unknown. Neither CI milliseconds nor commit timestamp gaps should be presented as active implementation labor.
+- **No speculative framework changes:** The existing state machine and adapters passed the cross-domain lifecycle tests, so only pilot validators, tests and evidence were revised.
+
+## Reproduction
+
+Run `npm run check` from the repository root. `tests/pilots.test.mjs` emits a `PP0003_PILOT_REPORT` line with observed per-domain adapter calls, failures, substantive rejections, source counts, scenario revisions and runtime. See [pilot methodology](README.md). Complete CI logs are linked above.

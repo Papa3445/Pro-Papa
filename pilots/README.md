@@ -1,23 +1,19 @@
-# PP-0003 three-domain reproducible pilots
+# PP-0003 — three reproducible domain pilots
 
-## Purpose and inputs
+## Scope
 
-Run three complete state-machine lifecycles in one disposable local project using the actual `src/core.mjs` and `src/adapters.mjs` implementations. The artifacts are a pure JavaScript boolean decision utility, a source-linked research JSON with three claims from two primary repository documents, and a Markdown handoff guide.
+A disposable initialized Pro-Papa project contains three ordered tasks: a pure software decision utility, a source-linked three-claim research artifact, and a bounded Markdown handoff guide. The integration test calls the **actual** Pro-Papa task, adapter and evidence APIs, persists the project, then reloads and checks status and each proof file's SHA-256.
 
-## Verification and measurements
+## Validation and adversarial cases
 
-`npm test` executes `tests/pilots.test.mjs`. Each profile goes through creation, dependency scheduling, start, a failing adapter check, corrected source and passing adapter check, separately recorded domain evidence, review-role simulation, closure, save, and reload. Software exercises a real eight-combination truth table and invalid input. Research compares claims to the checked-out primary source text, not just link formatting. Document validation inspects concrete messages about evidence limits.
+- **Software:** execute eight boolean combinations and reject a nonboolean input. An intentionally invalid source fails the syntax adapter before a fixed version passes.
+- **Research:** an unknown source ID fails the adapter; a false claim with **valid source IDs** passes the adapter's structural check but fails `auditResearchClaims` against explicit source-specific excerpts and exact approved proposition wording. A corrected claim then passes both checks.
+- **Document:** a TODO placeholder fails the structural adapter; a structurally valid but contradictory runtime guarantee passes the adapter yet fails `auditDocumentGuide`. Extra keyword-padding and a changed supporting primary source also fail the editorial audit. The actual guide passes its curated section-by-section requirements and support excerpts.
 
-The test outputs a structured `PP0003_PILOT_REPORT` line with adapter attempts, rework counts, source counts, genuine runtime measurements, and limitations. CI logs preserve the observed output; elapsed time must be taken from an actual execution, not invented in this document.
+These audits are intentionally **bounded to the provided three claims and single sample document**. They do not establish generic semantic understanding, live external source verification, or broad factual reliability.
 
-## Scope boundary
+## Evidence and actual observations
 
-The fixture's reviewer is **simulated by a different actor string**, not an authenticated independent reviewer. That is sufficient to test the v0.1 lifecycle but must never be claimed as an external quality review. The top-level PP-0003 task still requires independent review of its production PR before acceptance. Source permalinks are pinned to a previously observed repository commit; local source content is checked against the claims, without claiming live website retrieval.
+`tests/pilots.test.mjs` records artifact, domain, validation and simulated reviewer evidence separately from the built-in adapter proof, exercises the missing-evidence closure block, and closes all three tasks. Pilot reviewer accounts are **simulated**, not provider-authenticated. See [measured CI outcomes, rework and implementation-effort limitations](RESULTS.md). The production PP-0003 task is not complete until independent review approves this PR.
 
-## Rework and follow-up
-
-One intentionally invalid input is rejected and corrected per domain. Real regressions encountered in this pilot should be fixed in the smallest relevant framework component rather than adding speculative orchestration layers. The pilot observations will be reported after CI has actually executed.
-
-## Recorded outcome
-
-The first GitHub Actions execution passed 68/68 tests, with all three pilots closing after one deliberate failure/rework each. See [actual CI observations](RESULTS.md). Independent PR review is still pending.
+Run `npm run check` to reproduce. GitHub Actions logs expose a parseable `PP0003_PILOT_REPORT` line. Do not replace genuine source inspection or editorial review with these fixtures outside their fixed scope.
