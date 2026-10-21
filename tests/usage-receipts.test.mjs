@@ -111,7 +111,8 @@ test('readback verification requires exact commit and payload',async()=>{
   const f=fixture();await f.invoke();
   assert.deepEqual(f.calls.map(x=>x.method),['GET','GET','GET','GET','GET','PUT','GET','GET']);
   assert.ok(f.calls[0].path.endsWith(store));
-  assert.ok(f.calls.at(-1).path.includes('?ref='+commit));
+  assert.ok(f.calls.at(-2).path.includes('?ref='+commit));
+  assert.equal(f.calls.at(-1).path,'/repos/'+store,'post-readback privacy recheck is last');
 });
 
 test('privacy race after prewrite check fails closed after committing',async()=>{
