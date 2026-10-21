@@ -34,6 +34,21 @@ The sample `review` evidence uses a **simulated reviewer name** exclusively to e
 
 **Measured PR implementation footprint at commit `99dff88e29c9c02e23a5f76e5347a9873db518b7`:** eight changed files, **439 additions and three deletions**, across eight commits. These figures are a GitHub diff snapshot, not a conversion to labor hours. Reviewer-triggered rework includes new substantive audit rules, valid-citation falsehood and wrong-document negative tests, evidence-filename isolation and post-reload digest verification, plus the fixed interim CI regression. The per-domain adapter revision counts are instrumented in the test rather than copied from a proposed plan.
 
+## Independently timestamped implementation-effort sample (new run)
+
+The earlier independent FAIL correctly pointed out that the first implementation's active authoring time was never instrumented. Rather than infer missing hours from commits or CI runtime, a **new bounded engineering/editing work session** was recorded using two immutable GitHub conversation-comment creation times:
+
+- **Session start:** [GitHub issue comment 6314525827](https://github.com/Papa3445/Pro-Papa/pull/3#issuecomment-6314525827), **2026-10-21 11:12:56 UTC** — declared implementation scope and intended exclusion of later CI waiting.
+- **Session end:** [GitHub issue comment 6314553873](https://github.com/Papa3445/Pro-Papa/pull/3#issuecomment-6314553873), **2026-10-21 11:14:34 UTC** — posted immediately after two actual source-code commits and **before** the implementer began checking GitHub CI outcomes.
+- **Recorded contiguous tool-assisted engineering-session duration:** **98 seconds** (difference of two GitHub-server timestamps). Edits produced commits `e6cc1c391e1a057d43bf080a4aa89c3f186b442f` at **11:13:51 UTC** and `a95da07082c317fce9ecc71104230d1982a30607` at **11:14:19 UTC**, both *inside* the recorded interval.
+- **What was actually implemented in that interval:** a repository-primary-source blob-hash identity check, duplicate source declaration rejection, adversarial research/document tests, and a Git blob separator correction. Two subsequent failed CI runs uncovered a test syntax error and an outdated expected error message; both were corrected in separate commits `97b24b3` and `4a15d93`, and the [successful verification run 39590706277](https://github.com/Papa3445/Pro-Papa/actions/runs/39590706277) passed **69 tests, 0 failed**.
+
+**Effort interpretation:** 98 seconds is a **GitHub-server-timestamped active work-session interval**, not an estimate of historical engineering hours and not a stopwatch of exclusive keyboard or model reasoning time. It includes live design/editing and awaited GitHub connector API calls, whose individual latency was **not separately instrumented**. No deliberate idle wait for CI took place between the START and END comments (background GitHub runs may overlap). CI polling and subsequent test repairs occurred **after** the END marker and are not counted. Thus this is a defensible **bounded sample of newly observed tool-assisted implementation effort**, not a claim about total project effort or all active work. The earlier 507.323-second remediation/CI interval remains a distinct, less precise historical observation and **must not be added** as exclusive active time.
+
+## Strengthened source-provenance negative checks
+
+The final bounded audit also pins the exact Git blob SHA-1 identity of the two cited repository documents and rejects duplicate source declarations; it does not merely look for expected substring support in attacker-modified documents. The adversarial test replaces a source body and confirms both research and document audits refuse it. GitHub Actions run 39590706277 verified **69 tests** at commit `4a15d934976d122999b7019d3c7ff084c3f53ed1`. This is a pinned-run observation; later documentation commits require their own green CI check.
+
 ## Limitations and next decision
 
 - **Accuracy:** Only three predefined claims and a curated guidance document have substantive bounded checks. The same validators are not safe to reuse as a generic fact checker.
