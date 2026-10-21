@@ -24,7 +24,7 @@ node bin/pro-papa.mjs usage-receipt \
   --ref main
 ```
 
-A successful command returns `status: confirmed`, the exact source commit and consulted blob IDs, `receiptCommit`, and `receiptUrl` pointing to the stored JSON under `usage-receipts/YYYY/MM/<uuid>.json`. The command stops with a nonzero exit code if the store is public, unavailable, too broadly configured, or if any read, write, hash, or readback fails. It never silently changes a public repo.
+A successful command returns `status: confirmed`, the exact source commit and consulted blob IDs, `receiptCommit`, and `receiptUrl` pointing to the stored JSON under `usage-receipts/YYYY/MM/<uuid>.json`. The command checks store visibility before writing and after readback, and rejects observed public stores, identity/byte mismatches, and API failures. These GitHub calls are **not atomic**: a repository can become public while a PUT is executing, and a failed operation may have already committed a receipt. Prevent visibility changes using repository administration; never assume failure implies no write.
 
 ## Receipt fields
 
@@ -58,3 +58,9 @@ Tests in `tests/usage-receipts.test.mjs` mock all API operations and challenge a
 ## Copyable ChatGPT Project instruction
 
 See [universal operator](../prompts/universal-operator.md) for a concise project prompt that requires honest, per-response GitHub usage statuses and uses persisted receipts when an authorized private audit store is available. This prompt cannot enforce tool calls when the ChatGPT host does not support them.
+
+## Privacy, receipt integrity, and remaining limits
+
+The command rechecks private-store identity and default branch immediately before the receipt PUT and after the commit-pinned readback. A visibility change observed by the checks fails closed, **but does not undo any write**. Metadata lookups and GitHub Contents writes are non-atomic and provider metadata may be cached: there is no absolute confidentiality guarantee if administrators can change repository visibility concurrently. Keep visibility permissions restricted. A provider or authorized audit-repo writer with sufficient privileges may forge records.
+
+Receipt content is verified byte-for-byte and by computing the Git blob SHA of the actual payload; the SHA must agree with the write response and readback metadata. Timestamps use calendar-valid, canonical UTC `YYYY-MM-DDTHH:mm:ss.sssZ`. Neither establishes AI reasoning or an automatically enforced ChatGPT hook.

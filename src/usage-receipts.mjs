@@ -1,6 +1,6 @@
 // PP-0004: real GitHub read + private GitHub write + readback.
 // Proves provider-visible operations, NOT reasoning, model identity, or conversation contents.
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 
 const REPO = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
 const REF = /^[A-Za-z0-9][A-Za-z0-9_./-]{0,127}$/;
@@ -8,6 +8,18 @@ const COMMIT = /^[a-f0-9]{40}$/;
 const FILES = Object.freeze(['AGENTS.md', '.pro-papa/profiles.json']);
 const API = 'https://api.github.com';
 function insist(ok, message) { if (!ok) throw new Error(message); }
+function gitBlobSha(bytes) {
+  return createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex');
+}
+function validatePrivateStore(store, repository, expectedBranch) {
+  insist(store?.full_name?.toLowerCase() === repository.toLowerCase() &&
+    store.private === true && typeof store.default_branch === 'string' &&
+    REF.test(store.default_branch) &&
+    !store.default_branch.split('/').some(x => !x || x === '.' || x === '..') &&
+    (expectedBranch === undefined || store.default_branch === expectedBranch),
+    'Audit repository must exist, match the target, remain private, and retain its default branch');
+  return store.default_branch;
+}
 
 export function validateUsageOptions({ sourceRepository, storeRepository, sourceRef = 'main' }) {
   insist(typeof sourceRepository === 'string' && REPO.test(sourceRepository), 'Invalid source GitHub repository');
@@ -62,10 +74,7 @@ export async function issueUsageReceipt({
   };
   // Reject a public/misconfigured destination before any receipt can be published.
   const store = await request('/repos/' + storeRepository);
-  insist(store?.full_name?.toLowerCase() === storeRepository.toLowerCase() &&
-    store.private === true && typeof store.default_branch === 'string' &&
-    REF.test(store.default_branch) && !store.default_branch.split('/').some(x => x === '.' || x === '..'),
-    'Audit repository must exist, match the target, and be private');
+  const storeBranch = validatePrivateStore(store, storeRepository);
   const source = await request('/repos/' + sourceRepository + '/commits/' + encodeURIComponent(sourceRef));
   insist(COMMIT.test(source?.sha), 'Unable to pin source commit identity');
   const consulted = [];
@@ -74,8 +83,7 @@ export async function issueUsageReceipt({
       '?ref=' + source.sha);
     const bytes = decodeGitHubContent(response);
     // Verify returned Git blob SHA against the actual bytes, not a claimed filename.
-    const { createHash } = await import('node:crypto');
-    const computed = createHash('sha1').update('blob ' + bytes.length + '\0').update(bytes).digest('hex');
+    const computed = gitBlobSha(bytes);
     insist(computed === response.sha && response.path === path,
       'Framework source hash/path mismatch');
     if (path === 'AGENTS.md') {
@@ -93,8 +101,9 @@ export async function issueUsageReceipt({
   insist(typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id),
     'Invalid receipt UUID');
   const timestamp = now();
-  insist(typeof timestamp === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z$/.test(timestamp) &&
-    Number.isFinite(Date.parse(timestamp)), 'Invalid receipt timestamp');
+  insist(typeof timestamp === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(timestamp) &&
+    Number.isFinite(Date.parse(timestamp)) &&
+    new Date(timestamp).toISOString() === timestamp, 'Invalid receipt timestamp');
   const month = timestamp.slice(0, 7).replace('-', '/');
   const path = 'usage-receipts/' + month + '/' + id + '.json';
   const receipt = {
@@ -104,17 +113,24 @@ export async function issueUsageReceipt({
     verificationScope: 'GitHub files read and provider-backed private receipt write/readback; not proof of reasoning',
   };
   const raw = JSON.stringify(receipt, null, 2) + '\n';
+  const rawBytes = Buffer.from(raw, 'utf8');
+  const expectedBlobSha = gitBlobSha(rawBytes);
+  // These lookups are not atomic with the write: never claim absolute privacy.
+  validatePrivateStore(await request('/repos/' + storeRepository), storeRepository, storeBranch);
   const created = await request('/repos/' + storeRepository + '/contents/' + path,
     'PUT', { message: 'audit: record Pro-Papa framework read ' + id,
-      content: Buffer.from(raw, 'utf8').toString('base64'), branch: store.default_branch });
-  insist(COMMIT.test(created?.commit?.sha) && COMMIT.test(created?.content?.sha) &&
-    created.content.path === path, 'GitHub did not confirm receipt commit');
+      content: rawBytes.toString('base64'), branch: storeBranch });
+  insist(COMMIT.test(created?.commit?.sha) && created?.content?.sha === expectedBlobSha &&
+    created.content.path === path, 'GitHub did not confirm matching receipt blob/commit');
   // Validate readback from the exact new commit. Never assert saved without it.
   const stored = await request('/repos/' + storeRepository + '/contents/' + path +
     '?ref=' + created.commit.sha);
   const readback = decodeGitHubContent(stored);
-  insist(stored.path === path && stored.sha === created.content.sha &&
-    readback.toString('utf8') === raw, 'Receipt readback did not match saved data');
+  insist(stored.path === path && readback.equals(rawBytes) &&
+    stored.sha === expectedBlobSha && gitBlobSha(readback) === expectedBlobSha,
+    'Receipt readback did not match saved data or Git blob identity');
+  // A concurrent visibility change can disclose metadata before detection.
+  validatePrivateStore(await request('/repos/' + storeRepository), storeRepository, storeBranch);
   const url = 'https://github.com/' + storeRepository + '/blob/' + created.commit.sha + '/' + path;
   return {
     status: 'confirmed', sourceRepository, sourceCommit: source.sha,

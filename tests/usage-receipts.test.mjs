@@ -16,12 +16,13 @@ function file(path,content){
 }
 function fixture(options={}){
   const calls=[], saved=[], receiptFiles=new Map();
+  let publicStore=Boolean(options.publicStore);
   const api=async(url,request)=>{
     const uri=new URL(url),path=uri.pathname+uri.search;
     calls.push({path,method:request.method});
     let output,status=200;
     if(request.method==='GET' && path==='/repos/'+store) {
-      output={full_name:store,private:options.publicStore?false:true,default_branch:'main'};
+      output={full_name:store,private:!publicStore,default_branch:'main'};
     } else if(request.method==='GET' && path==='/repos/'+source+'/commits/main') {
       output={sha};
     } else if(request.method==='GET' && path.startsWith('/repos/'+source+'/contents/')){
@@ -37,14 +38,18 @@ function fixture(options={}){
       assert.equal(data.sha,undefined,'PUT must never overwrite existing receipts');
       const content=Buffer.from(data.content,'base64').toString('utf8');
       if(receiptFiles.has(name))return {ok:false,status:409,json:async()=>({message:'conflict'})};
+      if(options.publicBeforeWrite)publicStore=true;
       receiptFiles.set(name,content);saved.push({name,content});
-      output={commit:{sha:commit},content:{sha:file(name,content).sha,path:name}};
+      const blobSha=options.forgedMatchingBlob?'c'.repeat(40):file(name,content).sha;
+      output={commit:{sha:commit},content:{sha:blobSha,path:name}};
     } else if(request.method==='GET' && path.startsWith('/repos/'+store+'/contents/')){
       const suffix=path.slice(('/repos/'+store+'/contents/').length),name=suffix.split('?')[0];
       assert.equal(uri.searchParams.get('ref'),commit);
       const contents=receiptFiles.get(name);
       assert.ok(contents);
       output=file(name,options.tamperReadback?contents+'altered':contents);
+      if(options.forgedMatchingBlob)output.sha='c'.repeat(40);
+      if(options.publicAfterReadback)publicStore=true;
     } else throw Error('Unexpected request '+request.method+' '+path);
     return {ok:status===200,status,json:async()=>output};
   };
@@ -104,7 +109,33 @@ test('missing token or untrusted UUID and timestamp do not publish',async()=>{
 });
 test('readback verification requires exact commit and payload',async()=>{
   const f=fixture();await f.invoke();
-  assert.deepEqual(f.calls.map(x=>x.method),['GET','GET','GET','GET','PUT','GET']);
+  assert.deepEqual(f.calls.map(x=>x.method),['GET','GET','GET','GET','GET','PUT','GET','GET']);
   assert.ok(f.calls[0].path.endsWith(store));
   assert.ok(f.calls.at(-1).path.includes('?ref='+commit));
+});
+
+test('privacy race after prewrite check fails closed after committing',async()=>{
+  const f=fixture({publicBeforeWrite:true});
+  await assert.rejects(f.invoke(),/remain private/);
+  assert.equal(f.saved.length,1,'the receipt may already be written during the race');
+  assert.equal(f.calls.at(-1).path,'/repos/'+store);
+});
+test('public switch at readback fails closed',async()=>{
+  const f=fixture({publicAfterReadback:true});
+  await assert.rejects(f.invoke(),/remain private/);
+  assert.equal(f.saved.length,1);
+});
+test('matching but fabricated PUT and GET blob identities are rejected',async()=>{
+  const f=fixture({forgedMatchingBlob:true});
+  await assert.rejects(f.invoke(),/matching receipt blob/);
+  assert.equal(f.saved.length,1);
+});
+test('invalid calendar dates and noncanonical timestamps are rejected',async()=>{
+  for(const time of ['2026-02-30T12:00:00.000Z','2026-13-01T12:00:00.000Z',
+    '2026-10-21T12:00:00Z','2026-10-21T12:00:00.0000Z',
+    '2026-10-21T24:00:00.000Z']) {
+    const f=fixture();
+    await assert.rejects(f.invoke({now:()=>time}),/Invalid receipt timestamp/,time);
+    assert.equal(f.saved.length,0,time);
+  }
 });
