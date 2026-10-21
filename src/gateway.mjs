@@ -1,9 +1,10 @@
 // PP-0005: Host-invoked gateway. Task data never grants tools or shell authority.
 import { createHmac } from 'node:crypto';
-import { realpath } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { lstat, realpath } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { addTask, loadProject, saveState, startTask } from './core.mjs';
+import { issueUsageReceipt } from './usage-receipts.mjs';
 
 const FRAMEWORK_ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -46,6 +47,57 @@ function requestMac(secret, request, route) {
   ])).digest('hex');
 }
 
+
+async function assertIsolatedProject(root) {
+  const framework = await realpath(FRAMEWORK_ROOT);
+  if (root === framework || root.startsWith(framework + sep) || framework.startsWith(root + sep)) {
+    fail('Gateway requests cannot modify the Pro-Papa framework roadmap');
+  }
+  // Validate actual nested metadata paths, not just the enclosing project root.
+  const metadata = resolve(root, '.pro-papa');
+  const ledger = resolve(metadata, 'tasks.json');
+  const [directory, file, actualMetadata, actualLedger] = await Promise.all([
+    lstat(metadata), lstat(ledger), realpath(metadata), realpath(ledger),
+  ]);
+  if (!directory.isDirectory() || directory.isSymbolicLink() ||
+      !file.isFile() || file.isSymbolicLink() ||
+      actualMetadata !== metadata || actualLedger !== ledger ||
+      file.nlink !== 1) {
+    fail('Gateway project metadata must be real, unaliased files inside the separate project');
+  }
+}
+
+async function saveIsolatedProject(root, state, profiles) {
+  // Guards stable symlink aliases, not a hostile concurrent filesystem TOCTOU race.
+  await assertIsolatedProject(root);
+  await saveState(root, state, profiles);
+}
+
+const GITHUB_RECEIPT_URL = /^https:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/blob\/([a-f0-9]{40})\/usage-receipts\/(\d{4})\/(\d{2})\/([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})\.json$/i;
+function consistentReceipt(receipt, expectedStore) {
+  if (!plain(receipt) || receipt.status !== 'confirmed' ||
+      typeof receipt.receiptUrl !== 'string' || typeof expectedStore !== 'string') return false;
+  const match = GITHUB_RECEIPT_URL.exec(receipt.receiptUrl);
+  const store = match && match[1] + '/' + match[2];
+  return Boolean(match) && store.toLowerCase() === expectedStore.toLowerCase() &&
+    receipt.storeRepository?.toLowerCase() === expectedStore.toLowerCase() &&
+    receipt.receiptCommit === match[3] && receipt.receiptId?.toLowerCase() === match[6].toLowerCase() &&
+    receipt.visibility === 'private' &&
+    typeof receipt.sourceCommit === 'string' && /^[a-f0-9]{40}$/.test(receipt.sourceCommit) &&
+    Array.isArray(receipt.consulted) && receipt.consulted.length === 2 &&
+    ['AGENTS.md', '.pro-papa/profiles.json'].every(path =>
+      receipt.consulted.some(item => item.path === path && /^[a-f0-9]{40}$/.test(item.gitBlobSha)));
+}
+
+function validOutput(output) {
+  try {
+    const serialized = JSON.stringify(output);
+    return typeof serialized === 'string' && Buffer.byteLength(serialized, 'utf8') <= 256 * 1024;
+  } catch {
+    return false;
+  }
+}
+
 function publicTracking(task, state = 'durable') {
   return { mode: state, taskId: task.id, taskStatus: task.status, runState: task.gatewayRun };
 }
@@ -55,10 +107,11 @@ async function prepareTracking(tracking, request, route) {
   if (!ID.test(request.id ?? '')) fail('Durable requests require a valid UUID request.id');
   if (typeof tracking.projectRoot !== 'string' || !tracking.projectRoot.trim()) fail('Durable tracking requires a project root');
   const root = await realpath(tracking.projectRoot);
-  if (root === await realpath(FRAMEWORK_ROOT)) fail('Gateway requests cannot modify the Pro-Papa framework roadmap');
+  await assertIsolatedProject(root);
   const { state, profiles } = await loadProject(root);
+  const normalizedId = request.id.toLowerCase();
   const mac = requestMac(tracking.secret, request, route);
-  let task = state.tasks.find(t => t.gatewayRequest?.id === request.id);
+  let task = state.tasks.find(t => t.gatewayRequest?.id?.toLowerCase() === normalizedId);
   if (task && (task.gatewayRequest.mac !== mac || task.gatewayRequest.capability !== route)) {
     return { mode: 'denied', reason: 'idempotency_key_conflict' };
   }
@@ -74,35 +127,36 @@ async function prepareTracking(tracking, request, route) {
   }
   if (!task) {
     task = addTask(state, profiles, {
-      title: 'Gateway request ' + request.id.slice(0, 8),
+      title: 'Gateway request ' + normalizedId.slice(0, 8),
       objective: 'Execute approved host request without persisting its private text',
       profile: CAPABILITIES[route].profile,
       acceptance: ['Verify real authorized handler execution and output',
         'Record genuine evidence and obtain independent validation before task closure'],
     });
-    task.gatewayRequest = { id: request.id, mac, capability: route };
+    task.gatewayRequest = { id: normalizedId, mac, capability: route };
     task.gatewayRun = 'queued';
   }
   const other = state.tasks.some(t => t.status === 'in_progress' && t.id !== task.id);
   if (other) {
-    await saveState(root, state, profiles);
+    await saveIsolatedProject(root, state, profiles);
     return { mode: 'existing', task, reason: 'queued_behind_active_task' };
   }
   if (task.status === 'pending') startTask(state, task.id, 'gateway-host');
   if (task.status !== 'in_progress') return { mode: 'existing', task, reason: 'task_not_resumable' };
   task.gatewayRun = 'executing'; // Reserve before invoking a potentially side-effecting tool.
-  await saveState(root, state, profiles);
+  await saveIsolatedProject(root, state, profiles);
   return { mode: 'durable', root, taskId: task.id };
 }
 
 async function settleTracking(tracking, outcome) {
   if (tracking.mode !== 'durable') return { mode: 'ephemeral' };
   try {
+    await assertIsolatedProject(tracking.root);
     const { state, profiles } = await loadProject(tracking.root);
     const task = state.tasks.find(t => t.id === tracking.taskId);
     if (!task || task.gatewayRun !== 'executing') return { mode: 'durable', taskId: tracking.taskId, runState: 'needs_reconciliation' };
     task.gatewayRun = outcome === 'completed' ? 'completed' : outcome === 'provider_unavailable' ? 'retryable' : 'ambiguous';
-    await saveState(tracking.root, state, profiles);
+    await saveIsolatedProject(tracking.root, state, profiles);
     return publicTracking(task);
   } catch {
     // Provider side effects may already exist: NEVER automatically repeat them.
@@ -147,7 +201,7 @@ export async function runGateway({ request, host = {}, tracking = { mode: 'ephem
     const reply = await handlers[capability]({
       objective: request.objective, inputs: request.inputs, capability,
     });
-    if (plain(reply) && reply.ok === true && validProvenance(reply.provenance, capability)) {
+    if (plain(reply) && reply.ok === true && validProvenance(reply.provenance, capability) && validOutput(reply.output)) {
       status = 'completed';
       result = { output: reply.output, provenance: reply.provenance };
     } else if (plain(reply) && reply.ok === true) status = 'unverified_execution';
@@ -160,13 +214,22 @@ export async function runGateway({ request, host = {}, tracking = { mode: 'ephem
   if (host.audit === true) {
     audit = { status: 'failed' };
     try {
-      if (typeof host.receiptIssuer === 'function') {
-        const receipt = await host.receiptIssuer();
-        if (receipt?.status === 'confirmed' &&
-          typeof receipt.receiptUrl === 'string' &&
-          /^https:\/\/github\.com\/[^/]+\/[^/]+\/blob\/[a-f0-9]{40}\//.test(receipt.receiptUrl) &&
-          /^[a-f0-9]{40}$/.test(receipt.receiptCommit ?? '')) {
+      if (plain(host.pp0004Options)) {
+        // This code invokes the verified PP-0004 issuer directly: actual GitHub
+        // source reads, private-store write, commit-pinned readback and visibility checks.
+        const sourceRepository = host.pp0004Options.sourceRepository;
+        const storeRepository = host.pp0004Options.storeRepository;
+        const receipt = await issueUsageReceipt({ sourceRepository, storeRepository });
+        if (consistentReceipt(receipt, storeRepository)) {
           audit = { status: 'confirmed', receiptUrl: receipt.receiptUrl,
+            receiptCommit: receipt.receiptCommit };
+        }
+      } else if (typeof host.receiptIssuer === 'function') {
+        // External host callbacks cannot establish provider-backed readback here.
+        // Even consistent metadata is only an assertion from the injected host.
+        const receipt = await host.receiptIssuer();
+        if (consistentReceipt(receipt, host.expectedAuditStore)) {
+          audit = { status: 'host_asserted', receiptUrl: receipt.receiptUrl,
             receiptCommit: receipt.receiptCommit };
         }
       }
