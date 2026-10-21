@@ -98,11 +98,18 @@
       "dependsOn": [
         "PP-0001"
       ],
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "chatgpt-implementation",
       "blockedReason": null,
       "evidence": [],
-      "requiresAdapter": true
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 2,
+        "baseRef": "main",
+        "baseSha": "bd16037bb74bbfc5abc39bb3bd9763cc2a880ac8"
+      }
     },
     {
       "id": "PP-0003",
@@ -123,5 +130,5 @@
       "evidence": []
     }
   ],
-  "revision": 11
+  "revision": 14
 }

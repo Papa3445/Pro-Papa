@@ -24,3 +24,15 @@ Built-in checks now issue a separate `adapter` evidence type that cannot be repl
 ## Compatibility and evidence boundaries
 
 Proof types are intentionally distinct: `adapter` is a narrow structural check, while `test`, `sources`, and `validation` are separate domain observations. New software/research/document tasks opt into adapter verification. Projects created before this change keep their historical proof obligations unless explicitly opted in. Adapter evidence is source-hash checked and never proves that the substantive test or factual audit occurred. Manual proofs remain claims backed by hashed evidence files, not authenticated observations; stronger identity and immutable candidate verification are PP-0002 scope.
+
+## PP-0002 provider-bound review and trust boundary
+
+Tasks that explicitly require trusted review perform read-only authenticated GitHub API lookups at closure. The reviewer account must differ from the PR author and match a recorded review actor. Approvals on obsolete heads, dismissed approvals and outstanding changes requests cannot close the task. Historical requests for changes remain blocking until a later approval from the same reviewer on the current head, or GitHub dismisses that **specific** review ID. Malformed decisive reviews or unknown states fail closed.
+
+The verifier reads complete review histories twice and PR metadata three times; observed changes to head SHA, base ref/SHA/repo, author or review state during verification fail closed. An optional pair of pinned base-ref/base-SHA values also blocks a stable retarget or base advance. For historical targets without that pair, verification is **head-only**, not proof of an unchanged reviewable diff. Task files can be modified by repository writers; a meaningful historical base pin must come from a separately trusted source. GitHub review accounts do not certify reviewer diligence or local source-tree bytes.
+
+## Merge protection and removed status publisher
+
+The experimental custom commit-status publisher, status-writing entry point, and privileged review workflow have been removed. GitHub commit status contexts attach to commit SHAs, **not pull-request identities**; sharing a head SHA could let one PR's passing status mask another's failure. Moreover, a `pull_request_review`-triggered workflow with `statuses: write` can load PR-controlled workflow definitions for same-repository PRs before even checking out trusted code. This is an unacceptable authority boundary.
+
+Instead, use GitHub's **native protected-branch reviews**, stale-approval dismissal and the existing ordinary CI checks as the merge-time enforcement mechanism, configured by a repo administrator where available. The Pro-Papa CLI independently checks remote reviews for its opt-in task lifecycle but does **not** issue an approval status, configure protection, or perform an atomic review-to-merge transaction. Use an expected PR-head SHA at merge and recheck native branch rules. No custom status in this revision should be considered a reviewable-diff-bound PASS.

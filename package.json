@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check src/core.mjs && node --check src/adapters.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .",
+    "check": "node --check src/core.mjs && node --check src/adapters.mjs && node --check src/review-github.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .",
     "next": "node bin/pro-papa.mjs next",
     "status": "node bin/pro-papa.mjs status"
   },

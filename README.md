@@ -76,3 +76,9 @@ The `proof` command does not execute the tests mentioned in your report. The age
 ### Review follow-up for PP-0001
 
 Independent reviews found four validation weaknesses and then a legacy-proof compatibility regression. This revision checks adapter input digests at closure, uses a distinct `adapter` proof kind instead of overloading runtime tests, preserves old task records, ignores fenced Markdown code, and validates stable snapshots. New software/research/document tasks require separate adapter and domain evidence. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).
+
+## Authenticated GitHub reviews (PP-0002)
+
+For formally tracked tasks, GitHub review records can be checked at task closure against the exact PR head and optionally a separately trusted comparison-base ref/SHA. Use `review-status --id TASK` and `close --id TASK` with a host-managed **read-only** `GITHUB_TOKEN` after an independent reviewer submits a PR review. Manual evidence alone cannot create a provider approval. See [authenticated review instructions](docs/TRUSTED-REVIEWS.md).
+
+An experimental workflow that published custom review-integrity commit statuses was **removed** because same-repo PR workflows could mint statuses using elevated permissions, and different PRs can share the same SHA/status context. To enforce **merges**, use GitHub-native required reviews, stale-review dismissal, and normal CI checks through branch protection where available. Pro-Papa does not create AI reviews, merge autonomously, or configure repository rules.
