@@ -4,7 +4,6 @@
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runGateway } from '../src/gateway.mjs';
-import { issueUsageReceipt } from '../src/usage-receipts.mjs';
 
 export const BUILTIN_HANDLERS = Object.freeze({
   'text.metrics': async ({ objective }) => ({
@@ -59,10 +58,10 @@ export async function main(args = process.argv.slice(2), input = readInput, outp
       handlers: BUILTIN_HANDLERS, grants: ['text.metrics', 'math.sum'],
       allowTaskWrites: flags['--durable'] === true,
       audit,
-      receiptIssuer: audit ? () => issueUsageReceipt({
+      pp0004Options: audit ? {
         sourceRepository: process.env.PRO_PAPA_SOURCE_REPO ?? 'Papa3445/Pro-Papa',
         storeRepository: process.env.PRO_PAPA_AUDIT_REPO,
-      }) : undefined,
+      } : undefined,
     },
     tracking: flags['--durable'] ? {
       mode: 'durable', projectRoot: flags.project,
