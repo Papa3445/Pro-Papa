@@ -102,7 +102,12 @@
       "owner": "chatgpt-implementation",
       "blockedReason": null,
       "evidence": [],
-      "requiresAdapter": true
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 2
+      }
     },
     {
       "id": "PP-0003",
@@ -123,5 +128,5 @@
       "evidence": []
     }
   ],
-  "revision": 12
+  "revision": 13
 }
