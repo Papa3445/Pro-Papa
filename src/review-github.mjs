@@ -66,10 +66,17 @@ export function evaluateGitHubReviews(target, pull, reviews) {
     reason: 'Outstanding changes-requested review (including older PR heads)',
     blockingReviewIds: outstanding.map(x => x.id) };
   if (!approvals.length) return { ...reviewed, verdict: 'FAIL', reason: 'No independent GitHub approval on current PR head' };
+  // Maps preserve the first insertion position when an account re-reviews.
+  // Use submission order, not Map order, to select the newest valid approval.
+  approvals.sort((a, b) => Date.parse(a.submitted_at) - Date.parse(b.submitted_at) || a.id - b.id);
   const latestApproval = approvals.at(-1);
+  const approvedReviewers = approvals.map(review => ({
+    login: review.user.login, id: review.user.id,
+    reviewId: review.id, submittedAt: review.submitted_at,
+  }));
   return { ...reviewed, verdict: 'PASS', reason: 'Latest independent GitHub review approved exact current head',
     reviewer: { login: latestApproval.user.login, id: latestApproval.user.id },
-    reviewId: latestApproval.id, submittedAt: latestApproval.submitted_at };
+    reviewId: latestApproval.id, submittedAt: latestApproval.submitted_at, approvedReviewers };
 }
 
 export async function verifyGitHubReview(target, { token = process.env.GITHUB_TOKEN, fetchImpl = globalThis.fetch } = {}) {
@@ -86,22 +93,48 @@ export async function verifyGitHubReview(target, { token = process.env.GITHUB_TO
     if (!response || !response.ok) throw new Error(`GitHub review lookup failed: HTTP ${response?.status ?? 'unknown'}`);
     return response.json();
   }
-  const pull = await getJson(root);
-  const reviews = [];
-  let complete = false;
-  for (let page = 1; page <= 10; page++) {
-    const batch = await getJson(`${root}/reviews?per_page=100&page=${page}`);
-    if (!Array.isArray(batch) || batch.length > 100) throw new Error('Malformed GitHub review collection');
-    reviews.push(...batch);
-    if (batch.length < 100) { complete = true; break; }
+  // A stable PR head alone does not pin a changing review history.
+  // Bracket TWO complete review snapshots with PR identity checks.
+  async function readReviews() {
+    const reviews = [];
+    for (let page = 1; page <= 10; page++) {
+      const batch = await getJson(`${root}/reviews?per_page=100&page=${page}`);
+      if (!Array.isArray(batch) || batch.length > 100) throw new Error('Malformed GitHub review collection');
+      reviews.push(...batch);
+      if (batch.length < 100) return reviews;
+    }
+    throw new Error('Too many reviews to verify completely: refuse partial assessment');
   }
-  if (!complete) throw new Error('Too many reviews to verify completely: refuse partial assessment');
-  // Detect pushes while reviews are being read, rather than approving a stale head.
-  const after = await getJson(root);
-  if (after?.head?.sha !== pull?.head?.sha || after?.number !== pull?.number ||
-      after?.base?.repo?.full_name !== pull?.base?.repo?.full_name ||
-      after?.user?.id !== pull?.user?.id) {
+  function samePull(a, b) {
+    return a?.head?.sha === b?.head?.sha &&
+      a?.number === b?.number &&
+      a?.base?.repo?.full_name === b?.base?.repo?.full_name &&
+      a?.user?.id === b?.user?.id &&
+      a?.user?.login === b?.user?.login;
+  }
+  function snapshot(reviews) {
+    // Compare all review identities and decision fields independently of API order.
+    // New reviews, dismissals, and state changes all invalidate the first read.
+    return JSON.stringify(reviews.map(review => ({
+      id: review?.id, state: review?.state, commit: review?.commit_id,
+      submitted: review?.submitted_at, userId: review?.user?.id, login: review?.user?.login,
+    })).sort((a, b) => a.id - b.id));
+  }
+  const firstPull = await getJson(root);
+  const firstReviews = await readReviews();
+  const middlePull = await getJson(root);
+  if (!samePull(firstPull, middlePull)) {
     throw new Error('GitHub PR head or identity changed during review lookup; retry');
   }
-  return evaluateGitHubReviews(target, after, reviews);
+  const secondReviews = await readReviews();
+  const finalPull = await getJson(root);
+  if (!samePull(middlePull, finalPull)) {
+    throw new Error('GitHub PR head or identity changed during review lookup; retry');
+  }
+  if (snapshot(firstReviews) !== snapshot(secondReviews)) {
+    throw new Error('GitHub reviews changed during review lookup; retry');
+  }
+  // No GitHub REST sequence is atomic with future pushes or reviews.
+  // Protect any subsequent merge using the expected head SHA.
+  return evaluateGitHubReviews(target, finalPull, secondReviews);
 }

@@ -56,7 +56,7 @@ test('read-only authenticated GitHub API, no arbitrary hosts',async()=>{
   const f=mock([review()]);
   await assert.rejects(verifyGitHubReview(target,{token:'',fetchImpl:f.fetchImpl}),/GITHUB_TOKEN/);
   assert.equal((await verifyGitHubReview(target,{token:'testing',fetchImpl:f.fetchImpl})).verdict,'PASS');
-  assert.equal(f.calls.length,3);
+  assert.equal(f.calls.length,5);
   for(const {url,options} of f.calls){
     assert.ok(url.startsWith('https://api.github.com/repos/Papa3445/Pro-Papa/pulls/2'));
     assert.equal(options.method,'GET');assert.equal(options.redirect,'error');
@@ -165,4 +165,49 @@ test('changed PR author identity while paginating reviews fails closed',async()=
     return [review()];
   }});
   await assert.rejects(verifyGitHubReview(target,{token:'test',fetchImpl}),/changed during review lookup/);
+});
+
+test('review history changes during lookup fail closed without PR head change',async()=>{
+  const approver=review('APPROVED',{user:{id:51,login:'reviewer51'}});
+  const blocker=review('CHANGES_REQUESTED',{user:{id:52,login:'reviewer52'}});
+  let reads=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>url.endsWith('/pulls/2')?pull:++reads===1?[approver]:[approver,blocker]});
+  await assert.rejects(verifyGitHubReview(target,{token:'x',fetchImpl}),/reviews changed during review lookup/);
+  assert.equal(reads,2);
+});
+test('review state update or dismissal during lookup fails closed',async()=>{
+  const prior=review('APPROVED');let reads=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>url.endsWith('/pulls/2')?pull:++reads===1?[prior]:[{...prior,state:'DISMISSED'}]});
+  await assert.rejects(verifyGitHubReview(target,{token:'x',fetchImpl}),/reviews changed during review lookup/);
+});
+test('new change request on second page cannot bypass snapshot comparison',async()=>{
+  const first=review('APPROVED');
+  const filler=Array.from({length:99},()=>review('COMMENTED'));
+  const blocker=review('CHANGES_REQUESTED',{user:{id:987,login:'blocker'}});
+  let round=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>{
+    if(url.endsWith('/pulls/2'))return pull;
+    const page=new URL(url).searchParams.get('page');
+    if(page==='1'){round++;return [first,...filler];}
+    return round===1?[]:[blocker];
+  }});
+  await assert.rejects(verifyGitHubReview(target,{token:'x',fetchImpl}),/reviews changed during review lookup/);
+});
+test('A-B-A approvals select latest submission rather than Map insertion',()=>{
+  const a={id:111,login:'reviewerA'},b={id:222,login:'reviewerB'};
+  const first=review('APPROVED',{user:a});
+  const middle=review('APPROVED',{user:b});
+  const last=review('APPROVED',{user:a});
+  const x=evalReviews(target,pull,[first,middle,last]);
+  assert.equal(x.verdict,'PASS');assert.equal(x.reviewId,last.id);
+  assert.equal(x.reviewer.login,'reviewerA');
+  assert.deepEqual(x.approvedReviewers.map(v=>v.login),['reviewerB','reviewerA']);
+});
+test('task closure accepts any matching GitHub approver on exact head',async t=>{
+  const {root,state,profiles,task}=await fixture(t);
+  const a=review('APPROVED',{user:{id:196889071,login:'papa4568'}});
+  const b=review('APPROVED',{user:{id:444,login:'reviewerB'}});
+  const report=await closeTask(root,state,profiles,task.id,{token:'x',fetchImpl:mock([a,b]).fetchImpl});
+  assert.equal(report.trustedReview.reviewer.login,'reviewerB');
+  assert.equal(task.status,'verified');
 });

@@ -21,7 +21,7 @@ node bin/pro-papa.mjs review-status --id PP-0002
 node bin/pro-papa.mjs close --id PP-0002
 ```
 
-The gate reads the PR and paginated reviews live from the fixed GitHub REST API endpoint. It takes current PR head SHA from GitHub, ignores older approvals, rejects PR-author self-approval, blocks outstanding changes requests, and evaluates nondismissed decisions by each authenticated account. GitHub dismissals update one specific review ID; they never erase unrelated change requests from the same reviewer. Missing credentials, HTTP errors, malformed/incomplete results and mismatched PR identity fail closed. A newer approval by the reviewer can clear that reviewer's changes request.
+The gate reads the PR and paginated reviews live from the fixed GitHub REST API endpoint. It takes the current PR head SHA from GitHub, ignores older approvals, rejects PR-author self-approval, blocks outstanding changes requests, and evaluates nondismissed decisions by each authenticated account. All current-head qualifying approvers are returned in submission order; closure accepts the evidence actor only when that actor matches a qualifying GitHub account. GitHub dismissals update one specific review ID; they never erase unrelated change requests from the same reviewer. Missing credentials, HTTP errors, malformed/incomplete results and mismatched PR identity fail closed. A newer approval by the reviewer can clear that reviewer's changes request.
 
 ## Free GitHub Actions integration
 
@@ -36,6 +36,6 @@ After the first gate run, optionally configure a protected `main` branch/ruleset
 - Task opt-in and PR association are held in repo-controlled state; writers must be governed by normal GitHub permissions and review requirements. Local offline validation cannot authenticate past GitHub reviews.
 - A separate reviewer (human or AI process with GitHub review permission) must still submit an approval. Automating the reviewer itself is a separate problem.
 
-A historical changes-requested review remains blocking until the same reviewer approves the exact current head or GitHub formally dismisses that specific review ID. An unrelated dismissed review cannot clear another outstanding objection. Another reviewer's approval cannot bypass it. The verifier re-fetches PR metadata after review pagination to detect head/identity drift.
+A historical changes-requested review remains blocking until the same reviewer approves the exact current head or GitHub formally dismisses that specific review ID. An unrelated dismissed review cannot clear another outstanding objection. Another reviewer's approval cannot bypass it. The verifier reads the complete paginated review history twice, checking PR identity before, between, and after those snapshots. Changed review IDs, states, or candidate bindings detected between reads fail closed instead of reusing an old approval. The latest approval is selected by submission time, not Map insertion order.
 
-**Race boundary:** Rechecking the remote head does not make later task closure or merging atomic with future pushes. Use SHA-bound merge operations and branch protection as additional controls.
+**Race boundary:** Comparing two full review snapshots detects in-flight inconsistencies visible between reads, but cannot prevent changes immediately after the last review read or make task closure/merging atomic with future pushes or reviews. Use SHA-bound merge operations and branch protection as additional controls.

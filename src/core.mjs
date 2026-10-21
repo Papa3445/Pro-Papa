@@ -241,7 +241,10 @@ export async function verifyClosure(root, task, profile, options = {}) {
     // A task-file PASS claim is not authority. Ask GitHub on every closure.
     trustedReview = await verifyGitHubReview(task.reviewTarget, options);
     assert(trustedReview.verdict === 'PASS', `trusted review rejected: ${trustedReview.reason}`);
-    assert(review.actor.toLowerCase() === trustedReview.reviewer.login.toLowerCase(),
+    // Accept any actual, current-SHA, provider-approved reviewer whose account
+    // matches the file-backed review actor; not merely the last selected account.
+    assert(trustedReview.approvedReviewers.some(candidate =>
+      candidate.login.toLowerCase() === review.actor.toLowerCase()),
       'recorded reviewer identity differs from GitHub authenticated reviewer');
   }
   return { required, verifiedFiles: required.map(kind => latest.get(kind).path), ...(trustedReview ? { trustedReview } : {}) };
