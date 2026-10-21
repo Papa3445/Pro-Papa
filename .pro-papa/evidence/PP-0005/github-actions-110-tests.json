@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0005",
+  "result": "pass",
+  "evidenceType": "provider-observed-GitHub-Actions",
+  "repository": "Papa3445/Pro-Papa",
+  "sourceBranch": "feature/pp-0005-gateway",
+  "headSha": "a9beac2812777a28eec67deafeb6672223a5b4f3",
+  "runId": 39693487152,
+  "jobId": 119545118986,
+  "conclusion": "success",
+  "tests": 110,
+  "passed": 110,
+  "failed": 0,
+  "skipped": 0,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39693487152",
+  "scope": "Actual npm check and 110 Node tests including seven second-round output-serialization regressions; real built-in adapter-check against updated gateway source.",
+  "limitations": "Adapter is syntax-only; CI used a temporary harness removed subsequently. Final-head exact CI and independent renewed review are still required."
+}
