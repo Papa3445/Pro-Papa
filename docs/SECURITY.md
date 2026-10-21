@@ -11,3 +11,16 @@ Pro-Papa v0.1 is a local state machine. It is not an access-control system, auto
 - **External evidence:** Repository-local proofs cannot substitute for physical hardware testing, professional review, authenticated external source access or human judgment.
 - **Privacy:** Keep secrets and personal records out of a public `.pro-papa` task queue or evidence folder; store secret credentials in a vault or authorized external service.
 - **Versioning:** Task evidence is file-hash-bound in this version, not git-SHA-bound. This is insufficient for high-assurance cross-commit candidate review. See next roadmap tasks.
+
+## PP-0001 adapter limits
+
+An adapter is a static code-defined validator, not a general shell/tool runner. The only subprocess is a fixed, shell-free Node.js syntax check, which does not run the source code. Adapter configuration can revoke built-in capabilities but cannot inject commands, module paths, URLs to fetch, or executable flags. The check input must be a project-contained real file no larger than 1 MiB. A source may change while being checked; this iteration hashes its input and report but does not provide immutable-Git-candidate attestation or truthful independent verification. Citation and document checks are structural only. See `docs/ADAPTERS.md` and PP-0002.
+
+
+## PP-0001 review hardening
+
+Built-in checks now issue a separate `adapter` evidence type that cannot be replaced with a manually asserted pass through the CLI. Each report records its input SHA-256, and task closure verifies both report and original input identities. The syntax checker operates on a temporary private copy of exactly the read bytes and rereads the original input identity before publishing its report. The Markdown structure checker ignores fenced and indented code. These checks **do not** authenticate human review, prevent malicious edits to the repo-controlled state file, or establish factual correctness. Local concurrent attacker processes sharing the same OS user are outside this v0.1 trust boundary; provider-backed immutable SHA verification is a follow-up.
+
+## Compatibility and evidence boundaries
+
+Proof types are intentionally distinct: `adapter` is a narrow structural check, while `test`, `sources`, and `validation` are separate domain observations. New software/research/document tasks opt into adapter verification. Projects created before this change keep their historical proof obligations unless explicitly opted in. Adapter evidence is source-hash checked and never proves that the substantive test or factual audit occurred. Manual proofs remain claims backed by hashed evidence files, not authenticated observations; stronger identity and immutable candidate verification are PP-0002 scope.

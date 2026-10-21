@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, readFile, rm, symlink } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -26,6 +26,7 @@ async function evidence(root, state, id, kind, actor, result = 'pass', filename 
 test('initialization produces portable empty project, no destructive overwrite', async t => {
   const { root } = await fixture(t);
   assert.equal((await loadProject(root)).state.tasks.length, 0);
+  assert.equal(JSON.parse(await readFile(join(root, '.pro-papa/adapter-policy.json'), 'utf8')).adapters.software.enabled, true);
   await assert.rejects(initializeProject(root, 'Overwrite'), /already exists/);
   assert.equal((await loadProject(root)).state.project, 'Test project');
 });
@@ -95,9 +96,9 @@ test('symlink escape from project is refused', async t => {
 
 test('state save and reload persists task progress and evidence integrity', async t => {
   const { root, state, profiles } = await fixture(t);
-  const a = addTask(state, profiles, { title: 'Write', objective: 'Create artifact', profile: 'document', acceptance: ['Reviewed'] });
+  const a = addTask(state, profiles, { title: 'Write', objective: 'Create artifact', profile: 'general', acceptance: ['Reviewed'] });
   startTask(state, a.id, 'writer');
-  for (const kind of profiles.profiles.document.requiredEvidence) {
+  for (const kind of profiles.profiles.general.requiredEvidence) {
     await evidence(root, state, a.id, kind, kind === 'review' ? 'critic' : 'writer');
   }
   await closeTask(root, state, profiles, a.id);

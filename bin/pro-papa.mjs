@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path';
+import { runDomainCheck } from '../src/adapters.mjs';
 import {
   loadProject, selectNext, findTask, addTask, startTask,
   blockTask, unblockTask, recordEvidence, closeTask,
@@ -28,7 +29,7 @@ function required(flags, key) {
 export async function main(argv = process.argv.slice(2), output = console.log) {
   const { command, flags } = argumentsFor(argv);
   if (command === 'help') {
-    output('Pro-Papa v0.1\nCommands: init, validate, status, next, add, start, block, unblock, handoff, proof, close\nCommon: --root PATH\ninit --name NAME [--root PATH] [--guide true]\nadd --title TITLE --objective OBJECTIVE --profile PROFILE --accept CRITERION [--accept CRITERION] [--depends ID,ID]\nstart --id ID --actor NAME\nblock --id ID --reason TEXT | unblock --id ID\nhandoff --id ID\nproof --id ID --kind KIND --file RELPATH --actor NAME --note TEXT [--result pass|fail]\nclose --id ID');
+    output('Pro-Papa v0.1\nCommands: init, validate, status, next, add, start, block, unblock, handoff, proof, adapter-check, close\nCommon: --root PATH\ninit --name NAME [--root PATH] [--guide true]\nadd --title TITLE --objective OBJECTIVE --profile PROFILE --accept CRITERION [--accept CRITERION] [--depends ID,ID]\nstart --id ID --actor NAME\nblock --id ID --reason TEXT | unblock --id ID\nhandoff --id ID\nproof --id ID --kind KIND --file RELPATH --actor NAME --note TEXT [--result pass|fail]\nadapter-check --id ID --file RELPATH --actor NAME\nclose --id ID');
     return;
   }
   const root = resolve(flags.root ?? process.cwd());
@@ -57,10 +58,12 @@ export async function main(argv = process.argv.slice(2), output = console.log) {
     id: required(flags, 'id'), kind: required(flags, 'kind'), file: required(flags, 'file'),
     actor: required(flags, 'actor'), note: required(flags, 'note'), result: flags.result ?? 'pass',
   });
+  else if (command === 'adapter-check') result = await runDomainCheck({ root, state, id: required(flags, 'id'), file: required(flags, 'file'), actor: required(flags, 'actor') });
   else if (command === 'close') result = await closeTask(root, state, profiles, required(flags, 'id'));
   else throw new Error(`unknown command ${command}`);
   await saveState(root, state, profiles);
   output(JSON.stringify(result, null, 2));
+  if (command === 'adapter-check' && result.report.result !== 'pass') process.exitCode = 1;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.url).pathname)) {

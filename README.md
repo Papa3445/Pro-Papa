@@ -4,6 +4,10 @@
 
 Pro-Papa extracts the reusable ideas behind [Ironshade Vector](https://github.com/papa4568/ironshade-vector): persistent ordered tasks, scoped execution, domain-specific acceptance, evidence integrity, failure recovery and independent review. It deliberately does **not** copy game logic, graphics tests, Android pipelines, or expensive experimental CI governance.
 
+## PP-0001: permission-scoped domain checks
+
+The built-in software, research and document adapters provide **real, bounded, read-only checks** instead of only accepting self-reported proof. An active task selects its adapter by profile; `.pro-papa/adapter-policy.json` can revoke permission but cannot supply executable commands. Check an active task with `node bin/pro-papa.mjs adapter-check --id PP-0001 --actor IMPLEMENTER --file src/adapters.mjs`. The adapter writes a SHA-256-backed report and records pass/fail proof; failing checks exit nonzero. See [the detailed adapter contract](docs/ADAPTERS.md). Syntax, citations and structure checks are **not** quality, truth or security certifications.
+
 ## What's working in v0.1
 
 - Deterministic task selection and resume: ordered queue, one active task, validated dependencies, blocked-state handling and cycle detection.
@@ -41,6 +45,7 @@ A project can use a shared installation of Pro-Papa's CLI while retaining its ow
 ```bash
 node bin/pro-papa.mjs start --id PP-0001 --actor implementer
 # Perform real work and generate actual project-local artifact and proof files.
+node bin/pro-papa.mjs adapter-check --id PP-0001 --file src/adapters.mjs --actor implementer
 node bin/pro-papa.mjs proof --id PP-0001 --kind artifact --file outputs/result.md --actor implementer --note "Final output"
 node bin/pro-papa.mjs proof --id PP-0001 --kind test --file evidence/tests.txt --actor implementer --note "Observed tests"
 node bin/pro-papa.mjs proof --id PP-0001 --kind validation --file evidence/validation.md --actor implementer --note "Acceptance evaluation"
@@ -66,3 +71,8 @@ The `proof` command does not execute the tests mentioned in your report. The age
 ## Current status
 
 **Version 0.1: working task-control and evidence-integrity foundation.** It is not yet a complete autonomous agent platform. The ordered next milestones in `.pro-papa/tasks.json` add typed domain adapters, authenticated independent review and cross-domain pilot validation. No task is marked complete unless backed by actual checks and review.
+
+
+### Review follow-up for PP-0001
+
+Independent reviews found four validation weaknesses and then a legacy-proof compatibility regression. This revision checks adapter input digests at closure, uses a distinct `adapter` proof kind instead of overloading runtime tests, preserves old task records, ignores fenced Markdown code, and validates stable snapshots. New software/research/document tasks require separate adapter and domain evidence. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).

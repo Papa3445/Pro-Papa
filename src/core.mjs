@@ -1,9 +1,15 @@
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, rename, mkdir, realpath, stat, open, rm, access } from 'node:fs/promises';
-import { resolve, relative, isAbsolute, sep } from 'node:path';
+import { resolve, relative, dirname, isAbsolute, sep } from 'node:path';
 
 const STATUSES = new Set(['pending', 'in_progress', 'blocked', 'verified']);
-const PROOF_TYPES = new Set(['artifact', 'test', 'validation', 'review', 'sources', 'calculations']);
+const PROOF_TYPES = new Set(['artifact', 'test', 'validation', 'review', 'sources', 'calculations', 'adapter']);
+// The adapter check is a distinct proof: syntax is not a software test, citation
+// structure is not a source audit, and Markdown structure is not content review.
+export const BUILTIN_PROOF_KINDS = Object.freeze({ software: 'adapter', research: 'adapter', document: 'adapter' });
+// Historical v0.1 adapter outputs used these domain-proof kinds. Keep them
+// readable so upgrading cannot strand a verified or active project.
+const LEGACY_BUILTIN_KINDS = Object.freeze({ software: 'test', research: 'sources', document: 'validation' });
 const SAFE_ID = /^PP-[0-9]{4,}$/;
 const fail = message => { throw new Error(message); };
 const assert = (truth, message) => { if (!truth) fail(message); };
@@ -41,6 +47,8 @@ export function validateProject(state, profiles) {
     ids.add(task.id);
     assert(nonEmpty(task.title) && nonEmpty(task.objective), `${task.id}: missing title/objective`);
     assert(profiles.profiles[task.profile], `${task.id}: unknown profile`);
+    assert(task.requiresAdapter === undefined || typeof task.requiresAdapter === 'boolean', `${task.id}: invalid requiresAdapter flag`);
+    assert(!task.requiresAdapter || Object.hasOwn(BUILTIN_PROOF_KINDS, task.profile), `${task.id}: no adapter exists for profile`);
     uniqueStrings(task.acceptance, `${task.id}: acceptance`);
     uniqueStrings(task.dependsOn, `${task.id}: dependencies`, true);
     assert(STATUSES.has(task.status), `${task.id}: invalid status`);
@@ -55,6 +63,11 @@ export function validateProject(state, profiles) {
       assert(nonEmpty(proof.path) && /^[a-f0-9]{64}$/.test(proof.sha256), `${task.id}: invalid evidence file identity`);
       assert(nonEmpty(proof.note), `${task.id}: missing evidence explanation`);
       assert(nonEmpty(proof.recordedAt), `${task.id}: missing evidence time`);
+      // Preserve pre-upgrade adapter proofs in the legacy domain kind, but do not
+      // let them stand in for a real domain test/source/validation on new tasks.
+      if (proof.kind === 'adapter' || proof.origin === 'builtin-adapter') {
+        assert(proof.origin === 'builtin-adapter' && (proof.kind === 'adapter' || proof.kind === LEGACY_BUILTIN_KINDS[task.profile]) && plain(proof.input) && nonEmpty(proof.input.path) && /^[a-f0-9]{64}$/.test(proof.input.sha256), `${task.id}: adapter proof requires source provenance`);
+      }
     }
   }
   const byId = new Map(state.tasks.map(task => [task.id, task]));
@@ -64,6 +77,12 @@ export function validateProject(state, profiles) {
       const latest = new Map(task.evidence.map(proof => [proof.kind, proof]));
       const required = profiles.profiles[task.profile].requiredEvidence;
       for (const kind of required) assert(latest.get(kind)?.result === 'pass', `${task.id}: verified without passing ${kind} evidence`);
+      // Historical verified tasks are not retroactively subject to new gates.
+      if (task.requiresAdapter) {
+        assert(latest.get('adapter')?.result === 'pass', `${task.id}: verified without passing adapter evidence`);
+        const oldKind = LEGACY_BUILTIN_KINDS[task.profile];
+        assert(latest.get(oldKind)?.origin !== 'builtin-adapter', `${task.id}: adapter syntax proof cannot substitute for real ${oldKind} evidence`);
+      }
       assert(latest.get('review')?.actor !== task.owner, `${task.id}: verified with self-review`);
     }
   }
@@ -109,7 +128,7 @@ export function addTask(state, profiles, { title, objective, profile, acceptance
   uniqueStrings(dependsOn, 'dependencies', true);
   const number = Math.max(0, ...state.tasks.map(task => Number(task.id.slice(3)))) + 1;
   const id = `PP-${String(number).padStart(4, '0')}`;
-  const task = { id, title, objective, profile, acceptance, dependsOn, status: 'pending', owner: null, blockedReason: null, evidence: [] };
+  const task = { id, title, objective, profile, acceptance, dependsOn, status: 'pending', owner: null, blockedReason: null, evidence: [], ...(Object.hasOwn(BUILTIN_PROOF_KINDS, profile) ? { requiresAdapter: true } : {}) };
   state.tasks.push(task);
   validateProject(state, profiles);
   return task;
@@ -158,15 +177,24 @@ export async function safeEvidenceFile(root, filePath) {
   return { path: rel.replaceAll(sep, '/'), sha256 };
 }
 
-export async function recordEvidence(root, state, { id, kind, file, actor, note, result = 'pass' }) {
+export async function recordEvidence(root, state, { id, kind, file, actor, note, result = 'pass', origin = 'manual', input = null }) {
   const task = findTask(state, id);
   assert(task.status === 'in_progress', 'evidence can only be recorded for an active task');
   assert(PROOF_TYPES.has(kind), `unknown evidence kind ${kind}`);
   assert(['pass', 'fail'].includes(result), 'result must be pass or fail');
   assert(nonEmpty(actor) && nonEmpty(note), 'actor and explanatory note required');
   if (kind === 'review') assert(actor !== task.owner, 'reviewer must differ from implementer');
+  if (kind === 'adapter') {
+    assert(Object.hasOwn(BUILTIN_PROOF_KINDS, task.profile), 'no built-in adapter for this profile');
+    assert(origin === 'builtin-adapter' && plain(input) && nonEmpty(input.path) && /^[a-f0-9]{64}$/.test(input.sha256), 'adapter evidence requires built-in validator source provenance');
+    assert(actor === task.owner, 'adapter evidence must be produced by the task owner');
+  } else {
+    // Domain proofs remain usable for genuine test runs, source audits, and
+    // content validation, including files from existing v0.1 projects.
+    assert(origin === 'manual' && input === null, 'only adapter-check can issue new built-in adapter evidence');
+  }
   const identity = await safeEvidenceFile(root, file);
-  const proof = { kind, result, actor, note, ...identity, recordedAt: new Date().toISOString() };
+  const proof = { kind, result, actor, note, ...identity, recordedAt: new Date().toISOString(), ...(origin === 'builtin-adapter' ? { origin, input } : {}) };
   task.evidence.push(proof);
   return proof;
 }
@@ -183,6 +211,24 @@ export async function verifyClosure(root, task, profile) {
     assert(proof.result === 'pass', `latest ${kind} proof failed`);
     const current = await safeEvidenceFile(root, proof.path);
     assert(current.sha256 === proof.sha256, `stale evidence file: ${proof.path}`);
+  }
+  const adapterIsRequired = task.requiresAdapter === true || task.evidence.some(proof => proof.kind === 'adapter');
+  if (adapterIsRequired) {
+    const proof = latest.get('adapter');
+    assert(proof, 'missing required evidence: adapter');
+    assert(proof.result === 'pass', 'latest adapter proof failed');
+    assert(proof.origin === 'builtin-adapter' && plain(proof.input), 'adapter proof provenance missing');
+    const reportIdentity = await safeEvidenceFile(root, proof.path);
+    assert(reportIdentity.sha256 === proof.sha256 && reportIdentity.path === proof.path, 'stale adapter report');
+    const report = JSON.parse(await readFile(resolve(root, proof.path), 'utf8'));
+    assert(report.schemaVersion === 1 && report.taskId === task.id && report.adapter === task.profile && report.evidenceKind === 'adapter' && report.result === proof.result, 'adapter report identity mismatch');
+    assert(report.input?.path === proof.input.path && report.input?.sha256 === proof.input.sha256, 'adapter source identity mismatch');
+    const source = await safeEvidenceFile(root, proof.input.path);
+    assert(source.path === proof.input.path && source.sha256 === proof.input.sha256, `stale adapter input: ${proof.input.path}`);
+    const policy = JSON.parse(await readFile(resolve(root, '.pro-papa/adapter-policy.json'), 'utf8'));
+    assert(policy.adapters?.[task.profile]?.enabled === true && policy.adapters[task.profile].capability === report.capability, 'adapter disabled or capability policy changed');
+    const legacyKind = LEGACY_BUILTIN_KINDS[task.profile];
+    assert(latest.get(legacyKind)?.origin !== 'builtin-adapter', `real ${legacyKind} evidence required; legacy adapter proof is insufficient`);
   }
   const review = latest.get('review');
   assert(review.actor !== task.owner, 'reviewer must differ from task owner');
@@ -228,7 +274,7 @@ export function taskHandoff(task, profiles) {
     `Objective: ${task.objective}`,
     'Acceptance:',
     ...task.acceptance.map(text => `- ${text}`),
-    `Required evidence: ${required.join(', ')}`,
+    `Required evidence: ${[...required, ...(task.requiresAdapter ? ['adapter'] : [])].join(', ')}`,
     'Workflow: inspect → plan → implement → test → inspect actual output → independent review → record proof → close.',
     'Do not substitute claims or CI green status for actual artifact/content review.',
     'Report external dependencies; do not invent work, tool access, proof or success.',
@@ -239,7 +285,9 @@ export async function initializeProject(root, name, options = {}) {
   assert(nonEmpty(name), 'project name required');
   const target = resolve(root);
   const folder = resolve(target, '.pro-papa');
-  for (const file of [resolve(folder, 'tasks.json'), resolve(folder, 'profiles.json'), ...(options.agentGuide ? [resolve(target, 'AGENTS.md')] : [])]) {
+  // Preflight every destination before creating anything, preventing partial initialization
+  // if a project already has AGENTS.md or Pro-Papa state.
+  for (const file of [resolve(folder, 'tasks.json'), resolve(folder, 'profiles.json'), resolve(folder, 'adapter-policy.json'), ...(options.agentGuide ? [resolve(target, 'AGENTS.md')] : [])]) {
     try { await access(file); fail(`already exists: ${file}`); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
@@ -247,9 +295,13 @@ export async function initializeProject(root, name, options = {}) {
   const state = { schemaVersion: 1, revision: 0, project: name, tasks: [] };
   const profileFile = new URL('../.pro-papa/profiles.json', import.meta.url);
   const profiles = JSON.parse(await readFile(profileFile, 'utf8'));
+  const adapterPolicyFile = new URL('../.pro-papa/adapter-policy.json', import.meta.url);
+  const adapterPolicy = JSON.parse(await readFile(adapterPolicyFile, 'utf8'));
+  // Never overwrite an existing agent's state.
   const initial = [
     [resolve(folder, 'tasks.json'), `${JSON.stringify(state, null, 2)}\n`],
     [resolve(folder, 'profiles.json'), `${JSON.stringify(profiles, null, 2)}\n`],
+    [resolve(folder, 'adapter-policy.json'), `${JSON.stringify(adapterPolicy, null, 2)}\n`],
   ];
   for (const [file, content] of initial) {
     const fd = await open(file, 'wx');

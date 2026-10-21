@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "adapters": {
+    "software": { "enabled": true, "capability": "syntax:node" },
+    "research": { "enabled": true, "capability": "citations:structure" },
+    "document": { "enabled": true, "capability": "markdown:structure" }
+  }
+}
