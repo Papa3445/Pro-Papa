@@ -89,12 +89,61 @@ function consistentReceipt(receipt, expectedStore) {
       receipt.consulted.some(item => item.path === path && /^[a-f0-9]{40}$/.test(item.gitBlobSha)));
 }
 
-function validOutput(output) {
+// Create a detached, JSON-exact output snapshot. Plain JSON structures only:
+// JSON.stringify by itself silently drops undefined/functions, converts NaN to
+// null, serializes Map/Error as {}, and may invoke stateful toJSON methods.
+function snapshotOutput(output) {
+  const seen = new Set();
+  let nodes = 0;
+  function copy(value, depth) {
+    if (++nodes > 10000 || depth > 64) fail('Handler output exceeds JSON structure limits');
+    if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+    if (typeof value === 'number' && Number.isFinite(value) && !Object.is(value, -0)) return value;
+    if (typeof value !== 'object') fail('Handler output contains non-JSON data');
+    if (seen.has(value)) fail('Handler output contains repeated or cyclic object references');
+    seen.add(value);
+    const array = Array.isArray(value);
+    const prototype = Object.getPrototypeOf(value);
+    if (array ? prototype !== Array.prototype :
+        prototype !== Object.prototype && prototype !== null) {
+      fail('Handler output contains a non-JSON object');
+    }
+    const properties = Object.getOwnPropertyDescriptors(value);
+    const keys = Reflect.ownKeys(properties);
+    if (keys.some(key => typeof key !== 'string')) fail('Handler output contains symbol keys');
+    if (array) {
+      const length = value.length;
+      if (length > 10000 || keys.length !== length + 1)
+        fail('Handler output contains array holes or additional properties');
+      const result = [];
+      for (let i = 0; i < length; i++) {
+        const descriptor = properties[String(i)];
+        if (!descriptor || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value'))
+          fail('Handler output contains array holes or accessors');
+        result.push(copy(descriptor.value, depth + 1));
+      }
+      return result;
+    }
+    const result = Object.create(null);
+    for (const key of keys) {
+      const descriptor = properties[key];
+      if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value'))
+        fail('Handler output contains non-enumerable properties or getters');
+      Object.defineProperty(result, key, {
+        enumerable: true, configurable: true, writable: true,
+        value: copy(descriptor.value, depth + 1),
+      });
+    }
+    return result;
+  }
   try {
-    const serialized = JSON.stringify(output);
-    return typeof serialized === 'string' && Buffer.byteLength(serialized, 'utf8') <= 256 * 1024;
+    const validated = copy(output, 0);
+    const wire = JSON.stringify(validated);
+    if (typeof wire !== 'string' || Buffer.byteLength(wire, 'utf8') > 256 * 1024)
+      return { valid: false };
+    return { valid: true, output: JSON.parse(wire) };
   } catch {
-    return false;
+    return { valid: false };
   }
 }
 
@@ -201,9 +250,16 @@ export async function runGateway({ request, host = {}, tracking = { mode: 'ephem
     const reply = await handlers[capability]({
       objective: request.objective, inputs: request.inputs, capability,
     });
-    if (plain(reply) && reply.ok === true && validProvenance(reply.provenance, capability) && validOutput(reply.output)) {
+    const checked = plain(reply) && reply.ok === true ? snapshotOutput(reply.output) : { valid: false };
+    if (checked.valid && validProvenance(reply.provenance, capability)) {
+      // Never retain mutable handler-owned output or provenance in the result.
+      const provenance = {
+        provider: reply.provenance.provider,
+        operation: capability,
+        ...(reply.provenance.reference === undefined ? {} : { reference: reply.provenance.reference }),
+      };
       status = 'completed';
-      result = { output: reply.output, provenance: reply.provenance };
+      result = { output: checked.output, provenance };
     } else if (plain(reply) && reply.ok === true) status = 'unverified_execution';
   } catch {
     // Tool exception messages may contain secret data; never log/return them.
