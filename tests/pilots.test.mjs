@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { mayAccept } from '../pilots/software/decision-gate.mjs';
 import { auditResearchClaims, auditDocumentGuide } from '../pilots/validation/content-audits.mjs';
-import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext, saveState, validateProject } from '../src/core.mjs';
+import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext, saveState, validateProject, safeEvidenceFile } from '../src/core.mjs';
 import { runDomainCheck } from '../src/adapters.mjs';
 
 const rootDir = new URL('../', import.meta.url);
@@ -14,7 +14,7 @@ const sample = async path => readFile(new URL(path, rootDir), 'utf8');
 const actor='pilot-implementer', reviewer='pilot-review-simulation';
 
 async function proof({ root, state, task, kind, content, fileName }) {
-  const path = fileName || kind + '-evidence.txt';
+  const path = fileName || task.id + '-' + kind + '-evidence.txt';
   await writeFile(join(root,path),content);
   return recordEvidence(root,state,{id:task.id,kind,file:path,
     actor:kind==='review'?reviewer:actor,
@@ -156,6 +156,10 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
   for(const task of roundtrip.state.tasks){
     const expected=task.profile==='software'?2:3; // one extra structural PASS with semantic FAIL
     assert.equal(task.evidence.filter(p=>p.kind==='adapter').length,expected);
+    for(const proof of task.evidence){
+      const identity=await safeEvidenceFile(root,proof.path);
+      assert.equal(identity.sha256,proof.sha256,'stale or overwritten evidence: '+proof.path);
+    }
   }
   assert.equal(metrics.reduce((sum,p)=>sum+p.failedAdapterAttempts,0),3);
   assert.equal(metrics.reduce((sum,p)=>sum+(p.semanticAuditRejects||0),0),3);
