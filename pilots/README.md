@@ -17,3 +17,7 @@ The fixture's reviewer is **simulated by a different actor string**, not an auth
 ## Rework and follow-up
 
 One intentionally invalid input is rejected and corrected per domain. Real regressions encountered in this pilot should be fixed in the smallest relevant framework component rather than adding speculative orchestration layers. The pilot observations will be reported after CI has actually executed.
+
+## Recorded outcome
+
+The first GitHub Actions execution passed 68/68 tests, with all three pilots closing after one deliberate failure/rework each. See [actual CI observations](RESULTS.md). Independent PR review is still pending.
