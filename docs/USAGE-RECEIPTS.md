@@ -54,3 +54,7 @@ By design it **does not** record prompt text, conversation identifiers, other us
 Tests in `tests/usage-receipts.test.mjs` mock all API operations and challenge a private-store write/readback, public-store rejection, invalid Git identity, malformed selectors, bad clock/UUID, denied writes and tampered readback. Passing mock tests are **not a production private-repository smoke test**. Configure a private store and execute the command in an authorized host for a genuine receipt.
 
 **Important:** This is a library/CLI integration point, *not* a hosted server, hosted app, GitHub Action that runs on ChatGPT messages, or guarantee of always-on interception. A future supported host gateway could require a receipt before marking work complete; that's a separate integration requiring host/application support.
+
+## Copyable ChatGPT Project instruction
+
+See [universal operator](../prompts/universal-operator.md) for a concise project prompt that requires honest, per-response GitHub usage statuses and uses persisted receipts when an authorized private audit store is available. This prompt cannot enforce tool calls when the ChatGPT host does not support them.
