@@ -1,0 +1,37 @@
+{
+  "title": "Which guarantees do the Pro-Papa adapters provide?",
+  "sources": [
+    {
+      "id": "adapter-docs",
+      "title": "Pro-Papa: Built-in domain adapters",
+      "url": "https://github.com/Papa3445/Pro-Papa/blob/a72fa597494cadf54cb3c813f3bd9c6f5da39b23/docs/ADAPTERS.md"
+    },
+    {
+      "id": "security-docs",
+      "title": "Pro-Papa: Trust model and limitations",
+      "url": "https://github.com/Papa3445/Pro-Papa/blob/a72fa597494cadf54cb3c813f3bd9c6f5da39b23/docs/SECURITY.md"
+    }
+  ],
+  "claims": [
+    {
+      "text": "The software adapter checks syntax and does not execute source scripts.",
+      "sourceIds": [
+        "adapter-docs"
+      ]
+    },
+    {
+      "text": "The research adapter checks citation structure, not factual accuracy.",
+      "sourceIds": [
+        "adapter-docs",
+        "security-docs"
+      ]
+    },
+    {
+      "text": "A passing adapter report is not itself independent review.",
+      "sourceIds": [
+        "adapter-docs",
+        "security-docs"
+      ]
+    }
+  ]
+}
