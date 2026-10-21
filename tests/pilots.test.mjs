@@ -180,3 +180,20 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
   // Parseable evidence in CI job logs, with runtime rather than invented timings.
   console.log('PP0003_PILOT_REPORT '+JSON.stringify({pilots:metrics,completed:metrics.filter(p=>p.closed).length,adapterFailuresRecovered:metrics.reduce((n,p)=>n+p.failedAdapterAttempts,0),semanticAuditRejects:metrics.reduce((n,p)=>n+(p.semanticAuditRejects||0),0),sourceAuditClaims:metrics.find(p=>p.profile==='research').checkedClaims,sourceAuditDocuments:metrics.find(p=>p.profile==='research').sourceDocuments,limitations:['Adapter checks are structural','Research audit accepts only three fixed reviewed propositions with exact supporting excerpts, not arbitrary new claims','Document audit uses a curated complete-section rubric, not generic language comprehension','Review identities in pilot fixtures are simulated, not independently authenticated','Source texts are checked-out primary documentation, not fetched from network','Runtime duration is environment-dependent']}));
 });
+
+test('PP-0003 pinned primary sources detect tampering and duplicate declarations', async()=>{
+  const artifact=JSON.parse(await sample('pilots/research/adapter-capability-audit.json'));
+  const sources={
+    'adapter-docs':await sample('docs/ADAPTERS.md'),
+    'security-docs':await sample('docs/SECURITY.md'),
+  };
+  const research=auditResearchClaims(artifact,sources);
+  assert.equal(research.sourceIntegrity.length,2);
+  assert.equal(auditDocumentGuide(await sample('pilots/document/adapter-evidence-guide.md'),sources).sourceIntegrity.length,2);
+  const duplicated={...artifact,sources:[artifact.sources[0],artifact.sources[0]]};
+  assert.throws(()=>auditResearchClaims(duplicated,sources),/Duplicate source identity/);
+  const altered={...sources,'adapter-docs':sources['adapter-docs']+'\\nContradictory source edit\\n'};
+  assert.throws(()=>auditResearchClaims(artifact,altered),/no longer matches reviewed base Git blob/);
+  assert.throws(()=>auditDocumentGuide(await sample('pilots/document/adapter-evidence-guide.md'),altered),
+    /no longer matches reviewed base Git blob/);
+});

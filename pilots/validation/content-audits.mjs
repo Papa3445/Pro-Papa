@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 /**
  * Bounded, explicit acceptance oracles for PP-0003's fixed sample artifacts.
  * These validate specific approved propositions and complete document sections,
@@ -8,10 +10,12 @@ export const SOURCES=Object.freeze({
   'adapter-docs':{
     url:'https://github.com/Papa3445/Pro-Papa/blob/'+BASE+'/docs/ADAPTERS.md',
     path:'docs/ADAPTERS.md',
+    gitBlobSha:'a4e5c1173f9052f8be14a6ef3472b1151e2f188c',
   },
   'security-docs':{
     url:'https://github.com/Papa3445/Pro-Papa/blob/'+BASE+'/docs/SECURITY.md',
     path:'docs/SECURITY.md',
+    gitBlobSha:'c755739ba8560e36f9740d16380ab7606ae4f6aa',
   },
 });
 export const CLAIM_ORACLES=Object.freeze([
@@ -39,8 +43,29 @@ export const CLAIM_ORACLES=Object.freeze([
 const check=(value,message)=>{if(!value)throw new Error(message)};
 const norm=s=>s.replace(/\s+/g,' ').trim();
 
+function verifySources(sourceTexts){
+  check(sourceTexts && typeof sourceTexts==='object' && !Array.isArray(sourceTexts),
+    'Missing primary sources');
+  const ids=Object.keys(SOURCES);
+  check(Object.keys(sourceTexts).length===ids.length && ids.every(id=>Object.hasOwn(sourceTexts,id)),
+    'Primary sources do not match audited IDs');
+  const checked=[];
+  for(const id of ids){
+    const body=sourceTexts[id];
+    check(typeof body==='string' && body.length>0,'Missing primary source '+id);
+    const input=Buffer.from(body,'utf8');
+    const sha=createHash('sha1').update('blob '+input.length+'\\0').update(input).digest('hex');
+    check(sha===SOURCES[id].gitBlobSha,
+      'Primary source '+id+' no longer matches reviewed base Git blob');
+    checked.push({sourceId:id,gitBlobSha:sha});
+  }
+  return checked;
+}
+
 export function auditResearchClaims(artifact, sourceTexts) {
+  const sourceIntegrity=verifySources(sourceTexts);
   check(artifact?.sources?.length===Object.keys(SOURCES).length,'Unexpected source count');
+  check(new Set(artifact.sources.map(s=>s?.id)).size===artifact.sources.length,'Duplicate source identity');
   for(const source of artifact.sources){
     const expected=SOURCES[source.id];
     check(expected && source.url===expected.url,'Source identity or pinned URL differs from approved source');
@@ -68,7 +93,7 @@ export function auditResearchClaims(artifact, sourceTexts) {
     auditedClaims.push({text:actual.text,citations});
   }
   return {reviewedScope:'three fixed repository-specific claims; exact approved wording and supporting excerpts',
-    auditedClaims,sourceCount:Object.keys(SOURCES).length};
+    auditedClaims,sourceCount:Object.keys(SOURCES).length,sourceIntegrity};
 }
 
 // All the following sentences were reviewed as an explicit three-section editorial
@@ -109,7 +134,7 @@ const DOCUMENT_SUPPORT=Object.freeze([
 ]);
 export function auditDocumentGuide(markdown, sourceTexts) {
   check(typeof markdown==='string','Document must be Markdown');
-  check(sourceTexts && typeof sourceTexts==='object','Document quality audit requires primary sources');
+  const sourceIntegrity=verifySources(sourceTexts);
   const parts=markdown.trim().split(/^## /m);
   check(parts.length===DOCUMENT_RUBRIC.length+1,'Document must have exactly three audited sections');
   check(norm(parts[0])==='# Using a Pro-Papa Adapter Result','Incorrect document title or preamble');
@@ -134,5 +159,5 @@ export function auditDocumentGuide(markdown, sourceTexts) {
       exactCuratedParagraph:true,matchedSourceExcerpts});
   }
   return {validation:'fixed-document editorial rubric, not arbitrary natural-language reasoning',
-    sections,validatedSections:sections.length};
+    sections,validatedSections:sections.length,sourceIntegrity};
 }
