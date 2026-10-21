@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0002",
+  "adapter": "software",
+  "capability": "syntax:node",
+  "evidenceKind": "adapter",
+  "input": {
+    "path": "package.json",
+    "sha256": "9a0f33e7ec5f99d24076e9b4ff933695088c9c1a5ddea9bccb77939f5d72b430"
+  },
+  "result": "pass",
+  "checks": [
+    "JSON parses successfully"
+  ],
+  "limits": [
+    "No claims of factual correctness or product quality",
+    "No independent review performed"
+  ],
+  "timestamp": "2026-10-21T09:43:11.533Z"
+}
