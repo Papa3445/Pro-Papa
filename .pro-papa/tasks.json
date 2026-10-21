@@ -30,8 +30,50 @@
             "path": "src/adapters.mjs",
             "sha256": "b60afd4f419f2faec046f842938c9456f510f38edb2f955e3252ea938ebc3086"
           }
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Built-in software check (syntax:node); input sha256 5ff20b987c1f7fbb0fe405a288d583ce08f2e5325705c00093dc408723f2a829",
+          "path": ".pro-papa/evidence/PP-0001/software-90c9d3be-a022-422c-aef4-10eb75d6c757.json",
+          "sha256": "5b634882d254e1960720e53d55814d0ed3a84ac2b9e56c7f914a04d668cd45bb",
+          "recordedAt": "2026-10-21T01:57:46.894Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/adapters.mjs",
+            "sha256": "5ff20b987c1f7fbb0fe405a288d583ce08f2e5325705c00093dc408723f2a829"
+          }
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Implemented fixed read-only domain adapter registry and check implementation",
+          "path": "src/adapters.mjs",
+          "sha256": "5ff20b987c1f7fbb0fe405a288d583ce08f2e5325705c00093dc408723f2a829",
+          "recordedAt": "2026-10-21T01:57:47.087Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Observed npm run check: 33/33 tests and CI success on implementation commit",
+          "path": ".pro-papa/evidence/PP-0001/verification-summary.md",
+          "sha256": "f0a0c4816ace3f1b58ed74ddd8929dbe7bbc72489a34384b52106fde2e78d72a",
+          "recordedAt": "2026-10-21T02:05:29.678Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Acceptance analysis from code and adversarial tests; awaiting independent review",
+          "path": ".pro-papa/evidence/PP-0001/acceptance-notes.md",
+          "sha256": "cde97787761447df1f3f4e0d1b572a1fab6102b8487b4bd645ccee9b72e56118",
+          "recordedAt": "2026-10-21T02:05:29.747Z"
         }
-      ]
+      ],
+      "requiresAdapter": true
     },
     {
       "id": "PP-0002",
@@ -49,7 +91,8 @@
       "status": "pending",
       "owner": null,
       "blockedReason": null,
-      "evidence": []
+      "evidence": [],
+      "requiresAdapter": true
     },
     {
       "id": "PP-0003",
@@ -70,5 +113,5 @@
       "evidence": []
     }
   ],
-  "revision": 2
+  "revision": 8
 }
