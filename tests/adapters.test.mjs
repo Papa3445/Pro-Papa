@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext, validateProject } from '../src/core.mjs';
+import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext, validateProject, saveState } from '../src/core.mjs';
 import { BUILTIN_ADAPTERS, validateAdapterPolicy, runDomainCheck } from '../src/adapters.mjs';
 
 const policy = { schemaVersion: 1, adapters: {
@@ -62,7 +62,7 @@ test('software adapter parses JavaScript without executing side effects', async 
   const input = `import { writeFileSync } from 'node:fs';\nwriteFileSync(${JSON.stringify(marker)}, 'WAS EXECUTED');\n`;
   const output = await run(f, 'safe.mjs', input);
   assert.equal(output.report.result, 'pass');
-  assert.equal(output.proof.kind, 'test');
+  assert.equal(output.proof.kind, 'adapter');
   assert.equal(output.report.capability, 'syntax:node');
   await assert.rejects(readFile(marker), /ENOENT/);
   assert.equal(output.report.input.sha256.length, 64);
@@ -81,7 +81,7 @@ test('research adapter enforces citation references but makes no truth claims', 
   const f = await fixture(t, 'research');
   const good = await run(f, 'sources.json', goodResearch);
   assert.equal(good.report.result, 'pass');
-  assert.equal(good.proof.kind, 'sources');
+  assert.equal(good.proof.kind, 'adapter');
   const unreferenced = JSON.stringify({ sources: [{ id: 's1', title: 'One', url: 'https://example.org' }], claims: [{ text: 'No evidence', sourceIds: ['missing'] }] });
   assert.equal((await run(f, 'unknown.json', unreferenced)).report.result, 'fail');
   const malicious = JSON.stringify({ sources: [{ id: 's1', title: 'One', url: 'file:///etc/passwd' }], claims: [{ text: 'Foo', sourceIds: ['s1'] }] });
@@ -94,7 +94,7 @@ test('document adapter validates structure and rejects placeholders', async t =>
   const f = await fixture(t, 'document');
   const ok = await run(f, 'report.md', goodDocument);
   assert.equal(ok.report.result, 'pass');
-  assert.equal(ok.proof.kind, 'validation');
+  assert.equal(ok.proof.kind, 'adapter');
   assert.equal((await run(f, 'todo.md', goodDocument + '\nTODO: add claim')).report.result, 'fail');
   assert.equal((await run(f, 'empty.md', '# Title\nhello')).report.result, 'fail');
   assert.equal((await run(f, 'bad.txt', goodDocument)).report.result, 'fail');
@@ -133,13 +133,13 @@ test('adapter report digest and independent review remain required to close', as
   assert.equal(selectNext(f.state).id, f.task.id);
   await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /missing required evidence/);
   await assert.rejects(recordEvidence(f.root, f.state, { id: f.task.id, kind: 'review', actor: 'author', file: checked.reportFile, note: 'I reviewed myself' }), /reviewer must differ/);
-  for (const kind of ['artifact', 'validation', 'review']) {
+  for (const kind of ['artifact', 'test', 'validation', 'review']) {
     const file = join(f.root, `${kind}.txt`);
     await writeFile(file, `Proof of ${kind}`);
     await recordEvidence(f.root, f.state, { id: f.task.id, kind, file, actor: kind === 'review' ? 'different-reviewer' : 'author', note: 'Observed' });
   }
   await writeFile(join(f.root, checked.reportFile), '{"tampered": true}');
-  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /stale evidence file/);
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /stale adapter report/);
   assert.equal(task2.status, 'pending');
 });
 
@@ -153,7 +153,7 @@ test('input size limit prevents oversized adapter execution', async t => {
 test('stale source after successful adapter check cannot close the task', async t => {
   const f = await fixture(t, 'software');
   const result = await run(f, 'target.mjs', 'export const value = 1;');
-  for (const kind of ['artifact', 'validation', 'review']) {
+  for (const kind of ['artifact', 'test', 'validation', 'review']) {
     const file = join(f.root, `${kind}.txt`);
     await writeFile(file, `Review for ${kind}`);
     await recordEvidence(f.root, f.state, { id: f.task.id, kind, file, actor: kind === 'review' ? 'different-reviewer' : 'author', note: 'Observed' });
@@ -162,7 +162,7 @@ test('stale source after successful adapter check cannot close the task', async 
   await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /stale adapter input/);
   const retried = await runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file: 'target.mjs' });
   assert.equal(retried.report.result, 'fail');
-  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /latest test proof failed/);
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /latest adapter proof failed/);
   await writeFile(join(f.root, 'target.mjs'), 'export const value = 2;');
   const fixed = await runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file: 'target.mjs' });
   assert.equal(fixed.report.result, 'pass');
@@ -175,15 +175,17 @@ test('failed adapter check cannot be replaced by a fake manual passing proof', a
   assert.equal(result.report.result, 'fail');
   const fake = join(f.root, 'manual-ok.txt');
   await writeFile(fake, 'Everything passed');
-  await assert.rejects(recordEvidence(f.root, f.state, { id: f.task.id, kind: 'test', actor: 'author', result: 'pass', file: fake, note: 'Trust me' }), /requires a built-in adapter check/);
-  assert.equal(f.task.evidence.at(-1).result, 'fail');
+  await assert.rejects(recordEvidence(f.root, f.state, { id: f.task.id, kind: 'adapter', actor: 'author', result: 'pass', file: fake, note: 'Trust me' }), /requires built-in validator source provenance/);
+  // A genuine separately produced runtime test must still be recordable.
+  await recordEvidence(f.root, f.state, { id: f.task.id, kind: 'test', actor: 'author', result: 'pass', file: fake, note: 'A separate test result (claims still require review)' });
+  assert.equal(f.task.evidence.findLast(proof => proof.kind === 'adapter').result, 'fail');
 });
 
 test('protected evidence must include its source metadata, even in saved state', async t => {
   const f = await fixture(t, 'research');
   const checked = await run(f, 'sources.json', goodResearch);
   delete checked.proof.input;
-  assert.throws(() => validateProject(f.state, f.profiles), /protected proof requires adapter provenance/);
+  assert.throws(() => validateProject(f.state, f.profiles), /adapter proof requires source provenance/);
 });
 
 test('document headings and padding hidden inside fenced code cannot pass', async t => {
@@ -236,4 +238,70 @@ test('source retargeting to outside project during validation fails closed', asy
     afterSnapshot: async () => { await rm(file); await symlink(join(outside, 'payload.mjs'), file); },
   }), /inside project root/);
   assert.equal(f.task.evidence.length, 0);
+});
+
+test('legacy v0.1 task proofs remain loadable and verified after upgrade', async t => {
+  const f = await fixture(t, 'software');
+  // Old projects have no requiresAdapter field. They recorded genuine tests
+  // and review declarations in their original profile evidence kinds.
+  delete f.task.requiresAdapter;
+  for (const kind of f.profiles.profiles.software.requiredEvidence) {
+    const file = join(f.root, `legacy-${kind}.txt`);
+    await writeFile(file, `${kind}: historical evidence`);
+    await recordEvidence(f.root, f.state, {
+      id: f.task.id, kind, file,
+      actor: kind === 'review' ? 'external-reviewer' : 'author',
+      note: 'Recorded before adapter support',
+    });
+  }
+  await closeTask(f.root, f.state, f.profiles, f.task.id);
+  await saveState(f.root, f.state, f.profiles);
+  const loaded = await loadProject(f.root);
+  assert.equal(loaded.state.tasks[0].status, 'verified');
+  assert.equal(loaded.state.tasks[0].requiresAdapter, undefined);
+  assert.equal(loaded.state.tasks[0].evidence.length, 4);
+});
+
+test('historical built-in proof remains readable but cannot replace a real test in upgraded task', async t => {
+  const f = await fixture(t, 'software');
+  const old = await run(f, 'historical.mjs', 'export const ok = true;');
+  old.proof.kind = 'test';
+  // Simulate the old report format that stored syntax under the test kind.
+  assert.doesNotThrow(() => validateProject(f.state, f.profiles));
+  for (const kind of ['artifact', 'validation', 'review']) {
+    const file = join(f.root, `legacy-${kind}.txt`);
+    await writeFile(file, `${kind} evidence`);
+    await recordEvidence(f.root, f.state, { id: f.task.id, kind, file, actor: kind === 'review' ? 'another' : 'author', note: kind });
+  }
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /missing required evidence: adapter/);
+  // The current version's adapter check is required *separately*.
+  await runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file: 'historical.mjs' });
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /real test evidence required/);
+  const genuineTest = join(f.root, 'runtime-test-output.txt');
+  await writeFile(genuineTest, 'node --test => passed (fixture for standalone runtime check)');
+  await recordEvidence(f.root, f.state, { id: f.task.id, kind: 'test', file: genuineTest, actor: 'author', note: 'Separate runtime test evidence' });
+  await closeTask(f.root, f.state, f.profiles, f.task.id);
+  assert.equal(f.task.status, 'verified');
+});
+
+test('adapter failure stays binding despite a later manual test pass', async t => {
+  const f = await fixture(t, 'software');
+  await run(f, 'broken.mjs', 'const = ;');
+  for (const kind of f.profiles.profiles.software.requiredEvidence) {
+    const file = join(f.root, `manual-${kind}.txt`);
+    await writeFile(file, `${kind}: manual evidence`);
+    await recordEvidence(f.root, f.state, { id: f.task.id, kind, file, actor: kind === 'review' ? 'reviewer' : 'author', note: `Manual ${kind}` });
+  }
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /latest adapter proof failed/);
+  assert.equal(f.task.status, 'in_progress');
+});
+
+test('new tasks demand adapter proof; legacy unfinished tasks remain operable', async t => {
+  const f = await fixture(t, 'research');
+  assert.equal(f.task.requiresAdapter, true);
+  const newTask = addTask(f.state, f.profiles, { title: 'Draft', objective: 'Write document', profile: 'document', acceptance: ['Complete'], dependsOn: [f.task.id] });
+  assert.equal(newTask.requiresAdapter, true);
+  const legacy = { ...newTask, requiresAdapter: undefined };
+  // A v0.1 pending task loaded by current code has no forced migration.
+  assert.doesNotThrow(() => validateProject({ ...f.state, tasks: [f.task, legacy] }, f.profiles));
 });

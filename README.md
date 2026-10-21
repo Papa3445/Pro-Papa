@@ -45,6 +45,7 @@ A project can use a shared installation of Pro-Papa's CLI while retaining its ow
 ```bash
 node bin/pro-papa.mjs start --id PP-0001 --actor implementer
 # Perform real work and generate actual project-local artifact and proof files.
+node bin/pro-papa.mjs adapter-check --id PP-0001 --file src/adapters.mjs --actor implementer
 node bin/pro-papa.mjs proof --id PP-0001 --kind artifact --file outputs/result.md --actor implementer --note "Final output"
 node bin/pro-papa.mjs proof --id PP-0001 --kind test --file evidence/tests.txt --actor implementer --note "Observed tests"
 node bin/pro-papa.mjs proof --id PP-0001 --kind validation --file evidence/validation.md --actor implementer --note "Acceptance evaluation"
@@ -74,4 +75,4 @@ The `proof` command does not execute the tests mentioned in your report. The age
 
 ### Review follow-up for PP-0001
 
-The first independent review found four issues. This revision binds adapter checks to live input digests at closure, blocks manually asserted replacements of built-in proofs, ignores Markdown code fences for structure checks, and uses a stable snapshot plus source recheck during validation. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).
+Independent reviews found four validation weaknesses and then a legacy-proof compatibility regression. This revision checks adapter input digests at closure, uses a distinct `adapter` proof kind instead of overloading runtime tests, preserves old task records, ignores fenced Markdown code, and validates stable snapshots. New software/research/document tasks require separate adapter and domain evidence. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).

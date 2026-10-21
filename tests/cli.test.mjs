@@ -43,7 +43,7 @@ test('CLI adapter-check records truthful failing proof and exits nonzero', async
   await writeFile(join(root, 'valid.mjs'), 'export const x = 42;');
   const good = JSON.parse(run(['adapter-check', ...opts, '--id', task.id, '--file', 'valid.mjs', '--actor', 'agent']));
   assert.equal(good.report.result, 'pass');
-  assert.equal(good.proof.kind, 'test');
+  assert.equal(good.proof.kind, 'adapter');
   assert.match(good.reportFile, /^\.pro-papa\/evidence\//);
   await writeFile(join(root, 'bad.mjs'), 'const = ;');
   assert.throws(() => run(['adapter-check', ...opts, '--id', task.id, '--file', 'bad.mjs', '--actor', 'agent']), /Command failed/);
@@ -63,5 +63,9 @@ test('CLI cannot replace an adapter failure with a fake manual passing proof', a
   await writeFile(join(root, 'broken.mjs'), 'const = ;');
   assert.throws(() => run(['adapter-check', ...opts, '--id', task.id, '--file', 'broken.mjs', '--actor', 'agent']), /Command failed/);
   await writeFile(join(root, 'trust-me.txt'), 'PASS');
-  assert.throws(() => run(['proof', ...opts, '--id', task.id, '--kind', 'test', '--result', 'pass', '--file', 'trust-me.txt', '--actor', 'agent', '--note', 'PASS']), /Command failed/);
+  assert.throws(() => run(['proof', ...opts, '--id', task.id, '--kind', 'adapter', '--result', 'pass', '--file', 'trust-me.txt', '--actor', 'agent', '--note', 'PASS']), /Command failed/);
+  // Recording a legitimate runtime-test report remains permitted.
+  assert.equal(JSON.parse(run(['proof', ...opts, '--id', task.id, '--kind', 'test', '--result', 'pass', '--file', 'trust-me.txt', '--actor', 'agent', '--note', 'Runtime test evidence'])).kind, 'test');
+  const current = JSON.parse(await readFile(join(root, '.pro-papa/tasks.json'), 'utf8'));
+  assert.equal(current.tasks[0].evidence.findLast(item => item.kind === 'adapter').result, 'fail');
 });

@@ -32,3 +32,7 @@ Its game-specific Android, physics, rendering, performance, and heavyweight CI c
 ## Domain adapter interface
 
 Built-in static adapter dispatch is keyed by the in-progress task profile. The allowed capabilities are defined in code; `.pro-papa/adapter-policy.json` can deny an adapter but cannot load arbitrary executables or extend authority. The checked project-local input is size-bound and realpath-validated, and the resulting check report is hashed into existing evidence state. See `docs/ADAPTERS.md` for formats, limitations and examples.
+
+## Adapter and proof compatibility (PP-0001)
+
+A built-in adapter is one optional, explicitly selected mechanical check. Its report is recorded as evidence kind `adapter`; it does not satisfy domain evidence classes (`test`, `sources`, or `validation`). New tasks using a supported adapter profile automatically require both the adapter and their original evidence profile, while old tasks without `requiresAdapter` retain their existing closure requirements. This prevents ordinary v0.1 state files from becoming unloadable. For any task that executes a new adapter, the latest adapter result is binding at closure, and the report and source digests are rechecked. New manual proofs cannot forge an `adapter` result through the CLI.
