@@ -34,4 +34,4 @@ See `node bin/pro-papa.mjs help`, `README.md`, and `docs/ARCHITECTURE.md`. This 
 
 ## GitHub-backed independent review
 
-For an opted-in task (`requiresTrustedReview: true`), do not accept a self-declared reviewer name as final proof. `close` queries GitHub live via a host-managed `GITHUB_TOKEN`, verifies the approved reviewer identity and **current PR head SHA**, and refuses outstanding changes requests. Review submissions must still come from an independent account/context. Never run PR-controlled code with the privileged workflow token. See `docs/TRUSTED-REVIEWS.md`.
+For an opted-in task (`requiresTrustedReview: true`), do not accept a self-declared reviewer name as final proof. `close` queries GitHub live via a host-managed `GITHUB_TOKEN`, verifies the approved reviewer identity, **current PR head SHA**, and any separately trusted base ref/SHA pin, and refuses outstanding changes requests. Review submissions must still come from an independent account/context. This project has no privileged status-writing workflow. Native GitHub branch protection governs merges; repository-controlled task pins are not immutable attestations. See `docs/TRUSTED-REVIEWS.md`.

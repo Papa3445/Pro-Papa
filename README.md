@@ -77,12 +77,8 @@ The `proof` command does not execute the tests mentioned in your report. The age
 
 Independent reviews found four validation weaknesses and then a legacy-proof compatibility regression. This revision checks adapter input digests at closure, uses a distinct `adapter` proof kind instead of overloading runtime tests, preserves old task records, ignores fenced Markdown code, and validates stable snapshots. New software/research/document tasks require separate adapter and domain evidence. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).
 
-## Free authenticated GitHub review gate (PP-0002)
+## Authenticated GitHub reviews (PP-0002)
 
-Pro-Papa can check whether a **real, separate GitHub account approved the exact current PR head**. `GITHUB_TOKEN=... node bin/pro-papa.mjs review-gate --repo OWNER/REPO --pr N` verifies GitHub's recorded review decisions. `review-status --id ID` checks tasks opted into `requiresTrustedReview`; `close` rechecks it before accepting their manual proof records. No paid Copilot plan is needed. This does not itself create AI reviews or attest local working-tree content. See [setup and limitations](docs/TRUSTED-REVIEWS.md).
+For formally tracked tasks, GitHub review records can be checked at task closure against the exact PR head and optionally a separately trusted comparison-base ref/SHA. Use `review-status --id TASK` and `close --id TASK` with a host-managed **read-only** `GITHUB_TOKEN` after an independent reviewer submits a PR review. Manual evidence alone cannot create a provider approval. See [authenticated review instructions](docs/TRUSTED-REVIEWS.md).
 
-**Trusted-review safety:** PP-0002 honors outstanding changes requests across older commits and rechecks the PR head after fetching reviews. Review lookup is not atomic with later merges.
-
-## Strict GitHub review integrity status (PP-0002)
-
-Use the default-branch `Review Identity` workflow for automatic verification: it anchors the initial PR base to a GitHub-authored commit status on the PR head and publishes a separate `pro-papa/review-integrity` result. It rechecks after PR edits, review submissions, and base-branch pushes. Configure branch protection to require that **commit status context** rather than interpreting the head-only diagnostic as a diff-bound approval. See [trusted reviews](docs/TRUSTED-REVIEWS.md).
+An experimental workflow that published custom review-integrity commit statuses was **removed** because same-repo PR workflows could mint statuses using elevated permissions, and different PRs can share the same SHA/status context. To enforce **merges**, use GitHub-native required reviews, stale-review dismissal, and normal CI checks through branch protection where available. Pro-Papa does not create AI reviews, merge autonomously, or configure repository rules.

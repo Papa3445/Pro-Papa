@@ -1,10 +1,10 @@
-# Trusted GitHub independent review (PP-0002)
+# Authenticated independent GitHub review (PP-0002)
 
-The GitHub-backed gate **verifies** a real review, not the review's quality or existence of another AI. No Copilot subscription is required; a separate ChatGPT account/context or human reviewer can submit the independent GitHub review.
+This feature **reads authenticated GitHub review records** before a formal task can close. It does not generate an AI review, automatically merge a PR, or write a status-check result. GitHub proves account identity and the recorded decision, not that the reviewer was diligent or a distinct person.
 
-## Configure a task
+## Configure a formal task
 
-After the pull request is opened, set these opt-in fields in `.pro-papa/tasks.json`:
+The review target may be pinned to the intended comparison base:
 
 ```json
 "requiresTrustedReview": true,
@@ -16,42 +16,39 @@ After the pull request is opened, set these opt-in fields in `.pro-papa/tasks.js
 }
 ```
 
-The optional `baseRef` + `baseSha` pair pins the intended comparison base. The gate rejects a different target branch or target commit even if the PR head is unchanged. Existing targets without both fields remain head-only for backward compatibility, and must not be described as reviewed-diff-bound. Do not change a pinned base to bypass stale approval without a new review of that exact candidate. A manual evidence file cannot pass this remote check. Ordinary file-backed `review` evidence is still required, with an actor login matching the GitHub-approved reviewer. Other tasks retain previous rules for backward compatibility.
+`reviewTarget.baseRef` and `baseSha` must be set together. Record these from a **trusted, previously approved baseline** before review; do not replace them with whatever the current PR base reports after retargeting. Matching a repinned base does not prove the earlier approval covered the altered diff. Unpinned historical targets remain supported but authenticate only the *PR head*, not its comparison base.
 
-Use a host-managed, read-only `GITHUB_TOKEN` (provided automatically by GitHub Actions), never a token in a task or repository:
+File-backed review evidence must identify a reviewer distinct from the implementer. For an opted-in task, the reviewer must match a current-head GitHub-approved account and no unresolved changes request may remain. A change request on an older head still blocks until the same reviewer approves the new head or GitHub formally dismisses that particular review ID.
+
+With a host-managed **read-only** GitHub token, run:
 
 ```bash
-node bin/pro-papa.mjs review-gate --repo Papa3445/Pro-Papa --pr 2  # head-only diagnostic; NOT a required status
 node bin/pro-papa.mjs review-status --id PP-0002
 node bin/pro-papa.mjs close --id PP-0002
 ```
 
-The gate reads the PR and paginated reviews live from the fixed GitHub REST API endpoint. It takes the current PR head SHA from GitHub, ignores older approvals, rejects PR-author self-approval, blocks outstanding changes requests, and evaluates nondismissed decisions by each authenticated account. All current-head qualifying approvers are returned in submission order; closure accepts the evidence actor only when that actor matches a qualifying GitHub account. GitHub dismissals update one specific review ID; they never erase unrelated change requests from the same reviewer. Missing credentials, HTTP errors, malformed/incomplete results and mismatched PR identity fail closed. Before reviewer filtering, all undecided APPROVED/CHANGES_REQUESTED records must have verifiable reviewer IDs/logins, submission times and commit SHAs; a malformed, still-blocking request may never silently disappear. A newer approval by the reviewer can clear that reviewer's changes request.
+`review-gate --repo OWNER/REPO --pr NUMBER` is a **head-only diagnostic**, not a branch-protection substitute or reviewable-diff certification. A task's opt-in/pin and CLI invocation are repository-controlled, not an access-control boundary; protect baseline changes separately.
 
-## Free GitHub Actions integration: strict reviewable-diff status
+The verifier uses a fixed GitHub HTTPS endpoint, two complete review snapshots and three PR identity reads. It validates the head SHA, base ref/SHA/repository, author and review decisions; rejects malformed decisive records and unknown review states; and fails closed on changes visible during lookup. GitHub REST cannot make lookup, closure, and merge atomic. Use an expected-head-SHA condition when merging and recheck review state.
 
-The default-branch `.github/workflows/review-gate.yml` uses `bin/review-status.mjs` with a GitHub Actions token granted `contents: read`, `pull-requests: read`, and `statuses: write`. It checks out **only the trusted default-branch source**, never PR-controlled code.
+## GitHub branch protection and workflows
 
-This version issues a strict PASS **only** for PRs targeting the configured default branch (currently `main`). Other PR bases fail closed because their pushes are not monitored. To protect other target branches, extend the trusted branch push trigger and status runner together before enabling strict checks there.
+This repository deliberately **does not publish custom review-approval commit statuses**. An experimental status publisher was removed because an untrusted same-repo workflow could issue an identical GitHub Actions status, while different PRs can share a commit SHA/status context.
 
-For every new PR head SHA, the trusted `pull_request_target.opened/synchronize` workflow records a GitHub commit status in context `pro-papa/base-pin`, encoding the original base ref and full base SHA. Only the **first status** for that head is recognized; later repinning does not replace it. The status must come from GitHub's `github-actions[bot]` account. Approvals must be submitted **after** the baseline was recorded.
+Where available on your GitHub plan/repository, configure native branch protection or rulesets on `main` to:
 
-Review submissions/dismissals and PR `edited` events re-evaluate the original pin. A `push` on `main` scans open pull requests targeting `main`, re-evaluates the same trusted pin, and publishes a new result to their **PR head SHA**, not merely to the base-branch workflow run. New head SHA after synchronize gets a fresh pin and must receive fresh review.
+- Require pull requests and approval from eligible independent reviewers.
+- Dismiss stale approvals on new pushes and, where supported, require approval of the most recent reviewable push.
+- Require the ordinary `Verify Pro-Papa / check` CI result.
+- Restrict bypass privileges and avoid allowing PR authors to approve their own work.
 
-Require the **commit status context** `pro-papa/review-integrity` on `main` (preferably restricted to the GitHub Actions app), not merely the name of this Actions job. It is `success` only for a current-head independent approval against the original base identity. A missing pin, an advanced/retargeted base, unresolved changes requests or approval predating the pin produces `failure`. When no baseline exists, an `edited` or review event cannot invent a new one.
+An administrator must configure these settings; their exact availability depends on repository plan and visibility. They govern **merging**, while Pro-Papa `close` verifies the separate opt-in task evidence. Neither automatically generates an independent AI review.
 
-**Setup:** Enable the workflow on the default branch first. Enable GitHub branch protection/rulesets that require this status context. For a PR opened before this integration is installed, push a new head commit to establish a fresh baseline; previously submitted approvals are not reused. This status workflow itself cannot configure branch rulesets and cannot force merge protection if GitHub administrators do not enable the requirement.
+There is **no** custom `pull_request_review` Actions workflow with `statuses: write`; ordinary `pull_request` CI only runs untrusted code with non-privileged permissions. Never grant status-writing authority to workflow definitions supplied by an unreviewed PR.
 
-The older `pro-papa review-gate --repo ... --pr ...` command remains a **head-only diagnostic** for compatibility and must **never** be treated as this strict required status. Task closure may separately use explicit `baseRef` and `baseSha` pins in trusted task state.
+## Trust boundaries
 
-## Honest limitations
-
-- GitHub proves reviewer account ID, recorded decision and current PR head. It does not prove the reviewer actually read code, or that the human behind another account is independent.
-- **The GitHub PR candidate is SHA-bound. The local filesystem is not.** No claim is made that arbitrary local changes are independently reviewed or cryptographically attested. Perform code review before merging and close roadmap tasks from the merged, reviewed revision.
-- Task opt-in and PR association are held in repo-controlled state; writers must be governed by normal GitHub permissions and review requirements. Local offline validation cannot authenticate past GitHub reviews.
-- A separate reviewer (human or AI process with GitHub review permission) must still submit an approval. Automating the reviewer itself is a separate problem.
-- The trusted baseline is the first GitHub Actions-authored status on a PR head commit. This assumes protected default-branch workflows and correctly configured required-status rules; the GitHub Actions bot identity by itself does not identify a unique workflow. A writer with authority to change trusted workflows or GitHub merge rules can undermine the gate.
-
-A historical changes-requested review remains blocking until the same reviewer approves the exact current head or GitHub formally dismisses that specific review ID. An unrelated dismissed review cannot clear another outstanding objection. Another reviewer's approval cannot bypass it. The verifier reads the complete paginated review history twice, checking PR identity before, between, and after those snapshots. Changed review IDs, states, or candidate bindings detected between reads fail closed instead of reusing an old approval. The PR comparison also checks `base.ref` and `base.sha` across all three reads; unexpected review states fail closed. The latest approval is selected by submission time, not Map insertion order.
-
-**Race boundary:** Comparing two full review snapshots detects in-flight inconsistencies visible between reads, but cannot prevent changes immediately after the last review read or make task closure/merging atomic with future pushes or reviews. Without an explicit pinned base, a target-branch change that happened *before* the first read may preserve a historical approval despite changing the diff. With a pinned base, a mismatch fails closed; the pin must be maintained by a trusted workflow, not derived afresh from an already-retargeted PR. Configure stale-approval dismissal in branch protection for additional defense. Use SHA-bound merge operations and branch protection as additional controls.
+- GitHub records authenticate reviewer accounts and decisions, not the quality of their analysis or true real-world independence.
+- A repository author able to rewrite a locally stored base pin can undermine its historical meaning; preserve the pin with a separately trusted process.
+- Native protected-branch rules, not the Pro-Papa CLI, enforce whether a PR can merge.
+- Reviews or the base may change immediately after the final API read; use SHA-bound merge operations and consult current GitHub protection at merge time.
