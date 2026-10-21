@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0001",
+  "adapter": "software",
+  "capability": "syntax:node",
+  "evidenceKind": "test",
+  "input": {
+    "path": "src/adapters.mjs",
+    "sha256": "b60afd4f419f2faec046f842938c9456f510f38edb2f955e3252ea938ebc3086"
+  },
+  "result": "pass",
+  "checks": [
+    "Node.js syntax check passed (no code executed)"
+  ],
+  "limits": [
+    "No claims of factual correctness or product quality",
+    "No independent review performed"
+  ],
+  "timestamp": "2026-10-21T01:11:53.346Z"
+}

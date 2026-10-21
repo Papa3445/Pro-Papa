@@ -2,7 +2,7 @@
 
 ## Boundaries
 
-**Model/host** (ChatGPT with supported tools, an AI agent runner, human) understands goals and performs actions. **Pro-Papa** holds durable task state, acceptance criteria, proof requirements, and deterministic lifecycle transitions. **Domain adapters** will later connect to task-specific authentic validators. **Verifier** should independently challenge the exact output and record a traceable result. **Project repository** owns its artifacts and state.
+**Model/host** (ChatGPT with supported tools, an AI agent runner, human) understands goals and performs actions. **Pro-Papa** holds durable task state, acceptance criteria, proof requirements, and deterministic lifecycle transitions. **Domain adapters** have a v0.1 built-in interface for bounded syntax, citation-integrity, and Markdown-structure checks. Broader authenticated tool/host adapters are future work. **Verifier** should independently challenge the exact output and record a traceable result. **Project repository** owns its artifacts and state.
 
 The model is interchangeable. The repository is not a background process, and writing prompts is not equivalent to invoking external tools.
 
@@ -28,3 +28,7 @@ Its game-specific Android, physics, rendering, performance, and heavyweight CI c
 ## Roadmap authority
 
 `.pro-papa/tasks.json` is the only executable task queue. This document describes design, not duplicate progress state. `docs/TRANSFER.md` maps extracted concepts to the original project.
+
+## Domain adapter interface
+
+Built-in static adapter dispatch is keyed by the in-progress task profile. The allowed capabilities are defined in code; `.pro-papa/adapter-policy.json` can deny an adapter but cannot load arbitrary executables or extend authority. The checked project-local input is size-bound and realpath-validated, and the resulting check report is hashed into existing evidence state. See `docs/ADAPTERS.md` for formats, limitations and examples.

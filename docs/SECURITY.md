@@ -11,3 +11,7 @@ Pro-Papa v0.1 is a local state machine. It is not an access-control system, auto
 - **External evidence:** Repository-local proofs cannot substitute for physical hardware testing, professional review, authenticated external source access or human judgment.
 - **Privacy:** Keep secrets and personal records out of a public `.pro-papa` task queue or evidence folder; store secret credentials in a vault or authorized external service.
 - **Versioning:** Task evidence is file-hash-bound in this version, not git-SHA-bound. This is insufficient for high-assurance cross-commit candidate review. See next roadmap tasks.
+
+## PP-0001 adapter limits
+
+An adapter is a static code-defined validator, not a general shell/tool runner. The only subprocess is a fixed, shell-free Node.js syntax check, which does not run the source code. Adapter configuration can revoke built-in capabilities but cannot inject commands, module paths, URLs to fetch, or executable flags. The check input must be a project-contained real file no larger than 1 MiB. A source may change while being checked; this iteration hashes its input and report but does not provide immutable-Git-candidate attestation or truthful independent verification. Citation and document checks are structural only. See `docs/ADAPTERS.md` and PP-0002.

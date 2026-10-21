@@ -13,10 +13,20 @@
         "Preserve evidence digests, separated reviewers, and task ordering"
       ],
       "dependsOn": [],
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "chatgpt-implementation",
       "blockedReason": null,
-      "evidence": []
+      "evidence": [
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Built-in software check (syntax:node); input sha256 b60afd4f419f2faec046f842938c9456f510f38edb2f955e3252ea938ebc3086",
+          "path": ".pro-papa/evidence/PP-0001/software-abb65ec6-9dc2-42c6-ab96-3ef896c24375.json",
+          "sha256": "c9d515a9979288ebe10936614d33d7fdf5431bc7431620f6674e5706178c3fc9",
+          "recordedAt": "2026-10-21T01:11:53.351Z"
+        }
+      ]
     },
     {
       "id": "PP-0002",
@@ -28,7 +38,9 @@
         "Review identity and candidate binding can be verified from trusted provider data",
         "A failed review blocks closure until a later exact-candidate pass"
       ],
-      "dependsOn": ["PP-0001"],
+      "dependsOn": [
+        "PP-0001"
+      ],
       "status": "pending",
       "owner": null,
       "blockedReason": null,
@@ -44,12 +56,14 @@
         "Capture implementation effort, rework, genuine evidence and unresolved limitations",
         "Revise the framework based on demonstrated failures rather than speculative complexity"
       ],
-      "dependsOn": ["PP-0002"],
+      "dependsOn": [
+        "PP-0002"
+      ],
       "status": "pending",
       "owner": null,
       "blockedReason": null,
       "evidence": []
     }
   ],
-  "revision": 0
+  "revision": 2
 }

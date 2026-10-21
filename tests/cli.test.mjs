@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -31,4 +31,23 @@ test('CLI init, add, select, start, record, close and status', async t => {
 test('CLI refuses out-of-order flags and unrecognized command', () => {
   assert.throws(() => run(['nope']), /Command failed/);
   assert.throws(() => run(['add', '--title']), /Command failed/);
+});
+
+test('CLI adapter-check records truthful failing proof and exits nonzero', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'pp-adapter-cli-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const opts = ['--root', root];
+  run(['init', ...opts, '--name', 'Adapter cli test']);
+  const task = JSON.parse(run(['add', ...opts, '--title', 'Build', '--objective', 'Check syntax', '--profile', 'software', '--accept', 'Syntax check']));
+  run(['start', ...opts, '--id', task.id, '--actor', 'agent']);
+  await writeFile(join(root, 'valid.mjs'), 'export const x = 42;');
+  const good = JSON.parse(run(['adapter-check', ...opts, '--id', task.id, '--file', 'valid.mjs', '--actor', 'agent']));
+  assert.equal(good.report.result, 'pass');
+  assert.equal(good.proof.kind, 'test');
+  assert.match(good.reportFile, /^\.pro-papa\/evidence\//);
+  await writeFile(join(root, 'bad.mjs'), 'const = ;');
+  assert.throws(() => run(['adapter-check', ...opts, '--id', task.id, '--file', 'bad.mjs', '--actor', 'agent']), /Command failed/);
+  const contents = JSON.parse(await readFile(join(root, '.pro-papa/tasks.json'), 'utf8'));
+  assert.equal(contents.tasks[0].evidence.at(-1).result, 'fail');
+  assert.equal(contents.tasks[0].status, 'in_progress');
 });

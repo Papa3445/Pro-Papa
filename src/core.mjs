@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, rename, mkdir, realpath, stat, open, rm, access } from 'node:fs/promises';
-import { resolve, relative, isAbsolute, sep } from 'node:path';
+import { resolve, relative, dirname, isAbsolute, sep } from 'node:path';
 
 const STATUSES = new Set(['pending', 'in_progress', 'blocked', 'verified']);
 const PROOF_TYPES = new Set(['artifact', 'test', 'validation', 'review', 'sources', 'calculations']);
@@ -239,7 +239,9 @@ export async function initializeProject(root, name, options = {}) {
   assert(nonEmpty(name), 'project name required');
   const target = resolve(root);
   const folder = resolve(target, '.pro-papa');
-  for (const file of [resolve(folder, 'tasks.json'), resolve(folder, 'profiles.json'), ...(options.agentGuide ? [resolve(target, 'AGENTS.md')] : [])]) {
+  // Preflight every destination before creating anything, preventing partial initialization
+  // if a project already has AGENTS.md or Pro-Papa state.
+  for (const file of [resolve(folder, 'tasks.json'), resolve(folder, 'profiles.json'), resolve(folder, 'adapter-policy.json'), ...(options.agentGuide ? [resolve(target, 'AGENTS.md')] : [])]) {
     try { await access(file); fail(`already exists: ${file}`); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
@@ -247,9 +249,13 @@ export async function initializeProject(root, name, options = {}) {
   const state = { schemaVersion: 1, revision: 0, project: name, tasks: [] };
   const profileFile = new URL('../.pro-papa/profiles.json', import.meta.url);
   const profiles = JSON.parse(await readFile(profileFile, 'utf8'));
+  const adapterPolicyFile = new URL('../.pro-papa/adapter-policy.json', import.meta.url);
+  const adapterPolicy = JSON.parse(await readFile(adapterPolicyFile, 'utf8'));
+  // Never overwrite an existing agent's state.
   const initial = [
     [resolve(folder, 'tasks.json'), `${JSON.stringify(state, null, 2)}\n`],
     [resolve(folder, 'profiles.json'), `${JSON.stringify(profiles, null, 2)}\n`],
+    [resolve(folder, 'adapter-policy.json'), `${JSON.stringify(adapterPolicy, null, 2)}\n`],
   ];
   for (const [file, content] of initial) {
     const fd = await open(file, 'wx');

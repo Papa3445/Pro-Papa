@@ -4,6 +4,10 @@
 
 Pro-Papa extracts the reusable ideas behind [Ironshade Vector](https://github.com/papa4568/ironshade-vector): persistent ordered tasks, scoped execution, domain-specific acceptance, evidence integrity, failure recovery and independent review. It deliberately does **not** copy game logic, graphics tests, Android pipelines, or expensive experimental CI governance.
 
+## Domain adapters (PP-0001)
+
+Pro-Papa now supports **fixed, permission-scoped, read-only adapter checks** for software syntax, research citation structure, and Markdown document structure. On an active task, run `node bin/pro-papa.mjs adapter-check --id PP-0001 --file src/adapters.mjs --actor IMPLEMENTER`. The task's profile selects the built-in validator. The check creates an SHA-256-backed report, records a pass or fail, and returns a nonzero exit code for a failure. Task text and configuration cannot supply executable commands. See [the complete contract](docs/ADAPTERS.md). The checks do **not** certify real-world accuracy, software correctness or quality, and they do not replace independent review.
+
 ## What's working in v0.1
 
 - Deterministic task selection and resume: ordered queue, one active task, validated dependencies, blocked-state handling and cycle detection.
@@ -65,4 +69,4 @@ The `proof` command does not execute the tests mentioned in your report. The age
 
 ## Current status
 
-**Version 0.1: working task-control and evidence-integrity foundation.** It is not yet a complete autonomous agent platform. The ordered next milestones in `.pro-papa/tasks.json` add typed domain adapters, authenticated independent review and cross-domain pilot validation. No task is marked complete unless backed by actual checks and review.
+**Version 0.1: working task-control and evidence-integrity foundation.** It is not yet a complete autonomous agent platform. The domain-adapter milestone PP-0001 is in implementation/review. Following acceptance, the remaining milestones add authenticated independent review and cross-domain pilot validation. No task is marked complete unless backed by actual checks and review.
