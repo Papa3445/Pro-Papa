@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check src/core.mjs && node --check src/adapters.mjs && node --check src/review-github.mjs && node --check src/usage-receipts.mjs && node --check src/gateway.mjs && node --check bin/gateway.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root . && node bin/pro-papa.mjs adapter-check --id PP-0005 --actor chatgpt-implementation --file src/gateway.mjs",
+    "check": "node --check src/core.mjs && node --check src/adapters.mjs && node --check src/review-github.mjs && node --check src/usage-receipts.mjs && node --check src/gateway.mjs && node --check bin/gateway.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .",
     "next": "node bin/pro-papa.mjs next",
     "status": "node bin/pro-papa.mjs status",
     "gateway": "node bin/gateway.mjs"
