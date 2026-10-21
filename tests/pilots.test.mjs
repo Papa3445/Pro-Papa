@@ -153,7 +153,10 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
   await saveState(root,state,profiles);
   const roundtrip=await loadProject(root);
   assert.deepEqual(roundtrip.state.tasks.map(task=>task.status),['verified','verified','verified']);
-  for(const task of roundtrip.state.tasks)assert.equal(task.evidence.filter(p=>p.kind==='adapter').length,2);
+  for(const task of roundtrip.state.tasks){
+    const expected=task.profile==='software'?2:3; // one extra structural PASS with semantic FAIL
+    assert.equal(task.evidence.filter(p=>p.kind==='adapter').length,expected);
+  }
   assert.equal(metrics.reduce((sum,p)=>sum+p.failedAdapterAttempts,0),3);
   assert.equal(metrics.reduce((sum,p)=>sum+(p.semanticAuditRejects||0),0),3);
   // Parseable evidence in CI job logs, with runtime rather than invented timings.
