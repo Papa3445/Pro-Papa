@@ -54,7 +54,7 @@ function verifySources(sourceTexts){
     const body=sourceTexts[id];
     check(typeof body==='string' && body.length>0,'Missing primary source '+id);
     const input=Buffer.from(body,'utf8');
-    const sha=createHash('sha1').update('blob '+input.length+'\\0').update(input).digest('hex');
+    const sha=createHash('sha1').update('blob '+input.length+String.fromCharCode(0)).update(input).digest('hex');
     check(sha===SOURCES[id].gitBlobSha,
       'Primary source '+id+' no longer matches reviewed base Git blob');
     checked.push({sourceId:id,gitBlobSha:sha});
