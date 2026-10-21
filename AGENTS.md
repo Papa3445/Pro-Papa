@@ -35,3 +35,9 @@ See `node bin/pro-papa.mjs help`, `README.md`, and `docs/ARCHITECTURE.md`. This 
 ## GitHub-backed independent review
 
 For an opted-in task (`requiresTrustedReview: true`), do not accept a self-declared reviewer name as final proof. `close` queries GitHub live via a host-managed `GITHUB_TOKEN`, verifies the approved reviewer identity, **current PR head SHA**, and any separately trusted base ref/SHA pin, and refuses outstanding changes requests. Review submissions must still come from an independent account/context. This project has no privileged status-writing workflow. Native GitHub branch protection governs merges; repository-controlled task pins are not immutable attestations. See `docs/TRUSTED-REVIEWS.md`.
+
+## PP-0004 usage receipts — explicit, not automatic
+
+For requests where a GitHub usage receipt is appropriate and a **private** audit store is configured, invoke `node bin/pro-papa.mjs usage-receipt` or perform equivalent authenticated GitHub connector reads/writes. The operation must read current `AGENTS.md` and `.pro-papa/profiles.json` from a pinned GitHub commit and persist a **minimal**, non-sensitive receipt with a verified GitHub link. See `docs/USAGE-RECEIPTS.md`.
+
+Never claim confirmed GitHub usage from prompt text, memory, prior requests, or a self-authored unverified receipt. A receipt proves that GitHub files were read and a separate private write/readback occurred; it does **not** prove internal model reasoning or the quality of the answer. If the configured private audit store is missing or inaccessible, disclose the limitation. No prompt can itself force host tool execution. Do not publish conversation contents to the public Pro-Papa repository.

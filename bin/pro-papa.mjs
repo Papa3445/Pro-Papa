@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path';
 import { runDomainCheck } from '../src/adapters.mjs';
+import { issueUsageReceipt } from '../src/usage-receipts.mjs';
 import { verifyGitHubReview, validateReviewTarget } from '../src/review-github.mjs';
 import {
   loadProject, selectNext, findTask, addTask, startTask,
@@ -30,7 +31,7 @@ function required(flags, key) {
 export async function main(argv = process.argv.slice(2), output = console.log) {
   const { command, flags } = argumentsFor(argv);
   if (command === 'help') {
-    output('Pro-Papa v0.1\nCommands: init, validate, status, next, add, start, block, unblock, handoff, proof, adapter-check, review-status, review-gate, close\nCommon: --root PATH\ninit --name NAME [--root PATH] [--guide true]\nadd --title TITLE --objective OBJECTIVE --profile PROFILE --accept CRITERION [--accept CRITERION] [--depends ID,ID]\nstart --id ID --actor NAME\nblock --id ID --reason TEXT | unblock --id ID\nhandoff --id ID\nproof --id ID --kind KIND --file RELPATH --actor NAME --note TEXT [--result pass|fail]\nadapter-check --id ID --file RELPATH --actor NAME\nreview-status --id ID (uses GITHUB_TOKEN)\nreview-gate --repo OWNER/REPO --pr NUMBER\nclose --id ID');
+    output('Pro-Papa v0.1\nCommands: init, validate, status, next, add, start, block, unblock, handoff, proof, adapter-check, review-status, review-gate, usage-receipt, close\nCommon: --root PATH\ninit --name NAME [--root PATH] [--guide true]\nadd --title TITLE --objective OBJECTIVE --profile PROFILE --accept CRITERION [--accept CRITERION] [--depends ID,ID]\nstart --id ID --actor NAME\nblock --id ID --reason TEXT | unblock --id ID\nhandoff --id ID\nproof --id ID --kind KIND --file RELPATH --actor NAME --note TEXT [--result pass|fail]\nadapter-check --id ID --file RELPATH --actor NAME\nreview-status --id ID (uses GITHUB_TOKEN)\nreview-gate --repo OWNER/REPO --pr NUMBER\nusage-receipt [--source OWNER/REPO] [--store PRIVATE_OWNER/REPO] [--ref BRANCH]\nclose --id ID');
     return;
   }
   if (command === 'review-gate') {
@@ -38,6 +39,15 @@ export async function main(argv = process.argv.slice(2), output = console.log) {
     const verdict = await verifyGitHubReview(target);
     output(JSON.stringify(verdict, null, 2));
     if (verdict.verdict !== 'PASS') process.exitCode = 1;
+    return;
+  }
+  if (command === 'usage-receipt') {
+    const receipt = await issueUsageReceipt({
+      sourceRepository: flags.source ?? process.env.PRO_PAPA_SOURCE_REPO ?? 'Papa3445/Pro-Papa',
+      storeRepository: flags.store ?? process.env.PRO_PAPA_AUDIT_REPO,
+      sourceRef: flags.ref ?? 'main',
+    });
+    output(JSON.stringify(receipt, null, 2));
     return;
   }
   const root = resolve(flags.root ?? process.cwd());

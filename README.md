@@ -82,3 +82,17 @@ Independent reviews found four validation weaknesses and then a legacy-proof com
 For formally tracked tasks, GitHub review records can be checked at task closure against the exact PR head and optionally a separately trusted comparison-base ref/SHA. Use `review-status --id TASK` and `close --id TASK` with a host-managed **read-only** `GITHUB_TOKEN` after an independent reviewer submits a PR review. Manual evidence alone cannot create a provider approval. See [authenticated review instructions](docs/TRUSTED-REVIEWS.md).
 
 An experimental workflow that published custom review-integrity commit statuses was **removed** because same-repo PR workflows could mint statuses using elevated permissions, and different PRs can share the same SHA/status context. To enforce **merges**, use GitHub-native required reviews, stale-review dismissal, and normal CI checks through branch protection where available. Pro-Papa does not create AI reviews, merge autonomously, or configure repository rules.
+
+## PP-0004: verifiable framework-usage receipts
+
+The `usage-receipt` command reads this repository's actual `AGENTS.md` and domain profiles at an immutable Git commit, verifies Git blob identities, then writes and reads back a minimal receipt from a **separate private GitHub repository**. The returned receipt URL and commit provide a retrievable audit record, **not proof that the AI internally reasoned over the files**.
+
+```bash
+# Configure a separate PRIVATE repository first; give the token read access
+# to the source and Contents write access to the private audit store.
+export PRO_PAPA_AUDIT_REPO=YOUR_USERNAME/Pro-Papa-Audit
+export GITHUB_TOKEN=YOUR_HOST_MANAGED_GITHUB_TOKEN
+node bin/pro-papa.mjs usage-receipt
+```
+
+This is host-invoked, not automatic ChatGPT turn interception. Private repository creation, connector authorization and branch protection are deployment steps; no private audit store is provisioned by this code. Read the [setup and threat model](docs/USAGE-RECEIPTS.md).

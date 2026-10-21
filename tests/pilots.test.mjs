@@ -69,8 +69,8 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
     const sourceText=await sample('pilots/research/adapter-capability-audit.json');
     const data=JSON.parse(sourceText);
     const sources={
-      'adapter-docs':await sample('docs/ADAPTERS.md'),
-      'security-docs':await sample('docs/SECURITY.md'),
+      'adapter-docs':await sample('pilots/fixtures/docs/ADAPTERS.md'),
+      'security-docs':await sample('pilots/fixtures/docs/SECURITY.md'),
     };
     let attempts=0,failures=0,semanticRejects=0;
     const checked=async content=>{
@@ -113,8 +113,8 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
     startTask(state,document.id,actor);
     const source=await sample('pilots/document/adapter-evidence-guide.md');
     const documentSources={
-      'adapter-docs':await sample('docs/ADAPTERS.md'),
-      'security-docs':await sample('docs/SECURITY.md'),
+      'adapter-docs':await sample('pilots/fixtures/docs/ADAPTERS.md'),
+      'security-docs':await sample('pilots/fixtures/docs/SECURITY.md'),
     };
     let attempts=0,failures=0,semanticRejects=0;
     const checked=async content=>{
@@ -184,8 +184,8 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
 test('PP-0003 pinned primary sources detect tampering and duplicate declarations', async()=>{
   const artifact=JSON.parse(await sample('pilots/research/adapter-capability-audit.json'));
   const sources={
-    'adapter-docs':await sample('docs/ADAPTERS.md'),
-    'security-docs':await sample('docs/SECURITY.md'),
+    'adapter-docs':await sample('pilots/fixtures/docs/ADAPTERS.md'),
+    'security-docs':await sample('pilots/fixtures/docs/SECURITY.md'),
   };
   const research=auditResearchClaims(artifact,sources);
   assert.equal(research.sourceIntegrity.length,2);

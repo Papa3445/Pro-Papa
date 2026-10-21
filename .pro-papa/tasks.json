@@ -245,7 +245,33 @@
         }
       ],
       "verifiedAt": "2026-10-21T11:35:27.591Z"
+    },
+    {
+      "id": "PP-0004",
+      "title": "Add verifiable, privacy-safe GitHub usage receipts",
+      "objective": "Create a host-invoked operation that reads live framework instructions and persists a provider-verifiable receipt to a separate private GitHub repository; preserve honest security claims and tests.",
+      "profile": "software",
+      "acceptance": [
+        "Receipt must be based on real GitHub file reads and read back from a private Git commit",
+        "Reject public stores, altered data, malformed identities, and API failures without false confirmation",
+        "Provide a usable CLI, negative integration tests, and instructions for universal host use without claiming automatic ChatGPT interception"
+      ],
+      "dependsOn": [
+        "PP-0003"
+      ],
+      "status": "in_progress",
+      "owner": "chatgpt-implementation",
+      "blockedReason": null,
+      "evidence": [],
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 4,
+        "baseRef": "main",
+        "baseSha": "e5dbd9d4c414aab50d0940c282367f264563bbab"
+      }
     }
   ],
-  "revision": 17
+  "revision": 19
 }
