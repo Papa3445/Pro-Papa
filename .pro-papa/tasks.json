@@ -259,10 +259,38 @@
       "dependsOn": [
         "PP-0003"
       ],
-      "status": "in_progress",
+      "status": "blocked",
       "owner": "chatgpt-implementation",
-      "blockedReason": null,
-      "evidence": [],
+      "blockedReason": "Independent code review and CI passed, but a separate private GitHub audit repository is not configured or accessible; live receipt write/readback and deployment verification remain outstanding.",
+      "evidence": [
+        {
+          "kind": "review",
+          "result": "pass",
+          "actor": "papa4568",
+          "note": "Authenticated independent GitHub APPROVED review #5603992088 for exact head d4eb298; source is provider-backed.",
+          "path": ".pro-papa/evidence/PP-0004/independent-review-pr4.json",
+          "sha256": "4042c38109cbadf98e3fac1d4d787bddc09ac1ae36847c130457d7a01b2993e4",
+          "recordedAt": "2026-10-21T18:04:13.029Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "GitHub Actions run 39629453917 verified 80/80 tests pass against reviewed PR head.",
+          "path": ".pro-papa/evidence/PP-0004/github-actions-80-tests.json",
+          "sha256": "d07cd4df19169780ab3c9cad0b27ca9b9e04b79ac49ff1285fd7c91ea241479c",
+          "recordedAt": "2026-10-21T18:04:13.029Z"
+        },
+        {
+          "kind": "validation",
+          "result": "fail",
+          "actor": "chatgpt-implementation",
+          "note": "Live private audit-repository smoke test remains unperformed: repository inaccessible; project deployment blocked.",
+          "path": ".pro-papa/evidence/PP-0004/deployment-check.json",
+          "sha256": "e070689426c26703bd417ec3c885f491d669c6b54c6ff82849b9b686fdecd413",
+          "recordedAt": "2026-10-21T18:04:13.029Z"
+        }
+      ],
       "requiresAdapter": true,
       "requiresTrustedReview": true,
       "reviewTarget": {
@@ -273,5 +301,5 @@
       }
     }
   ],
-  "revision": 19
+  "revision": 20
 }

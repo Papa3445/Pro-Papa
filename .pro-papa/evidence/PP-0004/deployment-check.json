@@ -1,0 +1,10 @@
+{
+  "taskId": "PP-0004",
+  "result": "blocked",
+  "implementationMergedCommit": "e88d590d4e9ad1c344e172a92b33b5733120f53e",
+  "privateAuditRepository": "Papa3445/Pro-Papa-Audit",
+  "repositoryLookup": "NOT_FOUND",
+  "liveReceiptTest": "not_run",
+  "reason": "Separate private audit repository is not accessible to the connected implementation account; no live write/readback receipt was issued.",
+  "nextAction": "Provision or connect a separate private GitHub audit repository and authorize read/write access; execute a real receipt smoke test, then record evidence and close the task."
+}
