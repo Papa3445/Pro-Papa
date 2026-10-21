@@ -30,3 +30,16 @@ Task: PP-0005, software profile. This is an implementer assessment, **not** inde
 ## Provisional result
 
 **Implementer validation: pass for the documented PP-0005 gateway/CLI contract. Independent review outstanding.**
+
+## Independent CHANGES_REQUESTED review and remediation (second candidate)
+
+Authenticated review [#5606919958](https://github.com/Papa3445/Pro-Papa/pull/6#pullrequestreview-5606919958) found four blocking deficiencies on the original candidate c3b927f6bb93d37e5b8915c5fc44e39bfb6a4578. They are **not represented as cleared by the reviewer** until a new exact-head APPROVED review is received.
+
+- P1 metadata symlink isolation: gate now checks canonical project, physical .pro-papa directory and tasks.json identity, rejects symbolic links and hard-linked state files, and rechecks before each gateway-managed state write. New tests use disposable victim/user project directories and verify no victim ledger mutation. The check is not atomic against privileged concurrent filesystem swaps.
+- P2 UUID casing: normalize case at ingress, storage and lookup; a real external-effects handler cannot execute twice via uppercase/lowercase variants in a durable fixture.
+- P2 audit confirmation: the built-in CLI selects a direct PP-0004 issuer invocation, preserving its source-read/private-write/readback verification. Third-party host callbacks can only produce host_asserted when receipt identities are internally consistent and the expected audit repository matches; contradictions or incomplete identity fail. This does not make a third-party host's claimed proof independently verified.
+- P3 undefined output: completed now requires a defined, JSON-serializable (at most 256 KiB) output and matching host-provided operation provenance; absent or unserializable output yields unverified_execution.
+
+Real GitHub Actions [run 39691477143](https://github.com/Papa3445/Pro-Papa/actions/runs/39691477143), job 119538442712, passed 103/103 tests on security-fix code. GitHub Actions [run 39691557411](https://github.com/Papa3445/Pro-Papa/actions/runs/39691557411), job 119538710648, passed 103/103 **and** executed the real built-in syntax:node adapter against fixed src/gateway.mjs; the emitted report was saved at .pro-papa/evidence/PP-0005/software-846efd48-2a0a-46d9-ab54-cbe21660b745.json and separately hash-verified against returned provider bytes. The adapter is syntax-only, not an independent security audit.
+
+**Status:** implementation regression validation PASS; reviewer change requests remain outstanding until exact revised-head review. No merge or task closeout authorized by this document.
