@@ -1,0 +1,16 @@
+{
+  "name": "pro-papa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A domain-independent, repository-backed AI task execution and verification framework",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "bin": { "pro-papa": "./bin/pro-papa.mjs" },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/core.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .",
+    "next": "node bin/pro-papa.mjs next",
+    "status": "node bin/pro-papa.mjs status"
+  },
+  "license": "UNLICENSED"
+}

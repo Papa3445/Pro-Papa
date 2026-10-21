@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "project": "Pro-Papa framework",
+  "tasks": [
+    {
+      "id": "PP-0001",
+      "title": "Add domain adapter interface",
+      "objective": "Allow validated, permission-scoped domain adapters to produce executable checks rather than relying only on recorded evidence.",
+      "profile": "software",
+      "acceptance": [
+        "Adapters are isolated from untrusted task text and cannot invoke arbitrary commands",
+        "Demonstrate adapters for software, research, and document tasks using negative tests",
+        "Preserve evidence digests, separated reviewers, and task ordering"
+      ],
+      "dependsOn": [],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
+    },
+    {
+      "id": "PP-0002",
+      "title": "Add authenticated independent review",
+      "objective": "Bind independent reviewer identity, candidate identity, and verdict to a trusted host or provider instead of a self-declared actor string.",
+      "profile": "software",
+      "acceptance": [
+        "A self-authored or stale verdict cannot close a task",
+        "Review identity and candidate binding can be verified from trusted provider data",
+        "A failed review blocks closure until a later exact-candidate pass"
+      ],
+      "dependsOn": ["PP-0001"],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
+    },
+    {
+      "id": "PP-0003",
+      "title": "Run three end-to-end domain pilots",
+      "objective": "Prove the common operating contract on a software task, a sourced research task, and a non-code document task.",
+      "profile": "general",
+      "acceptance": [
+        "Complete reproducible tasks from each of the three domains",
+        "Capture implementation effort, rework, genuine evidence and unresolved limitations",
+        "Revise the framework based on demonstrated failures rather than speculative complexity"
+      ],
+      "dependsOn": ["PP-0002"],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
+    }
+  ],
+  "revision": 0
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "profiles": {
+    "general": { "description": "Any measurable objective", "requiredEvidence": ["artifact", "validation", "review"] },
+    "software": { "description": "Software, websites, apps, tools", "requiredEvidence": ["artifact", "test", "validation", "review"] },
+    "research": { "description": "Research, investigation, comparisons", "requiredEvidence": ["artifact", "sources", "validation", "review"] },
+    "document": { "description": "Documents, proposals, policies, content", "requiredEvidence": ["artifact", "validation", "review"] },
+    "data": { "description": "Analysis, spreadsheets, forecasts", "requiredEvidence": ["artifact", "calculations", "validation", "review"] },
+    "operations": { "description": "Workflows, planning, operations", "requiredEvidence": ["artifact", "validation", "review"] }
+  }
+}
