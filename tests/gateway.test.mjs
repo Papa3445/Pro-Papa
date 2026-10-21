@@ -140,7 +140,7 @@ test('audit is strictly opt-in and failed receipts do not erase genuine tool res
       }),
     }),
   });
-  assert.equal(good.audit.status, 'confirmed'); // Trusts the injected authorized host issuer.
+  assert.equal(good.audit.status, 'failed'); // Third-party metadata lacks independently verified identity/readback.
 });
 
 test('durable requests require authorized state writes; framework task file remains isolated', async t => {
