@@ -211,3 +211,35 @@ test('task closure accepts any matching GitHub approver on exact head',async t=>
   assert.equal(report.trustedReview.reviewer.login,'reviewerB');
   assert.equal(task.status,'verified');
 });
+
+test('malformed unresolved changes requests fail closed before reviewer filtering',()=>{
+  const approved=review('APPROVED');
+  const blocked=review('CHANGES_REQUESTED',{commit_id:'b'.repeat(40)});
+  const invalid=[
+    {...blocked,user:null},
+    {...blocked,user:{id:0,login:'missing'}},
+    {...blocked,user:{id:555,login:''}},
+    {...blocked,submitted_at:null},
+    {...blocked,submitted_at:'not-a-date'},
+    {...blocked,commit_id:null},
+  ];
+  for (const bad of invalid) {
+    assert.throws(()=>evalReviews(target,pull,[approved,bad]),/Malformed decisive GitHub review/);
+  }
+});
+test('stable double snapshot cannot hide a malformed change request',async()=>{
+  const approved=review('APPROVED');
+  const blocked=review('CHANGES_REQUESTED',{commit_id:'b'.repeat(40)});
+  for(const bad of [{...blocked,user:null},{...blocked,submitted_at:null},{...blocked,user:{id:12,login:''}}]){
+    const api=mock([approved,bad]);
+    await assert.rejects(verifyGitHubReview(target,{token:'x',fetchImpl:api.fetchImpl}),/Malformed decisive GitHub review/);
+    assert.equal(api.calls.length,5);
+  }
+});
+test('invalid approval is not ignored to pass using another reviewer',()=>{
+  const approved=review('APPROVED');
+  const invalid=review('APPROVED',{user:null});
+  assert.throws(()=>evalReviews(target,pull,[approved,invalid]),/Malformed decisive GitHub review/);
+  assert.equal(evalReviews(target,pull,[approved,review('COMMENTED',{user:null})]).verdict,'PASS');
+  assert.equal(evalReviews(target,pull,[approved,review('DISMISSED',{user:null})]).verdict,'PASS');
+});

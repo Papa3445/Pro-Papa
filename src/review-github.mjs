@@ -45,6 +45,18 @@ export function evaluateGitHubReviews(target, pull, reviews) {
   }
   // Dismissal updates the *same review ID* in GitHub. Ignore the dismissed
   // record without erasing other decisions from the same account.
+  // A decisive GitHub decision with incomplete identity cannot be safely
+  // assigned to a reviewer or cleared by a later review. Never silently omit
+  // an unknown CHANGES_REQUESTED; malformed approvals also fail closed.
+  for (const review of reviews) {
+    if (!DECISIVE.has(review.state)) continue;
+    if (!Number.isSafeInteger(review.user?.id) || review.user.id <= 0 ||
+        typeof review.user?.login !== 'string' || !review.user.login.trim() ||
+        typeof review.submitted_at !== 'string' || !Number.isFinite(Date.parse(review.submitted_at)) ||
+        typeof review.commit_id !== 'string' || !/^[a-f0-9]{40}$/.test(review.commit_id)) {
+      throw new Error('Malformed decisive GitHub review record; refuse incomplete review identity');
+    }
+  }
   const candidates = reviews.filter(review =>
     DECISIVE.has(review.state) && isReviewer(review, pull.user) &&
     typeof review.submitted_at === 'string' && Number.isFinite(Date.parse(review.submitted_at)) &&
