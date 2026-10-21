@@ -263,8 +263,15 @@
       "owner": "chatgpt-implementation",
       "blockedReason": null,
       "evidence": [],
-      "requiresAdapter": true
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 4,
+        "baseRef": "main",
+        "baseSha": "e5dbd9d4c414aab50d0940c282367f264563bbab"
+      }
     }
   ],
-  "revision": 18
+  "revision": 19
 }
