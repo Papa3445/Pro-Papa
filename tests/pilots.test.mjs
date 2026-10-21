@@ -194,6 +194,7 @@ test('PP-0003 pinned primary sources detect tampering and duplicate declarations
   assert.throws(()=>auditResearchClaims(duplicated,sources),/Duplicate source identity/);
   const altered={...sources,'adapter-docs':sources['adapter-docs']+'\\nContradictory source edit\\n'};
   assert.throws(()=>auditResearchClaims(artifact,altered),/no longer matches reviewed base Git blob/);
-  assert.throws(()=>auditDocumentGuide(await sample('pilots/document/adapter-evidence-guide.md'),altered),
+  const document=await sample('pilots/document/adapter-evidence-guide.md');
+  assert.throws(()=>auditDocumentGuide(document,altered),
     /no longer matches reviewed base Git blob/);
 });
