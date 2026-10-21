@@ -13,17 +13,17 @@ test('CLI init, add, select, start, record, close and status', async t => {
   t.after(() => rm(root, { recursive: true, force: true }));
   const opts = ['--root', root];
   assert.equal(JSON.parse(run(['init', '--name', 'General purpose', ...opts])).created, true);
-  const task = JSON.parse(run(['add', ...opts, '--title', 'A report', '--objective', 'Explain a subject', '--profile', 'research', '--accept', 'Evidence based']));
+  const task = JSON.parse(run(['add', ...opts, '--title', 'A report', '--objective', 'Explain a subject', '--profile', 'general', '--accept', 'Evidence based']));
   assert.equal(JSON.parse(run(['next', ...opts])).id, task.id);
   assert.equal(JSON.parse(run(['start', ...opts, '--id', task.id, '--actor', 'writer'])).status, 'in_progress');
-  assert.match(run(['handoff', ...opts, '--id', task.id]), /sources/);
-  for (const kind of ['artifact', 'sources', 'validation', 'review']) {
+  assert.match(run(['handoff', ...opts, '--id', task.id]), /validation/);
+  for (const kind of ['artifact', 'validation', 'review']) {
     const file = join(root, `${kind}.md`);
     await writeFile(file, `Proof for ${kind}`);
     const actor = kind === 'review' ? 'independent-critic' : 'writer';
     assert.equal(JSON.parse(run(['proof', ...opts, '--id', task.id, '--kind', kind, '--file', file, '--actor', actor, '--note', 'Observed result'])).result, 'pass');
   }
-  assert.equal(JSON.parse(run(['close', ...opts, '--id', task.id])).verifiedFiles.length, 4);
+  assert.equal(JSON.parse(run(['close', ...opts, '--id', task.id])).verifiedFiles.length, 3);
   assert.equal(JSON.parse(run(['status', ...opts])).tasks[0].status, 'verified');
   assert.equal(JSON.parse(run(['validate', ...opts])).valid, true);
 });
@@ -50,4 +50,18 @@ test('CLI adapter-check records truthful failing proof and exits nonzero', async
   const contents = JSON.parse(await readFile(join(root, '.pro-papa/tasks.json'), 'utf8'));
   assert.equal(contents.tasks[0].evidence.at(-1).result, 'fail');
   assert.equal(contents.tasks[0].status, 'in_progress');
+});
+
+
+test('CLI cannot replace an adapter failure with a fake manual passing proof', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'pp-cli-spoof-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const opts = ['--root', root];
+  run(['init', '--name', 'Negative adapter evidence', ...opts]);
+  const task = JSON.parse(run(['add', ...opts, '--title', 'Reject fake', '--objective', 'Proof quality', '--profile', 'software', '--accept', 'Do not fake']));
+  run(['start', ...opts, '--id', task.id, '--actor', 'agent']);
+  await writeFile(join(root, 'broken.mjs'), 'const = ;');
+  assert.throws(() => run(['adapter-check', ...opts, '--id', task.id, '--file', 'broken.mjs', '--actor', 'agent']), /Command failed/);
+  await writeFile(join(root, 'trust-me.txt'), 'PASS');
+  assert.throws(() => run(['proof', ...opts, '--id', task.id, '--kind', 'test', '--result', 'pass', '--file', 'trust-me.txt', '--actor', 'agent', '--note', 'PASS']), /Command failed/);
 });

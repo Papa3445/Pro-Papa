@@ -15,3 +15,8 @@ Pro-Papa v0.1 is a local state machine. It is not an access-control system, auto
 ## PP-0001 adapter limits
 
 An adapter is a static code-defined validator, not a general shell/tool runner. The only subprocess is a fixed, shell-free Node.js syntax check, which does not run the source code. Adapter configuration can revoke built-in capabilities but cannot inject commands, module paths, URLs to fetch, or executable flags. The check input must be a project-contained real file no larger than 1 MiB. A source may change while being checked; this iteration hashes its input and report but does not provide immutable-Git-candidate attestation or truthful independent verification. Citation and document checks are structural only. See `docs/ADAPTERS.md` and PP-0002.
+
+
+## PP-0001 review hardening
+
+Built-in adapter results protect the profile-specific evidence type from unverified manual replacement through the CLI. Each report records its input SHA-256, and task closure verifies both report and original input identities. The syntax checker operates on a temporary private copy of exactly the read bytes and rereads the original input identity before publishing its report. The Markdown structure checker ignores fenced and indented code. These checks **do not** authenticate human review, prevent malicious edits to the repo-controlled state file, or establish factual correctness. Local concurrent attacker processes sharing the same OS user are outside this v0.1 trust boundary; provider-backed immutable SHA verification is a follow-up.

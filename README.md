@@ -4,9 +4,9 @@
 
 Pro-Papa extracts the reusable ideas behind [Ironshade Vector](https://github.com/papa4568/ironshade-vector): persistent ordered tasks, scoped execution, domain-specific acceptance, evidence integrity, failure recovery and independent review. It deliberately does **not** copy game logic, graphics tests, Android pipelines, or expensive experimental CI governance.
 
-## Domain adapters (PP-0001)
+## PP-0001: permission-scoped domain checks
 
-Pro-Papa now supports **fixed, permission-scoped, read-only adapter checks** for software syntax, research citation structure, and Markdown document structure. On an active task, run `node bin/pro-papa.mjs adapter-check --id PP-0001 --file src/adapters.mjs --actor IMPLEMENTER`. The task's profile selects the built-in validator. The check creates an SHA-256-backed report, records a pass or fail, and returns a nonzero exit code for a failure. Task text and configuration cannot supply executable commands. See [the complete contract](docs/ADAPTERS.md). The checks do **not** certify real-world accuracy, software correctness or quality, and they do not replace independent review.
+The built-in software, research and document adapters provide **real, bounded, read-only checks** instead of only accepting self-reported proof. An active task selects its adapter by profile; `.pro-papa/adapter-policy.json` can revoke permission but cannot supply executable commands. Check an active task with `node bin/pro-papa.mjs adapter-check --id PP-0001 --actor IMPLEMENTER --file src/adapters.mjs`. The adapter writes a SHA-256-backed report and records pass/fail proof; failing checks exit nonzero. See [the detailed adapter contract](docs/ADAPTERS.md). Syntax, citations and structure checks are **not** quality, truth or security certifications.
 
 ## What's working in v0.1
 
@@ -69,4 +69,9 @@ The `proof` command does not execute the tests mentioned in your report. The age
 
 ## Current status
 
-**Version 0.1: working task-control and evidence-integrity foundation.** It is not yet a complete autonomous agent platform. The domain-adapter milestone PP-0001 is in implementation/review. Following acceptance, the remaining milestones add authenticated independent review and cross-domain pilot validation. No task is marked complete unless backed by actual checks and review.
+**Version 0.1: working task-control and evidence-integrity foundation.** It is not yet a complete autonomous agent platform. The ordered next milestones in `.pro-papa/tasks.json` add typed domain adapters, authenticated independent review and cross-domain pilot validation. No task is marked complete unless backed by actual checks and review.
+
+
+### Review follow-up for PP-0001
+
+The first independent review found four issues. This revision binds adapter checks to live input digests at closure, blocks manually asserted replacements of built-in proofs, ignores Markdown code fences for structure checks, and uses a stable snapshot plus source recheck during validation. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).

@@ -10,7 +10,7 @@ The model is interchangeable. The repository is not a background process, and wr
 
 `pending -> in_progress -> verified` or `pending/in_progress -> blocked -> pending`. One active task maximum. The next selector resumes an active task first, else chooses the earliest pending task whose prerequisites are verified. Blocked tasks are skipped; unresolved dependencies remain blockers only for dependent tasks. Explicit user priorities can be represented by editing/reordering tasks in reviewed changes.
 
-Task closure requires the latest proof of each required kind to pass, every referenced evidence file to still hash to the recorded SHA-256, and a review actor declared distinct from the implementation owner. This is a **procedural gate**, not an independently authenticated assessment. Inputs under source control can be altered; Git history and a future trusted verifier are required for tamper-resistant remote trust.
+Task closure requires the latest proof of each required kind to pass, every referenced evidence file to still hash to the recorded SHA-256, and a review actor declared distinct from the implementation owner. Built-in adapter proofs cannot be replaced with manual evidence, and their input digests must still match at closure. This is a **procedural gate**, not an independently authenticated assessment. Inputs under source control can be altered; Git history and a future trusted verifier are required for tamper-resistant remote trust.
 
 ## Separation of concerns
 

@@ -1,9 +1,10 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { mkdir, open, readFile, stat } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, open, readFile, realpath, stat } from 'node:fs/promises';
+import { constants } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
-import { findTask, safeEvidenceFile, recordEvidence } from './core.mjs';
+import { findTask, safeEvidenceFile, recordEvidence, BUILTIN_PROOF_KINDS } from './core.mjs';
 
 const execFileAsync = promisify(execFile);
 const MAX_INPUT_BYTES = 1024 * 1024;
@@ -11,9 +12,9 @@ const MAX_INPUT_BYTES = 1024 * 1024;
 // These are *code-defined* capabilities, not executable commands from a task or JSON file.
 // A project policy can revoke one; it cannot register code or elevate a capability.
 export const BUILTIN_ADAPTERS = Object.freeze({
-  software: Object.freeze({ capability: 'syntax:node', evidenceKind: 'test' }),
-  research: Object.freeze({ capability: 'citations:structure', evidenceKind: 'sources' }),
-  document: Object.freeze({ capability: 'markdown:structure', evidenceKind: 'validation' }),
+  software: Object.freeze({ capability: 'syntax:node', evidenceKind: BUILTIN_PROOF_KINDS.software }),
+  research: Object.freeze({ capability: 'citations:structure', evidenceKind: BUILTIN_PROOF_KINDS.research }),
+  document: Object.freeze({ capability: 'markdown:structure', evidenceKind: BUILTIN_PROOF_KINDS.document }),
 });
 
 function requireValid(condition, message) {
@@ -52,20 +53,24 @@ async function checkSoftware(file, content) {
   if (!['.js', '.mjs', '.cjs'].includes(ext)) {
     return { pass: false, checks: ['Only .js, .mjs, .cjs, or .json syntax checks are supported'] };
   }
-  // The invocation is fixed and shell-free. --check parses syntax; it does not execute JS.
-  // Task content never controls the executable or command flags.
+  // Validate exactly the immutable bytes read by the adapter, not the mutable source path.
+  // The private snapshot is placed under the input directory so .js still inherits its
+  // nearest package.json `type` (ESM or CJS); it is removed after validation.
+  const folder = await mkdtemp(resolve(dirname(file), '.pro-papa-syntax-'));
   try {
-    await execFileAsync(process.execPath, ['--check', file], {
-      shell: false,
-      timeout: 8000,
-      maxBuffer: 16384,
-      env: { NODE_OPTIONS: '', NODE_PATH: '' },
-      windowsHide: true,
-    });
-    return { pass: true, checks: ['Node.js syntax check passed (no code executed)'] };
-  } catch (error) {
-    return { pass: false, checks: [`Node.js syntax check failed: ${String(error.stderr || error.message).slice(0, 1200)}`] };
-  }
+    const snapshot = resolve(folder, `source${ext}`);
+    const descriptor = await open(snapshot, 'wx', 0o600);
+    try { await descriptor.writeFile(content); } finally { await descriptor.close(); }
+    try {
+      await execFileAsync(process.execPath, ['--check', snapshot], {
+        shell: false, timeout: 8000, maxBuffer: 16384,
+        env: { ...process.env, NODE_OPTIONS: '', NODE_PATH: '' }, windowsHide: true,
+      });
+      return { pass: true, checks: ['Node.js syntax check passed on immutable snapshot (no code executed)'] };
+    } catch (error) {
+      return { pass: false, checks: [`Node.js syntax check failed: ${String(error.stderr || error.message).slice(0, 1200)}`] };
+    }
+  } finally { await rm(folder, { recursive: true, force: true }); }
 }
 
 function checkResearch(content) {
@@ -101,17 +106,51 @@ function checkResearch(content) {
 function checkDocument(content) {
   const issues = [];
   const lines = content.split(/\r?\n/);
-  const titles = lines.filter(line => /^# \S/.test(line));
-  const sections = lines.filter(line => /^## \S/.test(line));
-  const words = content.trim().split(/\s+/).filter(Boolean).length;
-  if (titles.length !== 1) issues.push('Exactly one Markdown H1 title is required');
-  if (sections.length < 2) issues.push('At least two Markdown H2 sections are required');
-  if (words < 40) issues.push('Document must contain at least 40 words');
-  if (/\b(?:TODO|TBD|FIXME)\b|\[insert[^\]]*\]/i.test(content)) issues.push('Unresolved placeholder detected');
-  return { pass: issues.length === 0, checks: issues.length ? issues : [`Markdown structure valid: 1 title, ${sections.length} sections, ${words} words; content quality not checked`] };
+  // Ignore all fenced-code content for heading and word-count checks, including
+  // fences started with backticks or tildes and unclosed fences.
+  let fence = null;
+  const prose = [];
+  for (const line of lines) {
+    const match = line.match(/^ {0,3}(`{3,}|~{3,})/);
+    if (match) {
+      const symbol = match[1][0];
+      if (!fence) fence = { symbol, length: match[1].length };
+      else if (symbol === fence.symbol && match[1].length >= fence.length && /^\s*$/.test(line.slice(match[0].length))) fence = null;
+      continue;
+    }
+    if (!fence && !/^(?: {4}|\t)/.test(line)) prose.push(line);
+  }
+  const titles = prose.filter(line => /^# \S/.test(line));
+  const sections = prose.filter(line => /^## \S/.test(line));
+  const words = prose.join(' ').trim().split(/\s+/).filter(Boolean).length;
+  if (titles.length !== 1) issues.push('Exactly one Markdown H1 title is required outside code fences');
+  if (sections.length < 2) issues.push('At least two Markdown H2 sections are required outside code fences');
+  if (words < 40) issues.push('Document prose must contain at least 40 words outside code fences');
+  if (/\b(?:TODO|TBD|FIXME)\b|\[insert[^\]]*\]/i.test(prose.join('\n'))) issues.push('Unresolved placeholder detected');
+  return { pass: issues.length === 0, checks: issues.length ? issues : [`Markdown structure valid: 1 title, ${sections.length} sections, ${words} prose words; content quality not checked`] };
 }
 
-export async function runDomainCheck({ root, state, id, actor, file }) {
+// Read from one opened file descriptor, never validate a path read in two different
+// states. Any replacement/retargeting detected before recording is rejected.
+export async function readAdapterSnapshot(root, file) {
+  const before = await safeEvidenceFile(root, file);
+  const filename = resolve(root, before.path);
+  const descriptor = await open(filename, constants.O_RDONLY | constants.O_NOFOLLOW);
+  let data;
+  try {
+    const first = await descriptor.stat();
+    requireValid(first.isFile() && first.size > 0 && first.size <= MAX_INPUT_BYTES, 'Adapter input must be 1 byte to 1 MiB');
+    data = await descriptor.readFile();
+    const last = await descriptor.stat();
+    requireValid(first.dev === last.dev && first.ino === last.ino && first.size === last.size && first.mtimeMs === last.mtimeMs, 'Adapter input changed during snapshot');
+  } finally { await descriptor.close(); }
+  const after = await safeEvidenceFile(root, file);
+  const sha256 = createHash('sha256').update(data).digest('hex');
+  requireValid(before.path === after.path && before.sha256 === sha256 && after.sha256 === sha256, 'Adapter input changed during snapshot');
+  return { identity: { path: before.path, sha256 }, file: filename, contents: data.toString('utf8') };
+}
+
+export async function runDomainCheck({ root, state, id, actor, file }, { afterSnapshot } = {}) {
   const task = findTask(state, id);
   requireValid(task.status === 'in_progress', 'Adapter requires an in-progress task');
   requireValid(isText(actor) && actor === task.owner, 'Adapter actor must match task owner');
@@ -119,16 +158,19 @@ export async function runDomainCheck({ root, state, id, actor, file }) {
   requireValid(definition, `No built-in adapter for profile ${task.profile}`);
   const policy = validateAdapterPolicy(JSON.parse(await readFile(resolve(root, '.pro-papa/adapter-policy.json'), 'utf8')));
   requireValid(policy.adapters[task.profile].enabled, `Adapter ${task.profile} denied by project policy`);
-  const identity = await safeEvidenceFile(root, file);
-  const input = resolve(root, identity.path);
-  const metadata = await stat(input);
-  requireValid(metadata.size > 0 && metadata.size <= MAX_INPUT_BYTES, 'Adapter input must be 1 byte to 1 MiB');
-  const contents = await readFile(input, 'utf8');
+  const snapshot = await readAdapterSnapshot(root, file);
+  const { identity, contents } = snapshot;
+  const input = snapshot.file;
+  // Trusted test seam; task JSON and CLI cannot supply code or a callback.
+  if (afterSnapshot) await afterSnapshot();
   const ext = extname(input).toLowerCase();
   let outcome;
   if (task.profile === 'software') outcome = await checkSoftware(input, contents);
   else if (task.profile === 'research') outcome = ext === '.json' ? checkResearch(contents) : { pass: false, checks: ['Research adapter requires a .json file'] };
   else outcome = ext === '.md' ? checkDocument(contents) : { pass: false, checks: ['Document adapter requires a .md file'] };
+
+  const current = await safeEvidenceFile(root, file);
+  requireValid(current.path === identity.path && current.sha256 === identity.sha256, 'Adapter input changed during validation');
 
   const report = {
     schemaVersion: 1,
@@ -156,6 +198,7 @@ export async function runDomainCheck({ root, state, id, actor, file }) {
     actor,
     result: report.result,
     note: `Built-in ${task.profile} check (${definition.capability}); input sha256 ${identity.sha256}`,
+    origin: 'builtin-adapter', input: identity,
   });
   return { report, reportFile: reportRel, proof };
 }

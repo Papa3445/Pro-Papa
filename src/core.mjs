@@ -4,6 +4,7 @@ import { resolve, relative, dirname, isAbsolute, sep } from 'node:path';
 
 const STATUSES = new Set(['pending', 'in_progress', 'blocked', 'verified']);
 const PROOF_TYPES = new Set(['artifact', 'test', 'validation', 'review', 'sources', 'calculations']);
+export const BUILTIN_PROOF_KINDS = Object.freeze({ software: 'test', research: 'sources', document: 'validation' });
 const SAFE_ID = /^PP-[0-9]{4,}$/;
 const fail = message => { throw new Error(message); };
 const assert = (truth, message) => { if (!truth) fail(message); };
@@ -55,6 +56,9 @@ export function validateProject(state, profiles) {
       assert(nonEmpty(proof.path) && /^[a-f0-9]{64}$/.test(proof.sha256), `${task.id}: invalid evidence file identity`);
       assert(nonEmpty(proof.note), `${task.id}: missing evidence explanation`);
       assert(nonEmpty(proof.recordedAt), `${task.id}: missing evidence time`);
+      if (proof.kind === BUILTIN_PROOF_KINDS[task.profile]) {
+        assert(proof.origin === 'builtin-adapter' && plain(proof.input) && nonEmpty(proof.input.path) && /^[a-f0-9]{64}$/.test(proof.input.sha256), `${task.id}: protected proof requires adapter provenance`);
+      }
     }
   }
   const byId = new Map(state.tasks.map(task => [task.id, task]));
@@ -158,15 +162,22 @@ export async function safeEvidenceFile(root, filePath) {
   return { path: rel.replaceAll(sep, '/'), sha256 };
 }
 
-export async function recordEvidence(root, state, { id, kind, file, actor, note, result = 'pass' }) {
+export async function recordEvidence(root, state, { id, kind, file, actor, note, result = 'pass', origin = 'manual', input = null }) {
   const task = findTask(state, id);
   assert(task.status === 'in_progress', 'evidence can only be recorded for an active task');
   assert(PROOF_TYPES.has(kind), `unknown evidence kind ${kind}`);
   assert(['pass', 'fail'].includes(result), 'result must be pass or fail');
   assert(nonEmpty(actor) && nonEmpty(note), 'actor and explanatory note required');
   if (kind === 'review') assert(actor !== task.owner, 'reviewer must differ from implementer');
+  const protectedKind = BUILTIN_PROOF_KINDS[task.profile];
+  if (kind === protectedKind) {
+    assert(origin === 'builtin-adapter' && plain(input) && nonEmpty(input.path) && /^[a-f0-9]{64}$/.test(input.sha256), `${kind} evidence requires a built-in adapter check; manual proof cannot override it`);
+    assert(actor === task.owner, 'adapter evidence must be produced by the task owner');
+  } else {
+    assert(origin === 'manual' && input === null, 'adapter provenance is restricted to its built-in proof kind');
+  }
   const identity = await safeEvidenceFile(root, file);
-  const proof = { kind, result, actor, note, ...identity, recordedAt: new Date().toISOString() };
+  const proof = { kind, result, actor, note, ...identity, recordedAt: new Date().toISOString(), ...(origin === 'builtin-adapter' ? { origin, input } : {}) };
   task.evidence.push(proof);
   return proof;
 }
@@ -183,6 +194,18 @@ export async function verifyClosure(root, task, profile) {
     assert(proof.result === 'pass', `latest ${kind} proof failed`);
     const current = await safeEvidenceFile(root, proof.path);
     assert(current.sha256 === proof.sha256, `stale evidence file: ${proof.path}`);
+  }
+  const reserved = BUILTIN_PROOF_KINDS[task.profile];
+  if (reserved && required.includes(reserved)) {
+    const proof = latest.get(reserved);
+    assert(proof.origin === 'builtin-adapter' && plain(proof.input), 'adapter proof provenance missing');
+    const report = JSON.parse(await readFile(resolve(root, proof.path), 'utf8'));
+    assert(report.schemaVersion === 1 && report.taskId === task.id && report.adapter === task.profile && report.evidenceKind === reserved && report.result === proof.result, 'adapter report identity mismatch');
+    assert(report.input?.path === proof.input.path && report.input?.sha256 === proof.input.sha256, 'adapter source identity mismatch');
+    const source = await safeEvidenceFile(root, proof.input.path);
+    assert(source.path === proof.input.path && source.sha256 === proof.input.sha256, `stale adapter input: ${proof.input.path}`);
+    const policy = JSON.parse(await readFile(resolve(root, '.pro-papa/adapter-policy.json'), 'utf8'));
+    assert(policy.adapters?.[task.profile]?.enabled === true && policy.adapters[task.profile].capability === report.capability, 'adapter disabled or capability policy changed');
   }
   const review = latest.get('review');
   assert(review.actor !== task.owner, 'reviewer must differ from task owner');

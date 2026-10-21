@@ -24,7 +24,12 @@
           "note": "Built-in software check (syntax:node); input sha256 b60afd4f419f2faec046f842938c9456f510f38edb2f955e3252ea938ebc3086",
           "path": ".pro-papa/evidence/PP-0001/software-abb65ec6-9dc2-42c6-ab96-3ef896c24375.json",
           "sha256": "c9d515a9979288ebe10936614d33d7fdf5431bc7431620f6674e5706178c3fc9",
-          "recordedAt": "2026-10-21T01:11:53.351Z"
+          "recordedAt": "2026-10-21T01:11:53.351Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/adapters.mjs",
+            "sha256": "b60afd4f419f2faec046f842938c9456f510f38edb2f955e3252ea938ebc3086"
+          }
         }
       ]
     },

@@ -35,7 +35,9 @@ Research JSON format:
 }
 ```
 
-All input files must exist inside the project (including their resolved symlink targets), must be regular files, and must be 1 byte to 1 MiB. The command records the actual source file SHA-256 in its report. A project policy can **disable** any built-in adapter, but cannot authorize arbitrary commands or dynamically load code.
+All input files must exist inside the project (including their resolved symlink targets), must be regular files, and must be 1 byte to 1 MiB. The command records the actual source file SHA-256 in its report. At closure, the CLI recomputes the input digest and rejects any source changed since the passing check. Software syntax checks run against a private snapshot of the exact bytes hashed; the original source is checked again after validation. A manually declared passing proof cannot replace a built-in adapter result for the profile-specific protected evidence kind.
+
+A project policy can **disable** any built-in adapter, but cannot authorize arbitrary commands or dynamically load code.
 
 ## What a pass does *not* mean
 

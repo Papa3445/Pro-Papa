@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext } from '../src/core.mjs';
+import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext, validateProject } from '../src/core.mjs';
 import { BUILTIN_ADAPTERS, validateAdapterPolicy, runDomainCheck } from '../src/adapters.mjs';
 
 const policy = { schemaVersion: 1, adapters: {
@@ -67,6 +67,7 @@ test('software adapter parses JavaScript without executing side effects', async 
   await assert.rejects(readFile(marker), /ENOENT/);
   assert.equal(output.report.input.sha256.length, 64);
   assert.equal((await readFile(join(f.root, output.reportFile), 'utf8')).includes('No independent review performed'), true);
+  assert.equal(output.proof.origin, 'builtin-adapter');
 });
 
 test('software adapter fails syntax errors and unsupported file types', async t => {
@@ -146,4 +147,93 @@ test('input size limit prevents oversized adapter execution', async t => {
   const f = await fixture(t, 'software');
   await writeFile(join(f.root, 'huge.mjs'), ' '.repeat(1024 * 1024 + 1));
   await assert.rejects(runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file: 'huge.mjs' }), /1 byte to 1 MiB/);
+});
+
+
+test('stale source after successful adapter check cannot close the task', async t => {
+  const f = await fixture(t, 'software');
+  const result = await run(f, 'target.mjs', 'export const value = 1;');
+  for (const kind of ['artifact', 'validation', 'review']) {
+    const file = join(f.root, `${kind}.txt`);
+    await writeFile(file, `Review for ${kind}`);
+    await recordEvidence(f.root, f.state, { id: f.task.id, kind, file, actor: kind === 'review' ? 'different-reviewer' : 'author', note: 'Observed' });
+  }
+  await writeFile(join(f.root, 'target.mjs'), 'const = ;');
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /stale adapter input/);
+  const retried = await runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file: 'target.mjs' });
+  assert.equal(retried.report.result, 'fail');
+  await assert.rejects(closeTask(f.root, f.state, f.profiles, f.task.id), /latest test proof failed/);
+  await writeFile(join(f.root, 'target.mjs'), 'export const value = 2;');
+  const fixed = await runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file: 'target.mjs' });
+  assert.equal(fixed.report.result, 'pass');
+  await closeTask(f.root, f.state, f.profiles, f.task.id);
+});
+
+test('failed adapter check cannot be replaced by a fake manual passing proof', async t => {
+  const f = await fixture(t, 'software');
+  const result = await run(f, 'broken.mjs', 'const = ;');
+  assert.equal(result.report.result, 'fail');
+  const fake = join(f.root, 'manual-ok.txt');
+  await writeFile(fake, 'Everything passed');
+  await assert.rejects(recordEvidence(f.root, f.state, { id: f.task.id, kind: 'test', actor: 'author', result: 'pass', file: fake, note: 'Trust me' }), /requires a built-in adapter check/);
+  assert.equal(f.task.evidence.at(-1).result, 'fail');
+});
+
+test('protected evidence must include its source metadata, even in saved state', async t => {
+  const f = await fixture(t, 'research');
+  const checked = await run(f, 'sources.json', goodResearch);
+  delete checked.proof.input;
+  assert.throws(() => validateProject(f.state, f.profiles), /protected proof requires adapter provenance/);
+});
+
+test('document headings and padding hidden inside fenced code cannot pass', async t => {
+  const f = await fixture(t, 'document');
+  const falseHeadings = `This is ordinary content with no headings of its own.
+
+~~~markdown
+# Fake Title
+## Fake One
+## Fake Two
+${'lots of example text '.repeat(35)}
+~~~
+`;
+  const r = await run(f, 'false-headings.md', falseHeadings);
+  assert.equal(r.report.result, 'fail');
+  assert.ok(r.report.checks.some(x => /outside code fences/.test(x)));
+  const onlyPadding = `# Real Title
+
+## First
+text
+
+## Second
+text
+
+\`\`\`text
+${'fake words '.repeat(100)}
+\`\`\`
+`;
+  assert.equal((await run(f, 'fake-words.md', onlyPadding)).report.result, 'fail');
+});
+
+test('a mutation during validation fails closed rather than accepting mixed snapshots', async t => {
+  const f = await fixture(t, 'software');
+  const file = join(f.root, 'moving.mjs');
+  await writeFile(file, 'export const value = 1;');
+  await assert.rejects(runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file }, {
+    afterSnapshot: async () => { await writeFile(file, 'const = ;'); },
+  }), /input changed during validation/);
+  assert.equal(f.task.evidence.length, 0);
+});
+
+test('source retargeting to outside project during validation fails closed', async t => {
+  const f = await fixture(t, 'software');
+  const file = join(f.root, 'moving.mjs');
+  await writeFile(file, 'export const value = 1;');
+  const outside = await mkdtemp(join(tmpdir(), 'pp-outside-swap-'));
+  t.after(() => rm(outside, { recursive: true, force: true }));
+  await writeFile(join(outside, 'payload.mjs'), 'const = ;');
+  await assert.rejects(runDomainCheck({ root: f.root, state: f.state, id: f.task.id, actor: 'author', file }, {
+    afterSnapshot: async () => { await rm(file); await symlink(join(outside, 'payload.mjs'), file); },
+  }), /inside project root/);
+  assert.equal(f.task.evidence.length, 0);
 });

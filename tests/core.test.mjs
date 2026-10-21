@@ -96,9 +96,9 @@ test('symlink escape from project is refused', async t => {
 
 test('state save and reload persists task progress and evidence integrity', async t => {
   const { root, state, profiles } = await fixture(t);
-  const a = addTask(state, profiles, { title: 'Write', objective: 'Create artifact', profile: 'document', acceptance: ['Reviewed'] });
+  const a = addTask(state, profiles, { title: 'Write', objective: 'Create artifact', profile: 'general', acceptance: ['Reviewed'] });
   startTask(state, a.id, 'writer');
-  for (const kind of profiles.profiles.document.requiredEvidence) {
+  for (const kind of profiles.profiles.general.requiredEvidence) {
     await evidence(root, state, a.id, kind, kind === 'review' ? 'critic' : 'writer');
   }
   await closeTask(root, state, profiles, a.id);
