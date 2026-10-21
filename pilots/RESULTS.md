@@ -12,7 +12,7 @@
 
 These times are **test execution durations** from the actual CI job, not estimates of human or AI implementation effort. The first implementation comprised five new pilot artifact/test/methodology files and a roadmap status update, followed by this results report.
 
-**Measured implementation footprint (GitHub PR #3):** 7 changed files, **240 added lines and 3 removed lines**, across 2 commits. The first two commit timestamps are `2026-10-21T09:47:08Z` and `2026-10-21T09:48:43Z` (95 seconds apart). This is **commit-history elapsed time only**, not measured active engineer/model effort; the true authoring effort remains unknown.
+**Measured implementation footprint (snapshot at commit `f704027a93eaee5bf1a2d165a433aeada3121571`):** 7 changed files, **240 added lines and 3 removed lines**, across the first 2 commits. Later documentation-only commits are excluded from these snapshot figures. The first two commit timestamps are `2026-10-21T09:47:08Z` and `2026-10-21T09:48:43Z` (95 seconds apart). This is **commit-history elapsed time only**, not measured active engineer/model effort; the true authoring effort remains unknown.
 
 ## What the test actually proved
 
