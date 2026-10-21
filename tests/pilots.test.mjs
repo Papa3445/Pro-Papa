@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { mayAccept } from '../pilots/software/decision-gate.mjs';
+import { auditResearchClaims, auditDocumentGuide } from '../pilots/validation/content-audits.mjs';
 import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, selectNext, saveState, validateProject } from '../src/core.mjs';
 import { runDomainCheck } from '../src/adapters.mjs';
 
@@ -67,49 +68,85 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
     startTask(state,research.id,actor);
     const sourceText=await sample('pilots/research/adapter-capability-audit.json');
     const data=JSON.parse(sourceText);
+    const sources={
+      'adapter-docs':await sample('docs/ADAPTERS.md'),
+      'security-docs':await sample('docs/SECURITY.md'),
+    };
+    let attempts=0,failures=0,semanticRejects=0;
+    const checked=async content=>{
+      const output=await adapter({root,state,task:research,file:'adapter-capability-audit.json',content});
+      attempts++;
+      if(output.report.result==='fail')failures++;
+      return output;
+    };
     const corrupted={...data,claims:data.claims.map((claim,i)=>i===0?{...claim,sourceIds:['not-a-real-source']}:claim)};
-    const bad=await adapter({root,state,task:research,file:'adapter-capability-audit.json',content:JSON.stringify(corrupted)});
-    assert.equal(bad.report.result,'fail');
-    const valid=await adapter({root,state,task:research,file:'adapter-capability-audit.json',content:sourceText});
+    assert.equal((await checked(JSON.stringify(corrupted))).report.result,'fail');
+    // Structural adapter accepts this plausible-looking but explicitly FALSE
+    // claim: it still points to a real source ID. The substantive audit must reject.
+    const falseClaim={...data,claims:data.claims.map((claim,i)=>i===0
+      ? {...claim,text:'Pro-Papa software adapter executes untrusted scripts as root; this is guaranteed.'}
+      : claim)};
+    assert.equal((await checked(JSON.stringify(falseClaim))).report.result,'pass');
+    assert.throws(()=>auditResearchClaims(falseClaim,sources),/Unsupported or contradictory research claim/);
+    semanticRejects++;
+    const valid=await checked(sourceText);
     assert.equal(valid.report.result,'pass');
-    const docs=await sample('docs/ADAPTERS.md');
-    const security=await sample('docs/SECURITY.md');
-    // A substantive local source audit, not just the citation-format adapter:
-    assert.ok(docs.includes('no source script execution'));
-    assert.ok(docs.includes('Research citations are not fetched or fact-checked'));
-    assert.ok(docs.includes('Adapter output does **not** supply'));
-    assert.ok(security.includes('Evidence:')||security.includes('**Evidence:**'));
-    assert.equal(data.sources.length,2);
-    assert.equal(data.claims.length,3);
-    for(const claim of data.claims){
-      assert.ok(claim.sourceIds.length>0);
-      for(const id of claim.sourceIds) assert.ok(data.sources.some(source=>source.id===id));
-    }
+    const audit=auditResearchClaims(data,sources);
+    assert.equal(audit.auditedClaims.length,data.claims.length);
+    assert.equal(audit.sourceCount,data.sources.length);
+    for(const claim of audit.auditedClaims)
+      assert.ok(claim.citations.every(citation=>citation.matchedExcerpts.length>0));
     await recordEvidence(root,state,{id:research.id,kind:'artifact',file:'adapter-capability-audit.json',actor,note:'Structured primary-source research artifact and claim references'});
-    await proof({root,state,task:research,kind:'sources',content:JSON.stringify({auditedSources:data.sources.map(s=>s.url),verifiedClaims:data.claims.length,verifiedAgainstCheckedOutDocs:true,noNetworkFetchClaimed:true},null,2)});
-    await proof({root,state,task:research,kind:'validation',content:'Audited three concrete claims against local checked-out primary docs, not merely source-ID structure.'});
+    await proof({root,state,task:research,kind:'sources',content:JSON.stringify(audit,null,2)});
+    await proof({root,state,task:research,kind:'validation',content:'Validated the exact three propositions and source-specific quoted excerpts against checked-out pinned project docs. A false claim with legitimate citation IDs passed the adapter but failed the substantive audit.'});
     await proof({root,state,task:research,kind:'review',content:'SIMULATED reviewer role; no claim of human/independent provider review.'});
     await closeTask(root,state,profiles,research.id);
-    metrics.push({profile:'research',adapterAttempts:2,failedAdapterAttempts:1,reworks:1,sourceDocuments:2,checkedClaims:3,requiredEvidence:['artifact','sources','validation','review','adapter'],closed:true,elapsedMs:Math.round(performance.now()-started)});
+    metrics.push({profile:'research',adapterAttempts:attempts,failedAdapterAttempts:failures,
+      semanticAuditRejects:semanticRejects,reworks:attempts-1,
+      sourceDocuments:audit.sourceCount,checkedClaims:audit.auditedClaims.length,
+      requiredEvidence:['artifact','sources','validation','review','adapter'],
+      closed:true,elapsedMs:Math.round(performance.now()-started)});
   }
   assert.equal(selectNext(state).id,document.id);
   {
     const started=performance.now();
     startTask(state,document.id,actor);
     const source=await sample('pilots/document/adapter-evidence-guide.md');
-    const bad=await adapter({root,state,task:document,file:'adapter-evidence-guide.md',content:source+'\nTODO: unfinished content\n'});
-    assert.equal(bad.report.result,'fail');
-    const valid=await adapter({root,state,task:document,file:'adapter-evidence-guide.md',content:source});
+    let attempts=0,failures=0,semanticRejects=0;
+    const checked=async content=>{
+      const output=await adapter({root,state,task:document,file:'adapter-evidence-guide.md',content});
+      attempts++;
+      if(output.report.result==='fail')failures++;
+      return output;
+    };
+    assert.equal((await checked(source+'\nTODO: unfinished content\n')).report.result,'fail');
+    const contradictory=source.replace(
+      'For software, these checks cover syntax rather than runtime behavior.',
+      'For software, these checks guarantee runtime behavior, not merely syntax.');
+    assert.notEqual(contradictory,source);
+    // It still has a title, multiple sections, enough words and no TODO.
+    assert.equal((await checked(contradictory)).report.result,'pass');
+    assert.throws(()=>auditDocumentGuide(contradictory),/Incorrect, contradictory or unsupported guidance/);
+    semanticRejects++;
+    const misleading=source+'\n## Bonus guidance\nruntime tests; source audit; substantive content validation; not provider-authenticated.\n';
+    assert.throws(()=>auditDocumentGuide(misleading),/exactly three audited sections/);
+    semanticRejects++;
+    const valid=await checked(source);
     assert.equal(valid.report.result,'pass');
-    assert.ok(source.includes('runtime tests'));
-    assert.ok(source.includes('source audit'));
-    assert.ok(source.includes('substantive content validation'));
-    assert.ok(source.includes('not provider-authenticated'));
+    const reviewed=auditDocumentGuide(source);
+    assert.equal(reviewed.validatedSections,3);
     await recordEvidence(root,state,{id:document.id,kind:'artifact',file:'adapter-evidence-guide.md',actor,note:'Readable handoff artifact'});
-    await proof({root,state,task:document,kind:'validation',content:'Checked handoff guidance addresses software runtime tests, source audits, document content review, and reviewer identity boundary.'});
+    await proof({root,state,task:document,kind:'validation',content:JSON.stringify({
+      ...reviewed,negativeScenarios:['contradictory runtime guarantee rejected despite passing structural adapter',
+        'extra keyword-padding section rejected by the editorial rubric'],
+    },null,2)});
     await proof({root,state,task:document,kind:'review',content:'SIMULATED reviewer role; not a substitute for an authenticated independent critique.'});
     await closeTask(root,state,profiles,document.id);
-    metrics.push({profile:'document',adapterAttempts:2,failedAdapterAttempts:1,reworks:1,reviewedContentRequirements:4,requiredEvidence:['artifact','validation','review','adapter'],closed:true,elapsedMs:Math.round(performance.now()-started)});
+    metrics.push({profile:'document',adapterAttempts:attempts,
+      failedAdapterAttempts:failures,semanticAuditRejects:semanticRejects,
+      reworks:attempts-1,reviewedContentRequirements:reviewed.validatedSections,
+      requiredEvidence:['artifact','validation','review','adapter'],
+      closed:true,elapsedMs:Math.round(performance.now()-started)});
   }
   assert.equal(selectNext(state),null);
   validateProject(state,profiles);
@@ -118,6 +155,7 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
   assert.deepEqual(roundtrip.state.tasks.map(task=>task.status),['verified','verified','verified']);
   for(const task of roundtrip.state.tasks)assert.equal(task.evidence.filter(p=>p.kind==='adapter').length,2);
   assert.equal(metrics.reduce((sum,p)=>sum+p.failedAdapterAttempts,0),3);
+  assert.equal(metrics.reduce((sum,p)=>sum+(p.semanticAuditRejects||0),0),3);
   // Parseable evidence in CI job logs, with runtime rather than invented timings.
-  console.log('PP0003_PILOT_REPORT '+JSON.stringify({pilots:metrics,completed:3,adapterFailuresRecovered:3,sourceAuditClaims:3,sourceAuditDocuments:2,limitations:['Adapter checks are structural','Review identities in pilot fixtures are simulated, not independently authenticated','Source texts are checked-out primary documentation, not fetched from network','Runtime duration is environment-dependent']}));
+  console.log('PP0003_PILOT_REPORT '+JSON.stringify({pilots:metrics,completed:metrics.filter(p=>p.closed).length,adapterFailuresRecovered:metrics.reduce((n,p)=>n+p.failedAdapterAttempts,0),semanticAuditRejects:metrics.reduce((n,p)=>n+(p.semanticAuditRejects||0),0),sourceAuditClaims:metrics.find(p=>p.profile==='research').checkedClaims,sourceAuditDocuments:metrics.find(p=>p.profile==='research').sourceDocuments,limitations:['Adapter checks are structural','Research audit accepts only three fixed reviewed propositions with exact supporting excerpts, not arbitrary new claims','Document audit uses a curated complete-section rubric, not generic language comprehension','Review identities in pilot fixtures are simulated, not independently authenticated','Source texts are checked-out primary documentation, not fetched from network','Runtime duration is environment-dependent']}));
 });
