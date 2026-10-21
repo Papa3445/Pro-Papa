@@ -24,3 +24,7 @@ Built-in checks now issue a separate `adapter` evidence type that cannot be repl
 ## Compatibility and evidence boundaries
 
 Proof types are intentionally distinct: `adapter` is a narrow structural check, while `test`, `sources`, and `validation` are separate domain observations. New software/research/document tasks opt into adapter verification. Projects created before this change keep their historical proof obligations unless explicitly opted in. Adapter evidence is source-hash checked and never proves that the substantive test or factual audit occurred. Manual proofs remain claims backed by hashed evidence files, not authenticated observations; stronger identity and immutable candidate verification are PP-0002 scope.
+
+## PP-0002 provider-bound review
+
+Tasks with `requiresTrustedReview` must use a fixed repository/PR target and a host-managed `GITHUB_TOKEN` to fetch fresh GitHub reviews at closure. The reviewer account must differ from the PR author and match the stored review actor; approvals on obsolete heads, dismissed reviews and outstanding changes requests fail closed. This adds provider-verified reviewer/candidate identity, **not** proof that the reviewer was diligent or that local filesystem bytes match a reviewed commit. The `pull_request_target` check runs trusted default-branch code only, never PR-controlled code with the GitHub token. Historical tasks do not retroactively acquire new requirements.

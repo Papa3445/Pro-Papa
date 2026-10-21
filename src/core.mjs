@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, rename, mkdir, realpath, stat, open, rm, access } from 'node:fs/promises';
 import { resolve, relative, dirname, isAbsolute, sep } from 'node:path';
+import { validateReviewTarget, verifyGitHubReview } from './review-github.mjs';
 
 const STATUSES = new Set(['pending', 'in_progress', 'blocked', 'verified']);
 const PROOF_TYPES = new Set(['artifact', 'test', 'validation', 'review', 'sources', 'calculations', 'adapter']);
@@ -48,6 +49,9 @@ export function validateProject(state, profiles) {
     assert(nonEmpty(task.title) && nonEmpty(task.objective), `${task.id}: missing title/objective`);
     assert(profiles.profiles[task.profile], `${task.id}: unknown profile`);
     assert(task.requiresAdapter === undefined || typeof task.requiresAdapter === 'boolean', `${task.id}: invalid requiresAdapter flag`);
+    assert(task.requiresTrustedReview === undefined || typeof task.requiresTrustedReview === 'boolean', `${task.id}: invalid requiresTrustedReview flag`);
+    if (task.reviewTarget !== undefined) validateReviewTarget(task.reviewTarget);
+    if (task.requiresTrustedReview) assert(task.reviewTarget !== undefined, `${task.id}: review target required`);
     assert(!task.requiresAdapter || Object.hasOwn(BUILTIN_PROOF_KINDS, task.profile), `${task.id}: no adapter exists for profile`);
     uniqueStrings(task.acceptance, `${task.id}: acceptance`);
     uniqueStrings(task.dependsOn, `${task.id}: dependencies`, true);
@@ -199,7 +203,7 @@ export async function recordEvidence(root, state, { id, kind, file, actor, note,
   return proof;
 }
 
-export async function verifyClosure(root, task, profile) {
+export async function verifyClosure(root, task, profile, options = {}) {
   assert(task.status === 'in_progress', 'task is not in progress');
   const required = profile.requiredEvidence;
   const latest = new Map();
@@ -232,12 +236,20 @@ export async function verifyClosure(root, task, profile) {
   }
   const review = latest.get('review');
   assert(review.actor !== task.owner, 'reviewer must differ from task owner');
-  return { required, verifiedFiles: required.map(kind => latest.get(kind).path) };
+  let trustedReview = null;
+  if (task.requiresTrustedReview) {
+    // A task-file PASS claim is not authority. Ask GitHub on every closure.
+    trustedReview = await verifyGitHubReview(task.reviewTarget, options);
+    assert(trustedReview.verdict === 'PASS', `trusted review rejected: ${trustedReview.reason}`);
+    assert(review.actor.toLowerCase() === trustedReview.reviewer.login.toLowerCase(),
+      'recorded reviewer identity differs from GitHub authenticated reviewer');
+  }
+  return { required, verifiedFiles: required.map(kind => latest.get(kind).path), ...(trustedReview ? { trustedReview } : {}) };
 }
 
-export async function closeTask(root, state, profiles, id) {
+export async function closeTask(root, state, profiles, id, options = {}) {
   const task = findTask(state, id);
-  const report = await verifyClosure(root, task, profiles.profiles[task.profile]);
+  const report = await verifyClosure(root, task, profiles.profiles[task.profile], options);
   task.status = 'verified';
   task.verifiedAt = new Date().toISOString();
   return report;
@@ -274,7 +286,7 @@ export function taskHandoff(task, profiles) {
     `Objective: ${task.objective}`,
     'Acceptance:',
     ...task.acceptance.map(text => `- ${text}`),
-    `Required evidence: ${[...required, ...(task.requiresAdapter ? ['adapter'] : [])].join(', ')}`,
+    `Required evidence: ${[...required, ...(task.requiresAdapter ? ['adapter'] : []), ...(task.requiresTrustedReview ? ['authenticated GitHub approval'] : [])].join(', ')}`,
     'Workflow: inspect → plan → implement → test → inspect actual output → independent review → record proof → close.',
     'Do not substitute claims or CI green status for actual artifact/content review.',
     'Report external dependencies; do not invent work, tool access, proof or success.',

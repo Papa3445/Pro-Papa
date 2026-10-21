@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path';
 import { runDomainCheck } from '../src/adapters.mjs';
+import { verifyGitHubReview, validateReviewTarget } from '../src/review-github.mjs';
 import {
   loadProject, selectNext, findTask, addTask, startTask,
   blockTask, unblockTask, recordEvidence, closeTask,
@@ -29,7 +30,14 @@ function required(flags, key) {
 export async function main(argv = process.argv.slice(2), output = console.log) {
   const { command, flags } = argumentsFor(argv);
   if (command === 'help') {
-    output('Pro-Papa v0.1\nCommands: init, validate, status, next, add, start, block, unblock, handoff, proof, adapter-check, close\nCommon: --root PATH\ninit --name NAME [--root PATH] [--guide true]\nadd --title TITLE --objective OBJECTIVE --profile PROFILE --accept CRITERION [--accept CRITERION] [--depends ID,ID]\nstart --id ID --actor NAME\nblock --id ID --reason TEXT | unblock --id ID\nhandoff --id ID\nproof --id ID --kind KIND --file RELPATH --actor NAME --note TEXT [--result pass|fail]\nadapter-check --id ID --file RELPATH --actor NAME\nclose --id ID');
+    output('Pro-Papa v0.1\nCommands: init, validate, status, next, add, start, block, unblock, handoff, proof, adapter-check, review-status, review-gate, close\nCommon: --root PATH\ninit --name NAME [--root PATH] [--guide true]\nadd --title TITLE --objective OBJECTIVE --profile PROFILE --accept CRITERION [--accept CRITERION] [--depends ID,ID]\nstart --id ID --actor NAME\nblock --id ID --reason TEXT | unblock --id ID\nhandoff --id ID\nproof --id ID --kind KIND --file RELPATH --actor NAME --note TEXT [--result pass|fail]\nadapter-check --id ID --file RELPATH --actor NAME\nreview-status --id ID (uses GITHUB_TOKEN)\nreview-gate --repo OWNER/REPO --pr NUMBER\nclose --id ID');
+    return;
+  }
+  if (command === 'review-gate') {
+    const target = validateReviewTarget({ repository: required(flags, 'repo'), pullRequest: Number(required(flags, 'pr')) });
+    const verdict = await verifyGitHubReview(target);
+    output(JSON.stringify(verdict, null, 2));
+    if (verdict.verdict !== 'PASS') process.exitCode = 1;
     return;
   }
   const root = resolve(flags.root ?? process.cwd());
@@ -45,6 +53,14 @@ export async function main(argv = process.argv.slice(2), output = console.log) {
   }
   if (command === 'next') { output(JSON.stringify(selectNext(state), null, 2)); return; }
   if (command === 'handoff') { output(taskHandoff(findTask(state, required(flags, 'id')), profiles)); return; }
+  if (command === 'review-status') {
+    const task = findTask(state, required(flags, 'id'));
+    if (!task.requiresTrustedReview) throw new Error('task does not require a trusted GitHub review');
+    const verdict = await verifyGitHubReview(task.reviewTarget);
+    output(JSON.stringify(verdict, null, 2));
+    if (verdict.verdict !== 'PASS') process.exitCode = 1;
+    return;
+  }
   let result;
   if (command === 'add') result = addTask(state, profiles, {
     title: required(flags, 'title'), objective: required(flags, 'objective'),

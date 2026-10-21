@@ -76,3 +76,7 @@ The `proof` command does not execute the tests mentioned in your report. The age
 ### Review follow-up for PP-0001
 
 Independent reviews found four validation weaknesses and then a legacy-proof compatibility regression. This revision checks adapter input digests at closure, uses a distinct `adapter` proof kind instead of overloading runtime tests, preserves old task records, ignores fenced Markdown code, and validates stable snapshots. New software/research/document tasks require separate adapter and domain evidence. The PR remains subject to review again against its new head SHA; the independent reviewer identity is not yet authenticated (PP-0002).
+
+## Free authenticated GitHub review gate (PP-0002)
+
+Pro-Papa can check whether a **real, separate GitHub account approved the exact current PR head**. `GITHUB_TOKEN=... node bin/pro-papa.mjs review-gate --repo OWNER/REPO --pr N` verifies GitHub's recorded review decisions. `review-status --id ID` checks tasks opted into `requiresTrustedReview`; `close` rechecks it before accepting their manual proof records. No paid Copilot plan is needed. This does not itself create AI reviews or attest local working-tree content. See [setup and limitations](docs/TRUSTED-REVIEWS.md).

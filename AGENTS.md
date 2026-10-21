@@ -31,3 +31,7 @@ This repository is a **domain-independent orchestration contract**, not an auton
 ## CLI
 
 See `node bin/pro-papa.mjs help`, `README.md`, and `docs/ARCHITECTURE.md`. This v0.1 runner is **human/AI-invoked** and does not schedule itself, call an LLM API, or perform external account actions without a capable, explicitly authorized host.
+
+## GitHub-backed independent review
+
+For an opted-in task (`requiresTrustedReview: true`), do not accept a self-declared reviewer name as final proof. `close` queries GitHub live via a host-managed `GITHUB_TOKEN`, verifies the approved reviewer identity and **current PR head SHA**, and refuses outstanding changes requests. Review submissions must still come from an independent account/context. Never run PR-controlled code with the privileged workflow token. See `docs/TRUSTED-REVIEWS.md`.

@@ -36,3 +36,7 @@ Built-in static adapter dispatch is keyed by the in-progress task profile. The a
 ## Adapter and proof compatibility (PP-0001)
 
 A built-in adapter is one optional, explicitly selected mechanical check. Its report is recorded as evidence kind `adapter`; it does not satisfy domain evidence classes (`test`, `sources`, or `validation`). New tasks using a supported adapter profile automatically require both the adapter and their original evidence profile, while old tasks without `requiresAdapter` retain their existing closure requirements. This prevents ordinary v0.1 state files from becoming unloadable. For any task that executes a new adapter, the latest adapter result is binding at closure, and the report and source digests are rechecked. New manual proofs cannot forge an `adapter` result through the CLI.
+
+## Authenticated GitHub review gate (PP-0002)
+
+An opted-in task's completion checks GitHub's latest real reviews on its currently reported PR head. Reviewer account identity, current SHA and outstanding change requests are verified live, not read from a task file. The read-only `review-gate` CLI runs from trusted default-branch code in GitHub Actions and does not require a paid reviewer service. See `docs/TRUSTED-REVIEWS.md`. This is PR candidate review, not attestation of the local working directory.
