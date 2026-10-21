@@ -13,7 +13,7 @@
         "Preserve evidence digests, separated reviewers, and task ordering"
       ],
       "dependsOn": [],
-      "status": "in_progress",
+      "status": "verified",
       "owner": "chatgpt-implementation",
       "blockedReason": null,
       "evidence": [
@@ -71,9 +71,19 @@
           "path": ".pro-papa/evidence/PP-0001/acceptance-notes.md",
           "sha256": "cde97787761447df1f3f4e0d1b572a1fab6102b8487b4bd645ccee9b72e56118",
           "recordedAt": "2026-10-21T02:05:29.747Z"
+        },
+        {
+          "kind": "review",
+          "result": "pass",
+          "actor": "papa4568",
+          "note": "GitHub APPROVED PR #1 by account papa4568, reviewer ID 5594147188, exact head ae9cc7adfdc07741498dca89abe9fd26b665a624; external provider state checked",
+          "path": ".pro-papa/evidence/PP-0001/independent-review-github-pr1.json",
+          "sha256": "636cab27f1681a382f7826cbc947a7408195eb5ce93b9cf292aa53f69391b595",
+          "recordedAt": "2026-10-21T02:20:58.888Z"
         }
       ],
-      "requiresAdapter": true
+      "requiresAdapter": true,
+      "verifiedAt": "2026-10-21T02:20:58.974Z"
     },
     {
       "id": "PP-0002",
@@ -113,5 +123,5 @@
       "evidence": []
     }
   ],
-  "revision": 8
+  "revision": 11
 }
