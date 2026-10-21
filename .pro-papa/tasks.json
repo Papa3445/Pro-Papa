@@ -391,9 +391,57 @@
             "path": "src/gateway.mjs",
             "sha256": "96277c35d9fe978db08d090eea81957e38f1c47d6d9938bf7959f8af1af24a88"
           }
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Review-fixed source as returned by authenticated GitHub Contents API; source blob 49cd9877843910fc30ad8166d5b1c3bb7cae29fa; sha256 matches real Actions adapter input.",
+          "path": "src/gateway.mjs",
+          "sha256": "d313a6e9c07d78f89b4405f9e29aa9385b49d0cf567642bdd82cc0f6a612443c",
+          "recordedAt": "2026-10-21T23:11:53.781Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual 103/103 tests in GitHub Actions run 39691557411 job 119538710648 on security-fix head e63d7c63b37e1016e610d6d6eb9bbc5833a5ce68; five targeted P1/P2/P3 regression tests added.",
+          "path": ".pro-papa/evidence/PP-0005/github-actions-103-tests.json",
+          "sha256": "aca02e2b8c5328838c198b0de332585a3f25f609b16c57502cfcb65760deb533",
+          "recordedAt": "2026-10-21T23:11:53.781Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Documented remediation of authenticated independent CHANGES_REQUESTED review #5606919958 with links to provider CI; provisional implementer validation, pending renewed approval.",
+          "path": ".pro-papa/evidence/PP-0005/acceptance-validation.md",
+          "sha256": "add950ae0439defacdc62057574e7d28737a496fd375ac5e53b1537492fa4884",
+          "recordedAt": "2026-10-21T23:11:53.781Z"
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Built-in adapter-check syntax:node actually executed on review-fixed gateway in GitHub Actions run 39691557411 job 119538710648; source digest bound and reported proof sha256 verified.",
+          "path": ".pro-papa/evidence/PP-0005/software-846efd48-2a0a-46d9-ab54-cbe21660b745.json",
+          "sha256": "d7817634796fa029dc84355d65e55ecb55af918d31924833f5b5386ded538066",
+          "recordedAt": "2026-10-21T23:11:53.781Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/gateway.mjs",
+            "sha256": "d313a6e9c07d78f89b4405f9e29aa9385b49d0cf567642bdd82cc0f6a612443c"
+          }
         }
       ],
-      "requiresAdapter": true
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 6,
+        "baseRef": "main",
+        "baseSha": "581c7f53d05061a2c10e1968b94d1acbf539206e"
+      }
     },
     {
       "id": "PP-0006",
@@ -435,5 +483,5 @@
       "evidence": []
     }
   ],
-  "revision": 26
+  "revision": 27
 }
