@@ -177,7 +177,7 @@ export async function verifyClosure(root, task, profile) {
   const latest = new Map();
   for (const proof of task.evidence) latest.set(proof.kind, proof);
   const missing = required.filter(kind => !latest.has(kind));
-  assert(missing.length === 0, `missing required evidence: ${missing.join(', ')`);
+  assert(missing.length === 0, `missing required evidence: ${missing.join(', ')}`);
   for (const kind of required) {
     const proof = latest.get(kind);
     assert(proof.result === 'pass', `latest ${kind} proof failed`);
