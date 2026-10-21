@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0004",
+  "result": "pass",
+  "testType": "real-GitHub-connector-private-store-read-write-readback",
+  "checkedAt": "2026-10-21T19:25:05.723Z",
+  "privateStore": "Papa3445/Pro-Papa-Audit",
+  "visibilityBeforeWrite": "private",
+  "visibilityAfterReadback": "private",
+  "sourceRepository": "Papa3445/Pro-Papa",
+  "sourceCommit": "65234889c2d38459a67e53a3811eef0717fa9a1b",
+  "sourceBlobs": {
+    "AGENTS.md": "5dfd221a671933806833886af50eeca87b766928",
+    ".pro-papa/profiles.json": "7dc0e6b9670d4408b1f140c056c28e1dd1321073"
+  },
+  "receiptCommit": "59e94bd7cf0381c7dc6925b77c9edaba21761a5a",
+  "receiptBlobSha": "36f17d36962459e498cf49ce88d2949127fc88e9",
+  "receiptPath": "usage-receipts/2026/10/b4634cbc-1f30-4e8d-a272-0be51cff3058.json",
+  "verifications": {
+    "privateDestinationVerified": true,
+    "sourceFilesReadFromPinnedCommit": true,
+    "receiptCreatedInPrivateRepository": true,
+    "receiptReadbackAtExactCommitMatched": true,
+    "localIndependentGitBlobShaMatched": true
+  },
+  "limitations": "Executed with authenticated ChatGPT GitHub connector, not Node CLI usage-receipt command. Does not prove internal model reasoning, automatic per-turn interception, atomic privacy checks, or an unforgeable audit."
+}

@@ -259,9 +259,9 @@
       "dependsOn": [
         "PP-0003"
       ],
-      "status": "blocked",
+      "status": "in_progress",
       "owner": "chatgpt-implementation",
-      "blockedReason": "Independent code review and CI passed, but a separate private GitHub audit repository is not configured or accessible; live receipt write/readback and deployment verification remain outstanding.",
+      "blockedReason": null,
       "evidence": [
         {
           "kind": "review",
@@ -289,6 +289,15 @@
           "path": ".pro-papa/evidence/PP-0004/deployment-check.json",
           "sha256": "e070689426c26703bd417ec3c885f491d669c6b54c6ff82849b9b686fdecd413",
           "recordedAt": "2026-10-21T18:04:13.029Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Authenticated live GitHub connector created a private audit receipt, fetched it at exact commit and independently verified its Git blob SHA. Node CLI and automatic ChatGPT interception are not asserted.",
+          "path": ".pro-papa/evidence/PP-0004/private-store-smoke-test.json",
+          "sha256": "aff48f7fde537ac47c71061094f4e4b914031ae1a0771021ca9be5898002ed1a",
+          "recordedAt": "2026-10-21T19:25:05.723Z"
         }
       ],
       "requiresAdapter": true,
@@ -301,5 +310,5 @@
       }
     }
   ],
-  "revision": 20
+  "revision": 21
 }
