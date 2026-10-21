@@ -259,7 +259,7 @@
       "dependsOn": [
         "PP-0003"
       ],
-      "status": "in_progress",
+      "status": "verified",
       "owner": "chatgpt-implementation",
       "blockedReason": null,
       "evidence": [
@@ -298,6 +298,29 @@
           "path": ".pro-papa/evidence/PP-0004/private-store-smoke-test.json",
           "sha256": "aff48f7fde537ac47c71061094f4e4b914031ae1a0771021ca9be5898002ed1a",
           "recordedAt": "2026-10-21T19:25:05.723Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Authenticated GitHub source read of merged PP-0004 implementation from src/usage-receipts.mjs; independently computed SHA-256 from exact provider bytes, source Git blob 44616f8cdcdd1ed9ec3f9e2530281a91b4bbe68b; PR #4 head d4eb298cfc2b61894fb6331346de81b6d8e95ca9.",
+          "path": "src/usage-receipts.mjs",
+          "sha256": "9f303ce0433a8408502af6488f2113aacc84495403ece792a278be794f00bbfa",
+          "recordedAt": "2026-10-21T20:48:09.225Z"
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real built-in adapter-check executed by GitHub Actions run 39672998463 job 119475470102 on commit f677096eded7be215926de23ae46d6a482e87325; Node.js syntax check passed on immutable snapshot (no code executed); input sha256 9f303ce0433a8408502af6488f2113aacc84495403ece792a278be794f00bbfa",
+          "path": ".pro-papa/evidence/PP-0004/software-d987aac1-cc0b-4839-bcb2-d40bca668af1.json",
+          "sha256": "28659184eb127762a5ffb68761d2ff938db1dd3996b4fbcf9162b74710933d8b",
+          "recordedAt": "2026-10-21T20:45:13.273Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/usage-receipts.mjs",
+            "sha256": "9f303ce0433a8408502af6488f2113aacc84495403ece792a278be794f00bbfa"
+          }
         }
       ],
       "requiresAdapter": true,
@@ -307,7 +330,8 @@
         "pullRequest": 4,
         "baseRef": "main",
         "baseSha": "e5dbd9d4c414aab50d0940c282367f264563bbab"
-      }
+      },
+      "verifiedAt": "2026-10-21T20:50:59.514Z"
     },
     {
       "id": "PP-0005",
@@ -369,5 +393,5 @@
       "evidence": []
     }
   ],
-  "revision": 22
+  "revision": 24
 }

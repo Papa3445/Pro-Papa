@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0004",
+  "result": "pass",
+  "execution": "node bin/pro-papa.mjs close --id PP-0004",
+  "executedIn": "GitHub Actions push workflow in temporary scoped branch harness",
+  "workflowUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39673548192",
+  "workflowRunId": 39673548192,
+  "jobId": 119477388096,
+  "checkedCommit": "85ca3bd8801c1cd1fbaee7f2da6bd3f98cf2093a",
+  "observedAt": "2026-10-21T20:49:03Z",
+  "verifiedEvidenceFiles": [
+    "src/usage-receipts.mjs",
+    ".pro-papa/evidence/PP-0004/github-actions-80-tests.json",
+    ".pro-papa/evidence/PP-0004/private-store-smoke-test.json",
+    ".pro-papa/evidence/PP-0004/independent-review-pr4.json"
+  ],
+  "trustedReview": {
+    "provider": "github",
+    "repository": "Papa3445/Pro-Papa",
+    "pullRequest": 4,
+    "reviewer": "papa4568",
+    "reviewId": 5603992088,
+    "candidateSha": "d4eb298cfc2b61894fb6331346de81b6d8e95ca9",
+    "baseRef": "main",
+    "baseSha": "e5dbd9d4c414aab50d0940c282367f264563bbab",
+    "verdict": "PASS"
+  },
+  "limits": "The CLI persisted the verified task only in the transient CI runner; the authoritative branch state is subsequently synchronized via authenticated GitHub content update. The reviewer identity is GitHub-account-authenticated; diligence/real-world independence are not established by the API."
+}

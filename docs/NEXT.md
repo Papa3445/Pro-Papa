@@ -8,7 +8,7 @@ Make Pro-Papa a **universal, host-invoked work framework** for user requests, no
 
 ## Sequence
 
-**PP-0004 — Complete existing receipt-task closeout.** Real GitHub private-repo read/write/readback and independent PR approval have been recorded. The active task still needs authenticated artifact provenance, its genuine built-in `adapter-check` evidence, and an actual trusted `close` verification. Do not manufacture adapter evidence or claim the CLI ran when only the GitHub connector ran.
+**PP-0004 — Receipt-task closeout verified.** Real private-repository receipt readback and exact-head independent PR #4 approval are evidenced. GitHub Actions executed the built-in software `adapter-check` and the authenticated `close --id PP-0004` command; the exact adapter report and the recorded remote verification are persisted under `.pro-papa/evidence/PP-0004/`. The CI runner's local task-state transition was separately synchronized to the authoritative `.pro-papa/tasks.json` via the authenticated GitHub connector. These checks do not assert ChatGPT turn interception, reasoning attestation, or atomic repository privacy.
 
 **PP-0005 — Universal gateway contract and implementation.** A runnable entry point classifies/routs objectives to **authorized typed capabilities** without granting commands or credentials from user text. Choose ephemeral handling for routine questions and per-project durable state for substantial work. Preserve failures and make honest source/receipt links. Keep implementation small and testable; no speculative agents or automatic ChatGPT-hook claims.
 
