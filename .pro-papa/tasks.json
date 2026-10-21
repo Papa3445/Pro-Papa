@@ -350,7 +350,49 @@
       "status": "in_progress",
       "owner": "chatgpt-implementation",
       "blockedReason": null,
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Implemented host-authorized gateway with bounded registry, ephemeral/durable paths and HMAC idempotency; verified provider-returned source Git blob e3017ca2201e7f2f3a1f6a9984c4b82a9bcb954a",
+          "path": "src/gateway.mjs",
+          "sha256": "96277c35d9fe978db08d090eea81957e38f1c47d6d9938bf7959f8af1af24a88",
+          "recordedAt": "2026-10-21T21:54:11.777Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "GitHub Actions run 39681926039 job 119506291353 passed 98/98 real tests including spawned CLI and adverse permission/failure cases on source commit 4b9eab0.",
+          "path": ".pro-papa/evidence/PP-0005/github-actions-98-tests.json",
+          "sha256": "5ae8008aa666650ba8a4359bed6061ca7a3a67b52412007900db76005d1da9c3",
+          "recordedAt": "2026-10-21T21:54:11.777Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Acceptance and adversarial self-validation derived from inspected source, real CI logs, and documented host/trust limits; independent PR review still outstanding.",
+          "path": ".pro-papa/evidence/PP-0005/acceptance-validation.md",
+          "sha256": "bc5c77d65d560ce0770c392f2f1e90a12d8f7b3ab5cfedefc22fd9965ae07311",
+          "recordedAt": "2026-10-21T21:54:11.777Z"
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual built-in syntax:node adapter-check from GitHub Actions run 39681926039 job 119506291353 with input sha256 96277c35d9fe978db08d090eea81957e38f1c47d6d9938bf7959f8af1af24a88",
+          "path": ".pro-papa/evidence/PP-0005/software-f7ff123c-52e9-477e-8855-a1bfd4f2bd2c.json",
+          "sha256": "bc8ce90768eab631d69d9b627e09ff4efd21be3d40832e6a9470f4e82f0d1979",
+          "recordedAt": "2026-10-21T21:54:11.777Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/gateway.mjs",
+            "sha256": "96277c35d9fe978db08d090eea81957e38f1c47d6d9938bf7959f8af1af24a88"
+          }
+        }
+      ],
       "requiresAdapter": true
     },
     {
@@ -393,5 +435,5 @@
       "evidence": []
     }
   ],
-  "revision": 25
+  "revision": 26
 }
