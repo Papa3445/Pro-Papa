@@ -106,7 +106,9 @@
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 2
+        "pullRequest": 2,
+        "baseRef": "main",
+        "baseSha": "bd16037bb74bbfc5abc39bb3bd9763cc2a880ac8"
       }
     },
     {
@@ -128,5 +130,5 @@
       "evidence": []
     }
   ],
-  "revision": 13
+  "revision": 14
 }

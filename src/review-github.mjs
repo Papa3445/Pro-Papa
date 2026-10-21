@@ -1,12 +1,17 @@
 // PP-0002: read-only GitHub review observer. No task-defined hosts or commands.
 const REPO_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
 const DECISIVE = new Set(['APPROVED', 'CHANGES_REQUESTED']);
+const REVIEW_STATES = new Set(['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED', 'DISMISSED', 'PENDING']);
+const SHA = /^[a-f0-9]{40}$/;
 
 export function validateReviewTarget(target) {
   if (!target || typeof target !== 'object' || Array.isArray(target) ||
       typeof target.repository !== 'string' || !REPO_PATTERN.test(target.repository) ||
       !Number.isSafeInteger(target.pullRequest) || target.pullRequest < 1 ||
-      Object.keys(target).some(key => !['repository', 'pullRequest'].includes(key))) {
+      Object.keys(target).some(key => !['repository', 'pullRequest', 'baseRef', 'baseSha'].includes(key)) ||
+      (target.baseRef !== undefined || target.baseSha !== undefined) &&
+      (typeof target.baseRef !== 'string' || !target.baseRef.trim() ||
+        typeof target.baseSha !== 'string' || !SHA.test(target.baseSha))) {
     throw new Error('trusted review requires an exact GitHub repository and pull request number');
   }
   return target;
@@ -24,11 +29,15 @@ export function evaluateGitHubReviews(target, pull, reviews) {
   if (!pull || typeof pull !== 'object' || !Array.isArray(reviews) ||
       pull.number !== target.pullRequest ||
       pull.base?.repo?.full_name?.toLowerCase() !== target.repository.toLowerCase() ||
-      !/^[a-f0-9]{40}$/.test(pull.head?.sha ?? '') ||
+      !SHA.test(pull.head?.sha ?? '') ||
+      typeof pull.base?.ref !== 'string' || !pull.base.ref.trim() ||
+      !SHA.test(pull.base?.sha ?? '') ||
       !Number.isSafeInteger(pull.user?.id) || !pull.user?.login) {
     throw new Error('GitHub pull request identity cannot be established');
   }
   const candidateSha = pull.head.sha;
+  const baseRef = pull.base.ref;
+  const baseSha = pull.base.sha;
   // Observe each reviewer's effective decision across the full PR history.
   // A request for changes on an older head is still blocking until this same
   // reviewer approves the current head or that *specific review ID* has its
@@ -38,6 +47,9 @@ export function evaluateGitHubReviews(target, pull, reviews) {
   // duplicate IDs instead of interpreting conflicting snapshots as events.
   const seenReviewIds = new Set();
   for (const review of reviews) {
+    if (!REVIEW_STATES.has(review?.state)) {
+      throw new Error('Unknown GitHub review state; refuse incomplete assessment');
+    }
     if (!Number.isSafeInteger(review?.id) || review.id <= 0 || seenReviewIds.has(review.id)) {
       throw new Error('GitHub review IDs missing or duplicated; refuse partial assessment');
     }
@@ -73,7 +85,12 @@ export function evaluateGitHubReviews(target, pull, reviews) {
   const latest = [...latestByReviewer.values()];
   const outstanding = latest.filter(review => review.state === 'CHANGES_REQUESTED');
   const approvals = latest.filter(review => review.state === 'APPROVED' && review.commit_id === candidateSha);
-  const reviewed = { provider: 'github', repository: target.repository, pullRequest: target.pullRequest, candidateSha };
+  const reviewed = { provider: 'github', repository: target.repository, pullRequest: target.pullRequest, candidateSha, baseRef, baseSha };
+  // Optional explicit base pin preserves legacy head-only targets while
+  // supporting strict reviewable-diff identity on newly configured tasks.
+  if (target.baseRef !== undefined && (target.baseRef !== baseRef || target.baseSha !== baseSha)) {
+    return { ...reviewed, verdict: 'FAIL', reason: 'GitHub PR base ref or base SHA differs from pinned review target' };
+  }
   if (outstanding.length) return { ...reviewed, verdict: 'FAIL',
     reason: 'Outstanding changes-requested review (including older PR heads)',
     blockingReviewIds: outstanding.map(x => x.id) };
@@ -121,6 +138,8 @@ export async function verifyGitHubReview(target, { token = process.env.GITHUB_TO
     return a?.head?.sha === b?.head?.sha &&
       a?.number === b?.number &&
       a?.base?.repo?.full_name === b?.base?.repo?.full_name &&
+      a?.base?.ref === b?.base?.ref &&
+      a?.base?.sha === b?.base?.sha &&
       a?.user?.id === b?.user?.id &&
       a?.user?.login === b?.user?.login;
   }

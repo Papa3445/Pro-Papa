@@ -7,7 +7,7 @@ import { evaluateGitHubReviews as evalReviews, validateReviewTarget, verifyGitHu
 import { initializeProject, loadProject, addTask, startTask, recordEvidence, closeTask, validateProject } from '../src/core.mjs';
 
 const target={repository:'Papa3445/Pro-Papa',pullRequest:2}, sha='a'.repeat(40);
-const pull={number:2,base:{repo:{full_name:'Papa3445/Pro-Papa'}},head:{sha},user:{id:124238718,login:'Papa3445'}};
+const pull={number:2,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'b'.repeat(40)},head:{sha},user:{id:124238718,login:'Papa3445'}};
 let counter=1;
 function review(state='APPROVED',changes={}) {
   const id=counter++;
@@ -242,4 +242,44 @@ test('invalid approval is not ignored to pass using another reviewer',()=>{
   assert.throws(()=>evalReviews(target,pull,[approved,invalid]),/Malformed decisive GitHub review/);
   assert.equal(evalReviews(target,pull,[approved,review('COMMENTED',{user:null})]).verdict,'PASS');
   assert.equal(evalReviews(target,pull,[approved,review('DISMISSED',{user:null})]).verdict,'PASS');
+});
+
+
+test('base branch retarget between initial and middle reads fails closed',async()=>{
+  let reads=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>{
+    if(url.endsWith('/pulls/2'))return ++reads===1?pull:{...pull,base:{...pull.base,ref:'release'}};
+    return [review()];
+  }});
+  await assert.rejects(verifyGitHubReview(target,{token:'test',fetchImpl}),/changed during review lookup/);
+  assert.equal(reads,2);
+});
+test('base SHA advances during later PR read but head remains stable',async()=>{
+  let reads=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>{
+    if(url.endsWith('/pulls/2'))return ++reads<3?pull:{...pull,base:{...pull.base,sha:'c'.repeat(40)}};
+    return [review()];
+  }});
+  await assert.rejects(verifyGitHubReview(target,{token:'test',fetchImpl}),/changed during review lookup/);
+  assert.equal(reads,3);
+});
+test('pinned base ref and SHA reject stable retarget or advancement',async()=>{
+  const pinned={...target,baseRef:'main',baseSha:'b'.repeat(40)};
+  assert.equal((await verifyGitHubReview(pinned,{token:'test',fetchImpl:mock([review()]).fetchImpl})).verdict,'PASS');
+  for (const other of [
+    {...pull,base:{...pull.base,ref:'release'}},
+    {...pull,base:{...pull.base,sha:'c'.repeat(40)}},
+  ]) {
+    const result=await verifyGitHubReview(pinned,{token:'test',fetchImpl:mock([review()],other).fetchImpl});
+    assert.equal(result.verdict,'FAIL');
+    assert.match(result.reason,/pinned review target/);
+  }
+});
+test('base and review state must have valid identity',()=>{
+  const approved=review();
+  assert.throws(()=>evalReviews(target,{...pull,base:{...pull.base,ref:''}},[approved]),/identity/);
+  assert.throws(()=>evalReviews(target,{...pull,base:{...pull.base,sha:'short'}},[approved]),/identity/);
+  assert.throws(()=>evalReviews(target,pull,[approved,review('CHANGES_REQUESTED ')]),/Unknown GitHub review state/);
+  assert.throws(()=>validateReviewTarget({...target,baseRef:'main'}),/exact GitHub repository/);
+  assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });

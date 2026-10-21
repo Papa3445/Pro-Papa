@@ -8,10 +8,15 @@ After the pull request is opened, set these opt-in fields in `.pro-papa/tasks.js
 
 ```json
 "requiresTrustedReview": true,
-"reviewTarget": { "repository": "Papa3445/Pro-Papa", "pullRequest": 2 }
+"reviewTarget": {
+  "repository": "Papa3445/Pro-Papa",
+  "pullRequest": 2,
+  "baseRef": "main",
+  "baseSha": "bd16037bb74bbfc5abc39bb3bd9763cc2a880ac8"
+}
 ```
 
-A manual evidence file cannot pass this remote check. Ordinary file-backed `review` evidence is still required, with an actor login matching the GitHub-approved reviewer. Other tasks retain previous rules for backward compatibility.
+The optional `baseRef` + `baseSha` pair pins the intended comparison base. The gate rejects a different target branch or target commit even if the PR head is unchanged. Existing targets without both fields remain head-only for backward compatibility, and must not be described as reviewed-diff-bound. Do not change a pinned base to bypass stale approval without a new review of that exact candidate. A manual evidence file cannot pass this remote check. Ordinary file-backed `review` evidence is still required, with an actor login matching the GitHub-approved reviewer. Other tasks retain previous rules for backward compatibility.
 
 Use a host-managed, read-only `GITHUB_TOKEN` (provided automatically by GitHub Actions), never a token in a task or repository:
 
@@ -36,6 +41,6 @@ After the first gate run, optionally configure a protected `main` branch/ruleset
 - Task opt-in and PR association are held in repo-controlled state; writers must be governed by normal GitHub permissions and review requirements. Local offline validation cannot authenticate past GitHub reviews.
 - A separate reviewer (human or AI process with GitHub review permission) must still submit an approval. Automating the reviewer itself is a separate problem.
 
-A historical changes-requested review remains blocking until the same reviewer approves the exact current head or GitHub formally dismisses that specific review ID. An unrelated dismissed review cannot clear another outstanding objection. Another reviewer's approval cannot bypass it. The verifier reads the complete paginated review history twice, checking PR identity before, between, and after those snapshots. Changed review IDs, states, or candidate bindings detected between reads fail closed instead of reusing an old approval. The latest approval is selected by submission time, not Map insertion order.
+A historical changes-requested review remains blocking until the same reviewer approves the exact current head or GitHub formally dismisses that specific review ID. An unrelated dismissed review cannot clear another outstanding objection. Another reviewer's approval cannot bypass it. The verifier reads the complete paginated review history twice, checking PR identity before, between, and after those snapshots. Changed review IDs, states, or candidate bindings detected between reads fail closed instead of reusing an old approval. The PR comparison also checks `base.ref` and `base.sha` across all three reads; unexpected review states fail closed. The latest approval is selected by submission time, not Map insertion order.
 
-**Race boundary:** Comparing two full review snapshots detects in-flight inconsistencies visible between reads, but cannot prevent changes immediately after the last review read or make task closure/merging atomic with future pushes or reviews. Use SHA-bound merge operations and branch protection as additional controls.
+**Race boundary:** Comparing two full review snapshots detects in-flight inconsistencies visible between reads, but cannot prevent changes immediately after the last review read or make task closure/merging atomic with future pushes or reviews. Without an explicit pinned base, a target-branch change that happened *before* the first read may preserve a historical approval despite changing the diff. With a pinned base, a mismatch fails closed; the pin must be maintained by a trusted workflow, not derived afresh from an already-retargeted PR. Configure stale-approval dismissal in branch protection for additional defense. Use SHA-bound merge operations and branch protection as additional controls.
