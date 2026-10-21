@@ -82,3 +82,7 @@ Independent reviews found four validation weaknesses and then a legacy-proof com
 Pro-Papa can check whether a **real, separate GitHub account approved the exact current PR head**. `GITHUB_TOKEN=... node bin/pro-papa.mjs review-gate --repo OWNER/REPO --pr N` verifies GitHub's recorded review decisions. `review-status --id ID` checks tasks opted into `requiresTrustedReview`; `close` rechecks it before accepting their manual proof records. No paid Copilot plan is needed. This does not itself create AI reviews or attest local working-tree content. See [setup and limitations](docs/TRUSTED-REVIEWS.md).
 
 **Trusted-review safety:** PP-0002 honors outstanding changes requests across older commits and rechecks the PR head after fetching reviews. Review lookup is not atomic with later merges.
+
+## Strict GitHub review integrity status (PP-0002)
+
+Use the default-branch `Review Identity` workflow for automatic verification: it anchors the initial PR base to a GitHub-authored commit status on the PR head and publishes a separate `pro-papa/review-integrity` result. It rechecks after PR edits, review submissions, and base-branch pushes. Configure branch protection to require that **commit status context** rather than interpreting the head-only diagnostic as a diff-bound approval. See [trusted reviews](docs/TRUSTED-REVIEWS.md).
