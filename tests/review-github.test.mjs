@@ -55,7 +55,7 @@ test('read-only authenticated GitHub API, no arbitrary hosts',async()=>{
   const f=mock([review()]);
   await assert.rejects(verifyGitHubReview(target,{token:'',fetchImpl:f.fetchImpl}),/GITHUB_TOKEN/);
   assert.equal((await verifyGitHubReview(target,{token:'testing',fetchImpl:f.fetchImpl})).verdict,'PASS');
-  assert.equal(f.calls.length,2);
+  assert.equal(f.calls.length,3);
   for(const {url,options} of f.calls){
     assert.ok(url.startsWith('https://api.github.com/repos/Papa3445/Pro-Papa/pulls/2'));
     assert.equal(options.method,'GET');assert.equal(options.redirect,'error');
@@ -103,4 +103,42 @@ test('historical tasks remain valid without new review requirements',async t=>{
   delete task.reviewTarget;delete task.requiresTrustedReview;
   await closeTask(root,state,profiles,task.id);
   validateProject(state,profiles);assert.equal(task.status,'verified');
+});
+
+test('old-head changes requested stays blocking after newer reviewer approval',()=>{
+  const prior=review('CHANGES_REQUESTED',{commit_id:'b'.repeat(40)});
+  const other=review('APPROVED',{user:{id:91,login:'other'}});
+  const blocked=evalReviews(target,pull,[prior,other]);
+  assert.equal(blocked.verdict,'FAIL');assert.deepEqual(blocked.blockingReviewIds,[prior.id]);
+  assert.equal(evalReviews(target,pull,[prior,other,review('APPROVED',{commit_id:'b'.repeat(40)})]).verdict,'FAIL');
+  assert.equal(evalReviews(target,pull,[prior,other,review('APPROVED')]).verdict,'PASS');
+});
+test('dismissal clears historical change request without acting as approval',()=>{
+  const prior=review('CHANGES_REQUESTED',{commit_id:'b'.repeat(40)});
+  const other=review('APPROVED',{user:{id:91,login:'other'}});
+  const dismissed=review('DISMISSED',{commit_id:'b'.repeat(40)});
+  assert.equal(evalReviews(target,pull,[prior,other]).verdict,'FAIL');
+  assert.equal(evalReviews(target,pull,[prior,dismissed]).verdict,'FAIL');
+  assert.equal(evalReviews(target,pull,[prior,other,dismissed]).verdict,'PASS');
+});
+test('changed PR head while paginating reviews fails closed',async()=>{
+  let reads=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>{
+    if(url.endsWith('/pulls/2'))return ++reads===1?pull:{...pull,head:{sha:'b'.repeat(40)}};
+    return [review()];
+  }});
+  await assert.rejects(verifyGitHubReview(target,{token:'test',fetchImpl}),/changed during review lookup/);
+  assert.equal(reads,2);
+});
+test('stable PR head recheck still passes',async()=>{
+  const x=await verifyGitHubReview(target,{token:'test',fetchImpl:mock([review()]).fetchImpl});
+  assert.equal(x.verdict,'PASS');assert.equal(x.candidateSha,sha);
+});
+test('changed PR author identity while paginating reviews fails closed',async()=>{
+  let reads=0;
+  const fetchImpl=async url=>({ok:true,status:200,json:async()=>{
+    if(url.endsWith('/pulls/2'))return ++reads===1?pull:{...pull,user:{id:555,login:'new-author'}};
+    return [review()];
+  }});
+  await assert.rejects(verifyGitHubReview(target,{token:'test',fetchImpl}),/changed during review lookup/);
 });

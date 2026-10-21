@@ -35,3 +35,7 @@ After the first gate run, optionally configure a protected `main` branch/ruleset
 - **The GitHub PR candidate is SHA-bound. The local filesystem is not.** No claim is made that arbitrary local changes are independently reviewed or cryptographically attested. Perform code review before merging and close roadmap tasks from the merged, reviewed revision.
 - Task opt-in and PR association are held in repo-controlled state; writers must be governed by normal GitHub permissions and review requirements. Local offline validation cannot authenticate past GitHub reviews.
 - A separate reviewer (human or AI process with GitHub review permission) must still submit an approval. Automating the reviewer itself is a separate problem.
+
+A historical changes-requested review remains blocking until the same reviewer approves the exact current head or GitHub formally dismisses the review. Another reviewer's approval cannot bypass it. The verifier re-fetches PR metadata after review pagination to detect head/identity drift.
+
+**Race boundary:** Rechecking the remote head does not make later task closure or merging atomic with future pushes. Use SHA-bound merge operations and branch protection as additional controls.

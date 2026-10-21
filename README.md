@@ -80,3 +80,5 @@ Independent reviews found four validation weaknesses and then a legacy-proof com
 ## Free authenticated GitHub review gate (PP-0002)
 
 Pro-Papa can check whether a **real, separate GitHub account approved the exact current PR head**. `GITHUB_TOKEN=... node bin/pro-papa.mjs review-gate --repo OWNER/REPO --pr N` verifies GitHub's recorded review decisions. `review-status --id ID` checks tasks opted into `requiresTrustedReview`; `close` rechecks it before accepting their manual proof records. No paid Copilot plan is needed. This does not itself create AI reviews or attest local working-tree content. See [setup and limitations](docs/TRUSTED-REVIEWS.md).
+
+**Trusted-review safety:** PP-0002 honors outstanding changes requests across older commits and rechecks the PR head after fetching reviews. Review lookup is not atomic with later merges.

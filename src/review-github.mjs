@@ -29,17 +29,29 @@ export function evaluateGitHubReviews(target, pull, reviews) {
     throw new Error('GitHub pull request identity cannot be established');
   }
   const candidateSha = pull.head.sha;
-  const candidates = reviews.filter(review => review.commit_id === candidateSha &&
+  // Observe each reviewer's effective decision across the full PR history.
+  // A request for changes on an older head is still blocking until this same
+  // reviewer approves the current head or the request is formally dismissed.
+  const candidates = reviews.filter(review =>
     DECISIVE.has(review.state) && isReviewer(review, pull.user) &&
     typeof review.submitted_at === 'string' && Number.isFinite(Date.parse(review.submitted_at)) &&
-    Number.isSafeInteger(review.id));
+    Number.isSafeInteger(review.id) && review.id > 0);
   candidates.sort((a, b) => Date.parse(a.submitted_at) - Date.parse(b.submitted_at) || a.id - b.id);
   const latestByReviewer = new Map();
-  for (const review of candidates) latestByReviewer.set(review.user.id, review);
-  const outstanding = [...latestByReviewer.values()].filter(review => review.state === 'CHANGES_REQUESTED');
-  const approvals = [...latestByReviewer.values()].filter(review => review.state === 'APPROVED');
+  for (const review of candidates) {
+    const previous = latestByReviewer.get(review.user.id);
+    // A stale approval must not clear a pending changes-requested decision.
+    if (previous?.state === 'CHANGES_REQUESTED' &&
+        review.state === 'APPROVED' && review.commit_id !== candidateSha) continue;
+    latestByReviewer.set(review.user.id, review);
+  }
+  const latest = [...latestByReviewer.values()];
+  const outstanding = latest.filter(review => review.state === 'CHANGES_REQUESTED');
+  const approvals = latest.filter(review => review.state === 'APPROVED' && review.commit_id === candidateSha);
   const reviewed = { provider: 'github', repository: target.repository, pullRequest: target.pullRequest, candidateSha };
-  if (outstanding.length) return { ...reviewed, verdict: 'FAIL', reason: 'Outstanding changes-requested review on current head', blockingReviewIds: outstanding.map(x => x.id) };
+  if (outstanding.length) return { ...reviewed, verdict: 'FAIL',
+    reason: 'Outstanding changes-requested review (including older PR heads)',
+    blockingReviewIds: outstanding.map(x => x.id) };
   if (!approvals.length) return { ...reviewed, verdict: 'FAIL', reason: 'No independent GitHub approval on current PR head' };
   const latestApproval = approvals.at(-1);
   return { ...reviewed, verdict: 'PASS', reason: 'Latest independent GitHub review approved exact current head',
@@ -63,11 +75,20 @@ export async function verifyGitHubReview(target, { token = process.env.GITHUB_TO
   }
   const pull = await getJson(root);
   const reviews = [];
+  let complete = false;
   for (let page = 1; page <= 10; page++) {
     const batch = await getJson(`${root}/reviews?per_page=100&page=${page}`);
     if (!Array.isArray(batch) || batch.length > 100) throw new Error('Malformed GitHub review collection');
     reviews.push(...batch);
-    if (batch.length < 100) return evaluateGitHubReviews(target, pull, reviews);
+    if (batch.length < 100) { complete = true; break; }
   }
-  throw new Error('Too many reviews to verify completely: refuse partial assessment');
+  if (!complete) throw new Error('Too many reviews to verify completely: refuse partial assessment');
+  // Detect pushes while reviews are being read, rather than approving a stale head.
+  const after = await getJson(root);
+  if (after?.head?.sha !== pull?.head?.sha || after?.number !== pull?.number ||
+      after?.base?.repo?.full_name !== pull?.base?.repo?.full_name ||
+      after?.user?.id !== pull?.user?.id) {
+    throw new Error('GitHub PR head or identity changed during review lookup; retry');
+  }
+  return evaluateGitHubReviews(target, after, reviews);
 }
