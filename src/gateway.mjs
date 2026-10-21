@@ -213,10 +213,64 @@ async function settleTracking(tracking, outcome) {
   }
 }
 
-function validProvenance(p, capability) {
-  return plain(p) && typeof p.provider === 'string' && NAME.test(p.provider) &&
-    p.operation === capability && (p.reference === undefined ||
-      (typeof p.reference === 'string' && p.reference.length > 0 && p.reference.length <= 1024));
+// Snapshot provider identity once. Accessor-based or non-plain provenance must
+// never be validated under one value and later re-read as another.
+function snapshotProvenance(source, capability) {
+  try {
+    if (!plain(source)) return { valid: false };
+    const prototype = Object.getPrototypeOf(source);
+    if (prototype !== Object.prototype && prototype !== null) return { valid: false };
+    const fields = Object.getOwnPropertyDescriptors(source);
+    const keys = Reflect.ownKeys(fields);
+    if (keys.some(key => typeof key !== 'string' ||
+      !['provider', 'operation', 'reference'].includes(key))) return { valid: false };
+    const provider = fields.provider;
+    const operation = fields.operation;
+    const reference = fields.reference;
+    if (!provider || !operation ||
+        !provider.enumerable || !operation.enumerable ||
+        !Object.hasOwn(provider, 'value') || !Object.hasOwn(operation, 'value') ||
+        typeof provider.value !== 'string' || !NAME.test(provider.value) ||
+        operation.value !== capability) return { valid: false };
+    if (reference && (!reference.enumerable || !Object.hasOwn(reference, 'value') ||
+        typeof reference.value !== 'string' || reference.value.length === 0 ||
+        reference.value.length > 1024)) return { valid: false };
+    return { valid: true, provenance: {
+      provider: provider.value, operation: capability,
+      ...(reference ? { reference: reference.value } : {}),
+    } };
+  } catch {
+    // Proxy traps may throw; never treat an uninspectable host value as evidence.
+    return { valid: false };
+  }
+}
+
+// Inspect the handler reply envelope without triggering getters. The execution
+// result is composed only of validated, detached output and provenance snapshots.
+function snapshotReply(reply, capability) {
+  try {
+    if (!plain(reply)) return { valid: false };
+    const prototype = Object.getPrototypeOf(reply);
+    if (prototype !== Object.prototype && prototype !== null) return { valid: false };
+    const fields = Object.getOwnPropertyDescriptors(reply);
+    const success = fields.ok;
+    if (!success || !success.enumerable || !Object.hasOwn(success, 'value') ||
+        success.value !== true) return { valid: false };
+    const output = fields.output;
+    const provenance = fields.provenance;
+    if (!output || !provenance || !output.enumerable || !provenance.enumerable ||
+        !Object.hasOwn(output, 'value') || !Object.hasOwn(provenance, 'value')) {
+      return { valid: false };
+    }
+    const checkedOutput = snapshotOutput(output.value);
+    const checkedProvenance = snapshotProvenance(provenance.value, capability);
+    if (!checkedOutput.valid || !checkedProvenance.valid) return { valid: false };
+    return { valid: true, execution: {
+      output: checkedOutput.output, provenance: checkedProvenance.provenance,
+    } };
+  } catch {
+    return { valid: false };
+  }
 }
 
 export async function runGateway({ request, host = {}, tracking = { mode: 'ephemeral' } }) {
@@ -250,17 +304,14 @@ export async function runGateway({ request, host = {}, tracking = { mode: 'ephem
     const reply = await handlers[capability]({
       objective: request.objective, inputs: request.inputs, capability,
     });
-    const checked = plain(reply) && reply.ok === true ? snapshotOutput(reply.output) : { valid: false };
-    if (checked.valid && validProvenance(reply.provenance, capability)) {
-      // Never retain mutable handler-owned output or provenance in the result.
-      const provenance = {
-        provider: reply.provenance.provider,
-        operation: capability,
-        ...(reply.provenance.reference === undefined ? {} : { reference: reply.provenance.reference }),
-      };
+    const checked = snapshotReply(reply, capability);
+    if (checked.valid) {
       status = 'completed';
-      result = { output: checked.output, provenance };
-    } else if (plain(reply) && reply.ok === true) status = 'unverified_execution';
+      result = checked.execution;
+    } else if (plain(reply)) {
+      // A handler returned an unverifiable value; external effects may exist.
+      status = 'unverified_execution';
+    }
   } catch {
     // Tool exception messages may contain secret data; never log/return them.
     status = 'provider_unavailable';
