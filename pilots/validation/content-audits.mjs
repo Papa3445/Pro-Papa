@@ -89,8 +89,27 @@ export const DOCUMENT_RUBRIC=Object.freeze([
     text:'Attach the real artifact, its adapter report, domain-specific evidence, and a traceable review result. Document failures and changes, re-run the checks after correcting an artifact, and avoid marking the task complete before all required evidence is available. The separate-reviewer role in this sample is simulated for lifecycle testing and is not provider-authenticated.',
   },
 ]);
-export function auditDocumentGuide(markdown) {
+const DOCUMENT_SUPPORT=Object.freeze([
+  {'adapter-docs':[
+    'Software syntax does not establish that software runs',
+    'Research citations are not fetched or fact-checked.',
+    'markdown:structure',
+  ]},
+  {'adapter-docs':[
+    'Separate manual proofs for the domain remain available',
+    'Adapter output does **not** supply',
+  ],'security-docs':[
+    'An SHA-256 pins bytes, not truth.',
+  ]},
+  {'adapter-docs':[
+    'A failing adapter result still blocks closure',
+  ],'security-docs':[
+    'Different actor names are checked but not authenticated.',
+  ]},
+]);
+export function auditDocumentGuide(markdown, sourceTexts) {
   check(typeof markdown==='string','Document must be Markdown');
+  check(sourceTexts && typeof sourceTexts==='object','Document quality audit requires primary sources');
   const parts=markdown.trim().split(/^## /m);
   check(parts.length===DOCUMENT_RUBRIC.length+1,'Document must have exactly three audited sections');
   check(norm(parts[0])==='# Using a Pro-Papa Adapter Result','Incorrect document title or preamble');
@@ -101,7 +120,18 @@ export function auditDocumentGuide(markdown) {
     check(lines.shift()?.trim()===rule.title,'Missing or reordered section '+rule.title);
     const actual=norm(lines.join(' '));
     check(actual===norm(rule.text),'Incorrect, contradictory or unsupported guidance in '+rule.title);
-    sections.push({heading:rule.title,verifiedText:rule.text,exactCuratedParagraph:true});
+    const matchedSourceExcerpts=[];
+    for(const [sourceId,excerpts] of Object.entries(DOCUMENT_SUPPORT[i])){
+      const primary=sourceTexts[sourceId];
+      check(typeof primary==='string' && primary.length>0,'Missing primary source for '+rule.title);
+      for(const excerpt of excerpts){
+        check(primary.includes(excerpt),
+          'Section '+rule.title+' no longer supported by '+sourceId+': '+excerpt);
+      }
+      matchedSourceExcerpts.push({sourceId,excerpts});
+    }
+    sections.push({heading:rule.title,verifiedText:rule.text,
+      exactCuratedParagraph:true,matchedSourceExcerpts});
   }
   return {validation:'fixed-document editorial rubric, not arbitrary natural-language reasoning',
     sections,validatedSections:sections.length};

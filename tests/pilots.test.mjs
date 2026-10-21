@@ -112,6 +112,10 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
     const started=performance.now();
     startTask(state,document.id,actor);
     const source=await sample('pilots/document/adapter-evidence-guide.md');
+    const documentSources={
+      'adapter-docs':await sample('docs/ADAPTERS.md'),
+      'security-docs':await sample('docs/SECURITY.md'),
+    };
     let attempts=0,failures=0,semanticRejects=0;
     const checked=async content=>{
       const output=await adapter({root,state,task:document,file:'adapter-evidence-guide.md',content});
@@ -126,19 +130,29 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
     assert.notEqual(contradictory,source);
     // It still has a title, multiple sections, enough words and no TODO.
     assert.equal((await checked(contradictory)).report.result,'pass');
-    assert.throws(()=>auditDocumentGuide(contradictory),/Incorrect, contradictory or unsupported guidance/);
+    assert.throws(()=>auditDocumentGuide(contradictory,documentSources),/Incorrect, contradictory or unsupported guidance/);
     semanticRejects++;
     const misleading=source+'\n## Bonus guidance\nruntime tests; source audit; substantive content validation; not provider-authenticated.\n';
-    assert.throws(()=>auditDocumentGuide(misleading),/exactly three audited sections/);
+    assert.throws(()=>auditDocumentGuide(misleading,documentSources),/exactly three audited sections/);
     semanticRejects++;
     const valid=await checked(source);
     assert.equal(valid.report.result,'pass');
-    const reviewed=auditDocumentGuide(source);
+    const alteredSources={
+      ...documentSources,
+      'adapter-docs':documentSources['adapter-docs'].replace(
+        'Software syntax does not establish that software runs',
+        'Software syntax establishes full runtime correctness'),
+    };
+    assert.throws(()=>auditDocumentGuide(source,alteredSources),/no longer supported/);
+    semanticRejects++;
+    const reviewed=auditDocumentGuide(source,documentSources);
     assert.equal(reviewed.validatedSections,3);
+    assert.ok(reviewed.sections.every(section=>section.matchedSourceExcerpts.length>0));
     await recordEvidence(root,state,{id:document.id,kind:'artifact',file:'adapter-evidence-guide.md',actor,note:'Readable handoff artifact'});
     await proof({root,state,task:document,kind:'validation',content:JSON.stringify({
       ...reviewed,negativeScenarios:['contradictory runtime guarantee rejected despite passing structural adapter',
-        'extra keyword-padding section rejected by the editorial rubric'],
+        'extra keyword-padding section rejected by the editorial rubric',
+        'approved prose unsupported by altered primary source rejected'],
     },null,2)});
     await proof({root,state,task:document,kind:'review',content:'SIMULATED reviewer role; not a substitute for an authenticated independent critique.'});
     await closeTask(root,state,profiles,document.id);
@@ -162,7 +176,7 @@ test('PP-0003: reproducible software, sourced research, and document lifecycles'
     }
   }
   assert.equal(metrics.reduce((sum,p)=>sum+p.failedAdapterAttempts,0),3);
-  assert.equal(metrics.reduce((sum,p)=>sum+(p.semanticAuditRejects||0),0),3);
+  assert.equal(metrics.reduce((sum,p)=>sum+(p.semanticAuditRejects||0),0),4);
   // Parseable evidence in CI job logs, with runtime rather than invented timings.
   console.log('PP0003_PILOT_REPORT '+JSON.stringify({pilots:metrics,completed:metrics.filter(p=>p.closed).length,adapterFailuresRecovered:metrics.reduce((n,p)=>n+p.failedAdapterAttempts,0),semanticAuditRejects:metrics.reduce((n,p)=>n+(p.semanticAuditRejects||0),0),sourceAuditClaims:metrics.find(p=>p.profile==='research').checkedClaims,sourceAuditDocuments:metrics.find(p=>p.profile==='research').sourceDocuments,limitations:['Adapter checks are structural','Research audit accepts only three fixed reviewed propositions with exact supporting excerpts, not arbitrary new claims','Document audit uses a curated complete-section rubric, not generic language comprehension','Review identities in pilot fixtures are simulated, not independently authenticated','Source texts are checked-out primary documentation, not fetched from network','Runtime duration is environment-dependent']}));
 });
