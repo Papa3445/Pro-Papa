@@ -1,6 +1,6 @@
 // PP-0002: read-only GitHub review observer. No task-defined hosts or commands.
 const REPO_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
-const DECISIVE = new Set(['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED']);
+const DECISIVE = new Set(['APPROVED', 'CHANGES_REQUESTED']);
 
 export function validateReviewTarget(target) {
   if (!target || typeof target !== 'object' || Array.isArray(target) ||
@@ -31,8 +31,8 @@ export function evaluateGitHubReviews(target, pull, reviews) {
   const candidateSha = pull.head.sha;
   // Observe each reviewer's effective decision across the full PR history.
   // A request for changes on an older head is still blocking until this same
-  // reviewer approves the current head or the request is formally dismissed.
-  const candidates = reviews.filter(review =>
+  // reviewer approves the current head or that *specific review ID* has its\n  // state changed by GitHub to DISMISSED. A different dismissed record does\n  // not clear this reviewer's still-active change request.
+  // The REST API returns one current-state record per review ID. Detect\n  // duplicate IDs instead of interpreting conflicting snapshots as events.\n  const seenReviewIds = new Set();\n  for (const review of reviews) {\n    if (!Number.isSafeInteger(review?.id) || review.id <= 0 || seenReviewIds.has(review.id)) {\n      throw new Error('GitHub review IDs missing or duplicated; refuse partial assessment');\n    }\n    seenReviewIds.add(review.id);\n  }\n  // Dismissal updates the *same review ID* in GitHub. Ignore the dismissed\n  // record without erasing other decisions from the same account.\n  const candidates = reviews.filter(review =>
     DECISIVE.has(review.state) && isReviewer(review, pull.user) &&
     typeof review.submitted_at === 'string' && Number.isFinite(Date.parse(review.submitted_at)) &&
     Number.isSafeInteger(review.id) && review.id > 0);

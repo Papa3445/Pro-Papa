@@ -42,9 +42,10 @@ test('failed review blocks until same reviewer approves current head',()=>{
 test('other reviewer cannot override outstanding changes',()=>{
   assert.equal(evalReviews(target,pull,[review('CHANGES_REQUESTED'),review('APPROVED',{user:{id:91,login:'other'}})]).verdict,'FAIL');
 });
-test('commented/dismissed are not approvals',()=>{
+test('commented or dismissed review record does not count as an approval',()=>{
   assert.equal(evalReviews(target,pull,[review('COMMENTED')]).verdict,'FAIL');
-  assert.equal(evalReviews(target,pull,[review(),review('DISMISSED')]).verdict,'FAIL');
+  const approval=review('APPROVED');
+  assert.equal(evalReviews(target,pull,[{...approval,state:'DISMISSED'}]).verdict,'FAIL');
 });
 test('wrong repository, PR number and bad SHA reject provider identity',()=>{
   assert.throws(()=>evalReviews(target,{...pull,number:3},[review()]),/identity/);
@@ -113,13 +114,36 @@ test('old-head changes requested stays blocking after newer reviewer approval',(
   assert.equal(evalReviews(target,pull,[prior,other,review('APPROVED',{commit_id:'b'.repeat(40)})]).verdict,'FAIL');
   assert.equal(evalReviews(target,pull,[prior,other,review('APPROVED')]).verdict,'PASS');
 });
-test('dismissal clears historical change request without acting as approval',()=>{
+test('formal dismissal updates the SAME review ID and cannot itself approve',()=>{
   const prior=review('CHANGES_REQUESTED',{commit_id:'b'.repeat(40)});
   const other=review('APPROVED',{user:{id:91,login:'other'}});
-  const dismissed=review('DISMISSED',{commit_id:'b'.repeat(40)});
+  const dismissed={...prior,state:'DISMISSED'}; // PUT /reviews/{prior.id}/dismissals updates this record.
+  assert.equal(dismissed.id,prior.id);
   assert.equal(evalReviews(target,pull,[prior,other]).verdict,'FAIL');
-  assert.equal(evalReviews(target,pull,[prior,dismissed]).verdict,'FAIL');
-  assert.equal(evalReviews(target,pull,[prior,other,dismissed]).verdict,'PASS');
+  assert.equal(evalReviews(target,pull,[dismissed]).verdict,'FAIL');
+  assert.equal(evalReviews(target,pull,[dismissed,other]).verdict,'PASS');
+});
+test('dismissal of a DIFFERENT review ID cannot clear a still-requested change',()=>{
+  const prior=review('CHANGES_REQUESTED',{commit_id:'b'.repeat(40)});
+  const other=review('APPROVED',{user:{id:91,login:'other'}});
+  const dismissed=review('DISMISSED',{commit_id:'b'.repeat(40)}); // separate ID, same reviewer
+  assert.notEqual(prior.id,dismissed.id);
+  const blocked=evalReviews(target,pull,[prior,other,dismissed]);
+  assert.equal(blocked.verdict,'FAIL');
+  assert.deepEqual(blocked.blockingReviewIds,[prior.id]);
+  const sameReviewerApproval=review('APPROVED');
+  assert.equal(evalReviews(target,pull,[prior,other,dismissed,sameReviewerApproval]).verdict,'PASS');
+});
+test('dismissal removes only the specific approval review, not approvals by others',()=>{
+  const first=review('APPROVED');
+  const other=review('APPROVED',{user:{id:91,login:'other'}});
+  const dismissed={...first,state:'DISMISSED'};
+  assert.equal(evalReviews(target,pull,[dismissed]).verdict,'FAIL');
+  assert.equal(evalReviews(target,pull,[dismissed,other]).verdict,'PASS');
+});
+test('duplicate review ID with conflicting states fails closed',()=>{
+  const request=review('CHANGES_REQUESTED');
+  assert.throws(()=>evalReviews(target,pull,[request,{...request,state:'DISMISSED'}]),/IDs missing or duplicated/);
 });
 test('changed PR head while paginating reviews fails closed',async()=>{
   let reads=0;
