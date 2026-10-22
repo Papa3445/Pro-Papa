@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "manual-chatgpt-capture-review-repair-ci",
+  "sourceHead": "cba30cd2a098dd98208312ca1d0639b28e642576",
+  "baseSha": "a6acacd6344be05bc8f9caffbd3f18abaf9a276d",
+  "sourceFiles": [
+    {
+      "path": "bin/pp0007-manual-chatgpt-baseline.mjs",
+      "sha256": "0bd88f3d18cd8fef48a8de5fd13e5e11254b9f6559afbeaf8f500337b628b9ab",
+      "gitBlobSha": "13d622cd82966d66092ca04fd472b984398aecec"
+    },
+    {
+      "path": "tests/pp0007-manual-chatgpt-baseline.test.mjs",
+      "sha256": "1485f7c05fb951ec839809aa3ea71aea00ad9d074008686acf6fec982ea9df81",
+      "gitBlobSha": "4b754359066d069feca12d1b2514a5c4e801ef1f"
+    },
+    {
+      "path": "docs/PP0007-NO-API-CHATGPT-BASELINE.md",
+      "sha256": "f6414720a3aaeff7a6068392772af191762c3e84bea3d2c9c9edef347af30eb3",
+      "gitBlobSha": "dbb4f72d35b3615cdb5e8c0b91cf4d9ccc2573b8"
+    }
+  ],
+  "actualCI": {
+    "repository": "Papa3445/Pro-Papa",
+    "runId": 39874216368,
+    "jobId": 120155740649,
+    "event": "pull_request",
+    "headSha": "cba30cd2a098dd98208312ca1d0639b28e642576",
+    "conclusion": "success",
+    "total": 189,
+    "passed": 189,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true,
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39874216368"
+  },
+  "reviewedFinding": {
+    "reviewId": 5622265789,
+    "reviewer": "papa4568",
+    "severity": "nonblocking polish",
+    "issue": "invalid capture previously created zero-length new output",
+    "fix": "prevalidate all input before exclusive file creation; regression includes corrupted/absent transcript and successful same-path retry"
+  },
+  "modelCallsMade": 0,
+  "realDirectChatGPTBaselineCasesCollected": 0,
+  "limits": "Only synthetic CI and local file tests, not independent ChatGPT UI results; final evidence-head CI and fresh exact-head review required."
+}
