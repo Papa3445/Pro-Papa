@@ -100,3 +100,7 @@ This is host-invoked, not automatic ChatGPT turn interception. Private repositor
 ## PP-0005: host-invoked request gateway (in progress)
 
 Run node bin/gateway.mjs with a JSON objective on stdin. It routes to a fixed capability registry and executes only host-authorized handlers. The CLI includes two real read-only operations (text.metrics and math.sum); external work requires a separately connected trusted host. Durable requests use a separate initialized project's task queue, avoid persisting raw prompts, and remain open for authentic evidence and review. Optional private GitHub audit receipts use PP-0004 and do not substitute for task execution. See [the gateway guide](docs/GATEWAY.md). No automatic ChatGPT interception is claimed.
+
+## PP-0006: executable reference host and enforced audit preflight
+
+Run `npm run reference-host` for explicitly submitted JSON requests on stdin. Its real tools include local math/text and opt-in allowlisted GitHub repository metadata reads; external issue writes require exact host-granted UUID/repository approval and durable tracking. `--audit-required` performs actual private GitHub usage receipt issuance and readback *before* any tool executes; unverifiable audit fails closed. See [reference host integration and limits](docs/REFERENCE-HOST.md). This **does not intercept native ChatGPT Project messages** or prove independent answer quality.
