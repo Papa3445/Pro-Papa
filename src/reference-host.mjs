@@ -9,6 +9,48 @@ const same = (a, b) => typeof a === 'string' && typeof b === 'string' &&
   a.toLowerCase() === b.toLowerCase();
 const queues = new Map();
 
+function snapshotRequest(input) {
+  const visited = new Set();
+  let nodes = 0;
+  function copy(value, depth) {
+    if (++nodes > 10000 || depth > 64) fail();
+    if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+    if (typeof value === 'number' && Number.isFinite(value) && !Object.is(value, -0)) return value;
+    if (typeof value !== 'object' || visited.has(value)) fail();
+    visited.add(value);
+    const array = Array.isArray(value), prototype = Object.getPrototypeOf(value);
+    if (array ? prototype !== Array.prototype :
+      prototype !== Object.prototype && prototype !== null) fail();
+    const descriptors = Object.getOwnPropertyDescriptors(value);
+    const keys = Reflect.ownKeys(descriptors);
+    if (keys.some(key => typeof key !== 'string')) fail();
+    if (array) {
+      if (value.length > 10000 || keys.length !== value.length + 1) fail();
+      const result = [];
+      for (let i = 0; i < value.length; i++) {
+        const d = descriptors[String(i)];
+        if (!d || !d.enumerable || !Object.hasOwn(d, 'value')) fail();
+        result.push(copy(d.value, depth + 1));
+      }
+      return result;
+    }
+    const result = Object.create(null);
+    for (const key of keys) {
+      const d = descriptors[key];
+      if (!d.enumerable || !Object.hasOwn(d, 'value')) fail();
+      Object.defineProperty(result, key, { value: copy(d.value, depth + 1),
+        enumerable: true, writable: true, configurable: true });
+    }
+    return result;
+  }
+  try {
+    const copied = copy(input, 0), wire = JSON.stringify(copied);
+    if (typeof wire !== 'string' || Buffer.byteLength(wire) > 65536) return null;
+    return JSON.parse(wire);
+  } catch { return null; }
+}
+
+
 // Per-process serialization; cross-process conflicts remain conservatively gated
 // by the gateway's filesystem locks and incomplete-effect reconciliation.
 async function exclusive(key, work) {
@@ -148,17 +190,16 @@ export function createReferenceHost({
     allowTaskWrites: durableProject !== null };
   return Object.freeze({
     async execute(request) {
-      let length;
-      try { length = Buffer.byteLength(JSON.stringify(request)); } catch { length = Infinity; }
-      if (!plain(request) || !length || length > 65536 ||
-          typeof request.objective !== 'string' || !request.objective.trim() ||
-          request.objective.length > 16384)
+      const safeRequest = snapshotRequest(request);
+      if (!plain(safeRequest) ||
+          typeof safeRequest.objective !== 'string' || !safeRequest.objective.trim() ||
+          safeRequest.objective.length > 16384)
         return { status: 'invalid_request', audit: { status: 'not_requested' } };
       // Approval is bound to one request ID and action before any handler call.
-      if (approvedIssue && routeObjective(request) === 'operations' &&
-          (!same(request.id, approvedIssue.requestId) ||
-            request.inputs?.action !== 'github.create_issue' ||
-            !same(request.inputs?.repository, approvedIssue.repository)))
+      if (approvedIssue && routeObjective(safeRequest) === 'operations' &&
+          (!same(safeRequest.id, approvedIssue.requestId) ||
+            safeRequest.inputs?.action !== 'github.create_issue' ||
+            !same(safeRequest.inputs?.repository, approvedIssue.repository)))
         return { status: 'denied', reason: 'effect_not_approved',
           audit: { status: 'not_requested' } };
       return exclusive(durableProject, async () => {
@@ -179,7 +220,7 @@ export function createReferenceHost({
           }
         }
         try {
-          const result = await runGateway({ request, host,
+          const result = await runGateway({ request: safeRequest, host,
             tracking: durableProject === null ? { mode: 'ephemeral' } : {
               mode: 'durable', projectRoot: durableProject, secret: durableSecret,
             } });
