@@ -870,16 +870,52 @@
           "path": ".pro-papa/evidence/PP-0007/iso-date-ci.json",
           "sha256": "d7c5133d638fa14d3752fb342df1ad481c56348d9e3127539a9665716dba5512",
           "recordedAt": "2026-10-22T04:07:15.828Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/benchmark-structured-pp0007.mjs",
+          "sha256": "885d3d9dae3172b8aa33c9aad0aa04e1bfff610c8eeafa8871f1b4872ad95b8e",
+          "note": "Real local structured benchmark code; historical freeform 7-case baseline unchanged.",
+          "recordedAt": "2026-10-22T04:34:17.408Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/structured-local-observation.json",
+          "sha256": "62e3446a49dac2fe6d8b676142b3c94b0101aaf118206f4c43b7c238a283f41e",
+          "note": "Real pull_request provider run 39722383548, actual serialized output, 156/156; final evidence-head CI pending.",
+          "recordedAt": "2026-10-22T04:34:17.408Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-STRUCTURED-PILOTS.md",
+          "sha256": "4d17e53ba9fdc4f9f0972c3f74db5e8adad2c4673af39423255b9ef79928f3e5",
+          "note": "Bounded 4/4 mechanically validated local pilot, 5 negative checks, no direct assistant comparison.",
+          "recordedAt": "2026-10-22T04:34:17.408Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "f38c573c8294b935c066580e5bff8a86f1c3ac9e41073a42927429b7e74a92a4",
+          "note": "Trusted review target PR#14 cannot reuse merged PR#13 approval.",
+          "recordedAt": "2026-10-22T04:34:17.408Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 13,
+        "pullRequest": 14,
         "baseRef": "main",
-        "baseSha": "244617ba9f9e44538e1756d9320c0c6a9fb6472a"
+        "baseSha": "554fa5fca2b3dbffb785108a949023f9726e8d0d"
       }
     }
   ],
-  "revision": 45
+  "revision": 46
 }
