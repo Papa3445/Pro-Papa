@@ -78,7 +78,7 @@ test('no injected transport may masquerade as native production execution',async
 
 test('provider HTTP failure and network exception remain ambiguous with no retry',async()=>{
   for(const fetchImpl of [async()=>({ok:false,status:403,text:async()=>'{"error":"private"}'}),
-    async()=>{throw Error('credential-private-do-not-log')}]) {
+    async()=>{throw Error('credential-private-do-not-log')}]){
     let calls=0;
     const x=await runOne({id:'qa',model:'gpt-test',apiKey:'fixture-secret-value',
       mode:'simulation',fetchImpl:async(...a)=>{calls++;return fetchImpl(...a)}});
