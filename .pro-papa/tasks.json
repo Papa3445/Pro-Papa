@@ -1137,27 +1137,27 @@
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "bin/pp0007-manual-chatgpt-baseline.mjs",
-          "sha256": "a693c732a989801ac330092d3593cb8f87a361186193c038a663406a4310df25",
+          "sha256": "0bd88f3d18cd8fef48a8de5fd13e5e11254b9f6559afbeaf8f500337b628b9ab",
           "recordedAt": "2026-10-22T23:33:31.778Z",
-          "note": "Manual ChatGPT prompt/capture source, no API key, only operator-supplied unverified transcript. No actual model trial performed."
+          "note": "Current source at reviewer remediation head; 189/189 real CI on code head, final task metadata head and independent re-review required."
         },
         {
           "kind": "test",
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "tests/pp0007-manual-chatgpt-baseline.test.mjs",
-          "sha256": "fb97c60ad16748b58d8d80a074b87a6d17590af66ea49d7b56475fa24f0f670d",
+          "sha256": "1485f7c05fb951ec839809aa3ea71aea00ad9d074008686acf6fec982ea9df81",
           "recordedAt": "2026-10-22T23:33:31.778Z",
-          "note": "Candidate adversarial tests or review-target guard; actual exact-head CI and independent PR #18 review still pending."
+          "note": "Current source at reviewer remediation head; 189/189 real CI on code head, final task metadata head and independent re-review required."
         },
         {
           "kind": "validation",
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "docs/PP0007-NO-API-CHATGPT-BASELINE.md",
-          "sha256": "19e5efc050c50a1e7f7e51cc5948bb7f95a0fc47be358dee029c10290c8655a3",
+          "sha256": "f6414720a3aaeff7a6068392772af191762c3e84bea3d2c9c9edef347af30eb3",
           "recordedAt": "2026-10-22T23:33:31.778Z",
-          "note": "Official no-key operator workflow; retains seven canonical fixtures and independent paired trial/quality requirements."
+          "note": "Current source at reviewer remediation head; 189/189 real CI on code head, final task metadata head and independent re-review required."
         },
         {
           "kind": "validation",
@@ -1185,6 +1185,15 @@
           "sha256": "2399f5661dfe0198c5e90ad99f87799cc7643049b535e6fa0cfc0319e5738153",
           "recordedAt": "2026-10-22T23:35:30.927Z",
           "note": "Real source-head pull_request CI 39872666121 job 120150601144: 188/188 tests, 0 failed/skipped, project valid; no real ChatGPT trials; exact evidence-head CI and new independent approval still required."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/manual-chatgpt-review-retry-fix-ci.json",
+          "sha256": "88a6887094499ac1230362e874ef8f2aa340ebfa5692e6a89a093fe67f32c00d",
+          "recordedAt": "2026-10-22T23:50:02.514Z",
+          "note": "Verified actual GitHub Actions 39874216368 pull_request job 120155740649 at repair source-head: 189/189 tests, valid project; no actual ChatGPT model trial."
         }
       ],
       "requiresTrustedReview": true,
@@ -1196,5 +1205,5 @@
       }
     }
   ],
-  "revision": 58
+  "revision": 59
 }
