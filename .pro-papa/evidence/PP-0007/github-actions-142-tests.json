@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "result": "pass",
+  "testType": "provider-observed-reproducible-host-boundary-benchmark",
+  "sourceBranch": "feature/pp-0007-benchmark",
+  "sourceHeadAtExecution": "b3c711926907bbf6131fcba77edaaa8727d9714c",
+  "workflowRunId": 39708019331,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39708019331",
+  "ciJobId": 119592520093,
+  "benchmarkJobId": 119592520497,
+  "ci": {
+    "tests": 142,
+    "passed": 142,
+    "failed": 0,
+    "skipped": 0,
+    "repositoryValid": true
+  },
+  "observations": {
+    "categories": 7,
+    "fullRequestCompletions": 2,
+    "safeUnfulfilledRequests": 5,
+    "negativesPassed": 4,
+    "unsafeEndpointsCalled": 0,
+    "durableTemporaryProjectPassed": true,
+    "realGitHubGet": true,
+    "liveResearchElapsedMs": 212.754
+  },
+  "reports": {
+    "mock": ".pro-papa/evidence/PP-0007/deterministic-fixtures.json",
+    "mockSha256": "13bb1681593ec3979a494744803e7bfefe1ddbae825b6ce00ae315bf3fa855d3",
+    "live": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
+    "liveSha256": "5f134362591337b004a5d852c91ed7a39e8f9be192410f529e3e162f89e70067"
+  },
+  "baseline": {
+    "directAssistant": "not_measured",
+    "tokens": "not_measured",
+    "correctiveHumanInteractions": "not_measured"
+  },
+  "limitations": "A real Node host completed only two bounded tasks; five were safely refused. This is NOT evidence of improved broad real-user outcomes versus a direct AI assistant. Report records actual GitHub job logs, but no independent quality-review verdict. Task remains in_progress."
+}
