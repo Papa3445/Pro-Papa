@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0006",
+  "result": "pass",
+  "evidenceType": "authenticated-GitHub-Actions-actual-execution",
+  "observedHeadSha": "28233e6ecd943124161a152d04f11cf98a5df1dc",
+  "run": 39702580231,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39702580231",
+  "checkJob": 119575049326,
+  "negativeNativeAuditJob": 119575049769,
+  "tests": {
+    "total": 139,
+    "passed": 139,
+    "failed": 0,
+    "skipped": 0
+  },
+  "repositoryValid": true,
+  "independentReview": "not_yet_reapproved",
+  "verifiedActions": [
+    "Production Node CLI invoked with native Node fetch and GitHub Actions real read-only GITHUB_TOKEN. Separate private audit repo inaccessible; returned audit_failed without invoking local math handler. No fake confirmation.",
+    "Built-in PP-0006 syntax:node adapter-check actually executed against current fixed reference-host source.",
+    "Simulated PP-0004 GitHub API fixtures were classified audit_unverified / simulated with execution=null.",
+    "Unapproved changed GitHub issue title/body is denied before POST or durable task mutation. Approved body digest binds action, repository and ID."
+  ],
+  "adapter": {
+    "path": ".pro-papa/evidence/PP-0006/software-829cb5fc-d1b0-4ebc-9521-0c90ffbc390c.json",
+    "sourceSha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c",
+    "reportSha256": "88d3c5d4a6945f1b11fd2b8f807395a48182f0ada11ff9d6b88d76ec4cb080aa"
+  },
+  "limitations": "Positive end-to-end host CLI --audit-required with a privately authorized token still unavailable/unverified. A separate provider-backed GitHub connector receipt exists, but is not the actual host runtime proof. Prior CHANGES_REQUESTED review applies to previous head."
+}
