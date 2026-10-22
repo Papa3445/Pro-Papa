@@ -35,7 +35,7 @@ jobs:
               capability:"math.sum", inputs:{numbers:[7,9]} });
             const result=spawnSync(process.execPath,["bin/reference-host.mjs","--audit-required"],
               {input:request,encoding:"utf8"});
-            if(result.status!==0 || result.status === null && result.signal) process.exit(1);
+            if(result.error || result.signal) process.exit(1);
             let out; try {out=JSON.parse(result.stdout)}catch{process.exit(1)}
             if(result.status!==1 || out.status!=="audit_failed" ||
                out.audit?.status!=="failed" || out.execution!==null) process.exit(1);
