@@ -186,8 +186,9 @@ test('effects are denied without exact host authorization, even via heuristic ro
     ...opts,approvedIssue:{requestId:id,repository} }));
   const blocked=await host.execute({...issueRequest,id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'});
   assert.equal(blocked.status,'denied');
-  const heuristic=await host.execute({...issueRequest,id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-    capability:undefined,objective:'Plan workflow to create issue'});
+  const { capability, ...withoutCapability } = issueRequest;
+  const heuristic=await host.execute({...withoutCapability,id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    objective:'Plan workflow to create issue'});
   assert.equal(heuristic.status,'denied');
   assert.equal(f.calls.length,0);
 });
