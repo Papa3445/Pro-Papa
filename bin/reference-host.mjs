@@ -38,6 +38,12 @@ async function readInput(stream) {
 export async function main(argv = process.argv.slice(2),
   stdin = process.stdin, output = console.log) {
   const flags = parse(argv);
+  if (flags['--audit-required'] && !process.env.PRO_PAPA_AUDIT_REPO) {
+    const rejected = { status: 'audit_failed', audit: { status: 'failed' }, execution: null };
+    output(JSON.stringify(rejected));
+    process.exitCode = 1;
+    return rejected;
+  }
   const repos = flags['--github-repo'] ? [flags['--github-repo']] : [];
   if (flags['--issue-repository'] &&
       !repos.some(x => x.toLowerCase() === flags['--issue-repository'].toLowerCase()))
