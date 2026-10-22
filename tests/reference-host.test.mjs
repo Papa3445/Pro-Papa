@@ -95,7 +95,7 @@ test('reference host executes real local math/text handlers and rejects missing 
   assert.equal(words.status,'completed');
   assert.equal(words.execution.output.words,4);
   const unsupported=await host.execute(request);
-  assert.equal(unsupported.status,'unsupported');
+  assert.equal(unsupported.status,'denied');
   assert.equal(f.calls.length,0);
 });
 
@@ -120,7 +120,7 @@ test('host never allows request to grant unauthorized repositories or tools',asy
   assert.equal(blocked.status,'provider_unavailable');
   assert.equal(f.calls.length,0);
   const unsupported=await host.execute({...request,capability:'software',grants:['software']});
-  assert.equal(unsupported.status,'denied');
+  assert.equal(unsupported.status,'unsupported');
 });
 
 test('private audit fail-closed before tool or task state on public store',async t=>{
