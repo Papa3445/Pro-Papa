@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0005",
+  "result": "pass",
+  "evidenceType": "GitHub-Actions-actual-test-run",
+  "repository": "Papa3445/Pro-Papa",
+  "sourceBranch": "feature/pp-0005-gateway",
+  "headSha": "114a50e616bde093c2aee8ddbb7c3a610e279159",
+  "runId": 39695489640,
+  "jobId": 119551709117,
+  "conclusion": "success",
+  "tests": 117,
+  "passed": 117,
+  "failed": 0,
+  "skipped": 0,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39695489640",
+  "scope": "Real Node suite including seven changing-getter/proxy/provenance and durable external-effect regressions, repository project validation, and actually executed built-in syntax:node adapter against fixed source.",
+  "limitations": "Temporary adapter harness removed after execution. This is implementer verification, not independent approval; final exact-head CI still required."
+}

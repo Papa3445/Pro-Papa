@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0005",
+  "result": "pass",
+  "evidenceType": "observed-GitHub-Actions-test-run",
+  "repository": "Papa3445/Pro-Papa",
+  "sourceRef": "feature/pp-0005-gateway",
+  "headSha": "4b9eab0bf5746203021cdfd617ed6ddb361d3fea",
+  "runId": 39681926039,
+  "jobId": 119506291353,
+  "conclusion": "success",
+  "tests": 98,
+  "passed": 98,
+  "failed": 0,
+  "skipped": 0,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39681926039",
+  "scope": "Actual complete npm run check and code-defined software adapter-check in GitHub Actions; tests include spawned CLI and adversarial gateway cases.",
+  "limits": "CI job includes a temporary adapter-check append to package.json, reverted afterward. Final exact-head CI required before merge. Green tests are not independent quality/security assessment."
+}

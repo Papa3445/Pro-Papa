@@ -96,3 +96,7 @@ node bin/pro-papa.mjs usage-receipt
 ```
 
 This is host-invoked, not automatic ChatGPT turn interception. Private repository creation, connector authorization and branch protection are deployment steps; no private audit store is provisioned by this code. Read the [setup and threat model](docs/USAGE-RECEIPTS.md).
+
+## PP-0005: host-invoked request gateway (in progress)
+
+Run node bin/gateway.mjs with a JSON objective on stdin. It routes to a fixed capability registry and executes only host-authorized handlers. The CLI includes two real read-only operations (text.metrics and math.sum); external work requires a separately connected trusted host. Durable requests use a separate initialized project's task queue, avoid persisting raw prompts, and remain open for authentic evidence and review. Optional private GitHub audit receipts use PP-0004 and do not substitute for task execution. See [the gateway guide](docs/GATEWAY.md). No automatic ChatGPT interception is claimed.
