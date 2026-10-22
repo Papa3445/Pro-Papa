@@ -19,7 +19,10 @@ test('PP-0007 synthetic provider pilot does not fabricate cross-domain completio
   assert.equal(report.userTaskCompletionRate,Math.round(2/7*1000)/1000);
   assert.equal(report.testExpectationPassRate,1);
   assert.equal(report.guardrailsPassed,true);
-  assert.equal(report.totalGitHubCallsObserved,1);
+  assert.equal(report.totalGitHubCallsObserved,0);
+  assert.equal(report.totalResearchTransportCallsObserved,1);
+  assert.equal(report.pilots.find(x=>x.id==='research').providerCalls,0);
+  assert.equal(report.pilots.find(x=>x.id==='research').transportCalls,1);
   assert.equal(report.requestsToUnapprovedEndpoints,0);
   assert.equal(report.receiptCount,0);
   assert.equal(report.persistedTaskCount,1);
@@ -54,7 +57,10 @@ test('PP-0007 live-mode transport can be exercised with a source-verified stub w
   const report=await runBenchmark({liveResearch:true,fetchImpl});
   assert.equal(report.mode,'injected_read_only_github_transport');
   assert.equal(calls,1);
-  assert.equal(report.totalGitHubCallsObserved,1);
+  assert.equal(report.totalGitHubCallsObserved,0);
+  assert.equal(report.totalResearchTransportCallsObserved,1);
+  assert.equal(report.pilots.find(x=>x.id==='research').providerCalls,0);
+  assert.equal(report.pilots.find(x=>x.id==='research').transportCalls,1);
   assert.equal(report.requestsToUnapprovedEndpoints,0);
   assert.equal(report.guardrailsPassed,true);
   assert.equal(report.successfulUserTasks,2);

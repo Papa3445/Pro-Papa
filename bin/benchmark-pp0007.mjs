@@ -135,7 +135,10 @@ export async function runBenchmark({ liveResearch = false, fetchImpl } = {}) {
       requirementMet:output.status==='completed' && quality,
       safeFailure:output.status===test.expected && quality && output.status!=='completed',
       validationPassed:quality,provenanceProvider:output.provenance?.provider ?? null,
-      auditStatus:output.auditStatus,providerCalls,elapsedMs:Math.round(elapsedMs*1000)/1000,
+      auditStatus:output.auditStatus,
+      // Count an injected stub invocation separately from an external GET.
+      providerCalls:liveResearch && !injectedTransport ? providerCalls : 0,
+      transportCalls:providerCalls,elapsedMs:Math.round(elapsedMs*1000)/1000,
       outputSummary:test.id==='data' ? { total:output.output?.total,count:output.output?.count } :
         test.id==='research' ? { repository:output.output?.repository,url:output.output?.url } : null,
       persistedTask:false, correctionInteractionsObserved:0,notes:test.validation,
@@ -182,7 +185,8 @@ export async function runBenchmark({ liveResearch = false, fetchImpl } = {}) {
     medianHostTimeMs:(()=>{const z=pilots.map(p=>p.elapsedMs).sort((a,b)=>a-b);
       return z[Math.floor(z.length/2)]})(),
     meanHostTimeMs:avg(pilots.map(p=>p.elapsedMs)),
-    totalGitHubCallsObserved:calls.length,
+    totalGitHubCallsObserved:liveResearch && !injectedTransport ? calls.length : 0,
+    totalResearchTransportCallsObserved:calls.length,
     requestsToUnapprovedEndpoints:calls.filter(c=>c.path !== '/repos/'+REPOSITORY).length,
     correctiveInteractionsMeasured:false,
     actualUserCorrections:'not_observed_in_single_pass_automated_fixtures',

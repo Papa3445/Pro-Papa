@@ -695,10 +695,10 @@
           "kind": "artifact",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Candidate benchmark transport-classification hardening: injected HTTP fixtures explicitly distinguished from native live GitHub GET; provider attempt counts consistent. Supersedes earlier artifact bytes. Await new exact-head CI.",
+          "note": "Candidate source: native live GitHub HTTP activity counted separately from injected transport invocations; awaiting final-head CI.",
           "path": "bin/benchmark-pp0007.mjs",
-          "sha256": "2b752cddf1dbca6fc15a04aa274da3a5fc9f67599e3523c479ee225d3671c0b7",
-          "recordedAt": "2026-10-22T02:10:05.166Z"
+          "sha256": "4c3599771b9fe87bf4ca19f5b806a72d1b7e284b1a1fdde6c3f8ccd9402b6deb",
+          "recordedAt": "2026-10-22T02:13:38.822Z"
         },
         {
           "kind": "test",
@@ -731,10 +731,10 @@
           "kind": "validation",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Reproducible methodology, detailed seven-category outcomes and explicit limitations of the benchmark.",
+          "note": "Corrected limitation: historical fixture counters include mock transport calls, not independent provider GETs.",
           "path": "docs/PP0007-BENCHMARK.md",
-          "sha256": "84e720435fe5a610e0d829bd5b730ddde13d496612937a35711166c0753075b0",
-          "recordedAt": "2026-10-22T01:58:04.290Z"
+          "sha256": "68525fe9e287855144cac6881778c6e683da2f99758198e78f5e047e0aaeffc8",
+          "recordedAt": "2026-10-22T02:13:38.831Z"
         }
       ],
       "requiresTrustedReview": true,

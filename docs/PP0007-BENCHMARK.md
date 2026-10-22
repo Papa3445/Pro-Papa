@@ -24,7 +24,7 @@ Evaluate the **actual, bounded PP-0006 reference host** against representative u
 | Planning/operations | Produce a project schedule | `denied` | No (correctly no authorized planning handler) |
 | Novel/fallback | Answer an unusual multidisciplinary request | `unsupported` | No |
 
-**Task completion:** `2/7 = 28.6%`. **Safe noncompletion:** `5/7`. **Fixture expectation pass:** `7/7`; this reflects correct outcomes (including refusals), not task-success quality. Exactly one external GitHub HTTP GET was observed in each 7-case run. No arbitrary endpoint was called, no issue was posted, no LLM tokens were spent by the host itself, and no private audit receipt was requested by these pilots.
+**Task completion:** `2/7 = 28.6%`. **Safe noncompletion:** `5/7`. **Fixture expectation pass:** `7/7`; this reflects correct outcomes (including refusals), not task-success quality. The fixture run exercised one in-process fake transport, without a real GitHub HTTP request. The separate native live run made one public GitHub HTTP GET. Historical attached reports predate the counter distinction: the fixture's `totalGitHubCallsObserved: 1` field included a stub invocation and **does not establish a network request**. Updated code reports actual GitHub calls and transport invocations separately. No arbitrary endpoint was called, no issue was posted, no LLM tokens were spent by the host itself, and no private audit receipt was requested by these pilots.
 
 ## Explicit safety/negative controls
 
@@ -53,7 +53,7 @@ npm run benchmark:pp0007
 node bin/benchmark-pp0007.mjs --live-research
 ```
 
-The default command is deterministic except for local timings; the `--live-research` command performs **one real public read-only GitHub GET**. The benchmark needs no GitHub write token, produces no issue, and removes the temporary durable project. The test suite `tests/benchmark-pp0007.test.mjs` checks seven-category coverage, statuses, negative outcomes and durable tracking. Actual GitHub Actions logs provide independent provider execution evidence; the local test with injected fake fetch alone does not.
+The default command is deterministic except for local timings; the `--live-research` command performs **one real public read-only GitHub GET**. The benchmark needs no GitHub write token, produces no issue, and removes the temporary durable project. The test suite `tests/benchmark-pp0007.test.mjs` checks seven-category coverage, statuses, negative outcomes, injected-vs-native network accounting and durable tracking. Actual GitHub Actions logs provide independent provider execution evidence; the local test with injected fake fetch alone does not.
 
 ## Baseline and remaining acceptance gaps
 
