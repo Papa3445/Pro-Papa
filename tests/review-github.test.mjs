@@ -284,16 +284,16 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-test('PP-0007 must use new PR #14, not old independently approved PR #13',async()=>{
+test('PP-0007 active review on comparison readiness cannot reuse previously approved PR #14',async()=>{
   const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
   assert.equal(task.status,'in_progress');
   assert.equal(task.requiresTrustedReview,true);
-  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:14,baseRef:'main',baseSha:'554fa5fca2b3dbffb785108a949023f9726e8d0d'});
-  const p={number:14,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'554fa5fca2b3dbffb785108a949023f9726e8d0d'},
+  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:15,baseRef:'main',baseSha:'3e58f0f5c757d72da8a79274aa6d6565bc49287a'});
+  const p={number:15,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'3e58f0f5c757d72da8a79274aa6d6565bc49287a'},
     head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
   const old=review('APPROVED',{commit_id:'d'.repeat(40)});
-  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:13},[old]),/identity/);
+  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:14},[old]),/identity/);
   assert.equal(evalReviews(task.reviewTarget,p,[old]).verdict,'FAIL');
   assert.equal(evalReviews(task.reviewTarget,p,[review('APPROVED',{commit_id:p.head.sha})]).verdict,'PASS');
-  assert.ok(task.evidence.some(e=>e.path==='bin/benchmark-structured-pp0007.mjs'));
+  assert.ok(task.evidence.some(e=>e.path==='bin/pp0007-readiness.mjs'));
 });

@@ -26,6 +26,7 @@ test('PP-0007 readiness auditor reports real noncomparable case coverage and unr
   assert.ok(a.conditions.every(c=>c.met===false));
   assert.match(a.sourceIntegrity.note,/not independently queried/);
   assert.match(a.sourceIntegrity.structuredSourceSha256,/^[a-f0-9]{64}$/);
+  console.log('PP0007_READINESS_REPORT_JSON='+JSON.stringify(a));
 });
 test('PP-0007 missing or fabricated original baseline cannot become comparative success',async()=>{
   const [canon,study]=await actual();
