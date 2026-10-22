@@ -52,10 +52,12 @@ test('PP-0007 live-mode transport can be exercised with a source-verified stub w
     })};
   };
   const report=await runBenchmark({liveResearch:true,fetchImpl});
-  assert.equal(report.mode,'live_read_only_github');
+  assert.equal(report.mode,'injected_read_only_github_transport');
   assert.equal(calls,1);
+  assert.equal(report.totalGitHubCallsObserved,1);
+  assert.equal(report.requestsToUnapprovedEndpoints,0);
   assert.equal(report.guardrailsPassed,true);
   assert.equal(report.successfulUserTasks,2);
-  // Mode indicates intended path; it does not establish that this substituted
-  // fetch client was a real GitHub provider. CI live job must be separate.
+  // Injected fetch proves host behavior, not a native live provider read.
+  // A real GitHub GET must be evidenced by a separate provider run.
 });

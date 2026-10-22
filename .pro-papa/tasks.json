@@ -695,10 +695,10 @@
           "kind": "artifact",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Real seven-category bounded host benchmark; source byte digest backed by GitHub blob 8c584ffee66dd04045806d5ec20ccb241575395a",
+          "note": "Candidate benchmark transport-classification hardening: injected HTTP fixtures explicitly distinguished from native live GitHub GET; provider attempt counts consistent. Supersedes earlier artifact bytes. Await new exact-head CI.",
           "path": "bin/benchmark-pp0007.mjs",
-          "sha256": "8d1b7249f567ead76a67141a16c066809f1851672f4982b036571072174fcea1",
-          "recordedAt": "2026-10-22T01:58:04.286Z"
+          "sha256": "2b752cddf1dbca6fc15a04aa274da3a5fc9f67599e3523c479ee225d3671c0b7",
+          "recordedAt": "2026-10-22T02:10:05.166Z"
         },
         {
           "kind": "test",

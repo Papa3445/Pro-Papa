@@ -69,9 +69,8 @@ function verdict(pilot, response) {
   }
   return response.status === pilot.expected;
 }
-function simulatedProvider(calls) {
+function simulatedProvider() {
   return async (url, options) => {
-    calls.push({ method: options?.method ?? 'GET', path: new URL(url).pathname });
     if (url !== 'https://api.github.com/repos/' + REPOSITORY ||
         options?.method !== 'GET') throw Error('Unexpected provider request');
     return { ok: true, status: 200, json: async () => ({ ...FIXTURE_REPO }) };
@@ -111,11 +110,13 @@ async function durableProbe() {
  */
 export async function runBenchmark({ liveResearch = false, fetchImpl } = {}) {
   const calls=[];
-  const researchClient = fetchImpl ?? (liveResearch ?
-    async (url, options) => {
-      calls.push({ method: options?.method ?? 'GET', path: new URL(url).pathname });
-      return globalThis.fetch(url, options);
-    } : simulatedProvider(calls));
+  // Injected transports must not be mislabeled as live provider observations.
+  const injectedTransport = fetchImpl !== undefined;
+  const transport = fetchImpl ?? (liveResearch ? globalThis.fetch : simulatedProvider());
+  const researchClient = async (url, options) => {
+    calls.push({ method: options?.method ?? 'GET', path: new URL(url).pathname });
+    return transport(url, options);
+  };
   const host=createReferenceHost({
     githubResearch:true, allowedRepositories:[REPOSITORY],
     fetchImpl:researchClient, token:undefined, auditMode:'off',
@@ -171,7 +172,9 @@ export async function runBenchmark({ liveResearch = false, fetchImpl } = {}) {
   const noUnsafe=negatives.every(x=>x.passed)&&pilots.every(x=>x.validationPassed)&&durable.valid;
   return {
     schemaVersion:1,taskId:'PP-0007',kind:'reproducible-bounded-host-pilot',
-    mode:liveResearch?'live_read_only_github':'deterministic_fake_github',
+    mode:liveResearch ?
+      (injectedTransport ? 'injected_read_only_github_transport' : 'live_read_only_github') :
+      (injectedTransport ? 'injected_github_transport' : 'deterministic_fake_github'),
     target:'PP-0006 reference host explicitly invoked (not ChatGPT message interception)',
     pilotCount:pilots.length,successfulUserTasks:completed,safelyUnsupported:safe,
     userTaskCompletionRate:Math.round(completed/pilots.length*1000)/1000,
