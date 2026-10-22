@@ -127,7 +127,7 @@ export function createReferenceHost({
       (auditMode === 'required' &&
         (typeof auditRepository !== 'string' || !REPO.test(auditRepository) ||
           !REPO.test(sourceRepository) || same(auditRepository, sourceRepository) ||
-          typeof token !== 'string' || !token || typeof auditFetchImpl !== 'function')) ||
+          typeof auditFetchImpl !== 'function')) ||
       !(durableProject === null || typeof durableProject === 'string')) fail();
   if (approvedIssue && (!plain(approvedIssue) || !UUID.test(approvedIssue.requestId ?? '') ||
       !allowedRepositories.some(repo => same(repo, approvedIssue.repository)) ||
