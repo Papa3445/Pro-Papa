@@ -115,3 +115,30 @@ test('malformed input transcripts cannot be silently accepted or treated as prov
   await assert.rejects(capturedPacket('qa',link),/Invalid PP-0007/);
   await assert.rejects(capturedPacket('invalid',file),/Invalid PP-0007/);
 });
+
+
+test('P3 reviewer regression: invalid capture leaves no reserved output; valid retry works with same filename',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'pp7-chatgpt-retry-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const source=join(dir,'copied-response.txt'),destination=join(dir,'record.json');
+  const argv=['--execute','--capture','--case','qa','--transcript',source,'--out',destination];
+  for (const invalid of [Buffer.from([0xff]),Buffer.from('  \n'),Buffer.from([0, 65])]) {
+    await writeFile(source,invalid,{mode:0o600});
+    await assert.rejects(main(argv,()=>{}),/Invalid PP-0007/);
+    await assert.rejects(stat(destination),{code:'ENOENT'});
+  }
+  await rm(source);
+  await assert.rejects(main(argv,()=>{}),{code:'ENOENT'});
+  await assert.rejects(stat(destination),{code:'ENOENT'});
+  await writeFile(source,'Paris', {mode:0o600});
+  const observed=[];
+  const result=await main(argv,str=>observed.push(JSON.parse(str)));
+  assert.equal(result.status,'operator_supplied_unverified');
+  assert.equal(result.copiedTranscript,'Paris');
+  assert.equal(result.taskSuccess,null);
+  assert.equal((await stat(destination)).mode&0o777,0o600);
+  assert.equal(observed.length,1);
+  assert.equal(observed[0].status,'operator_transcript_saved');
+  await assert.rejects(main(argv,()=>{}),{code:'EEXIST'});
+  assert.equal(JSON.parse(await readFile(destination,'utf8')).copiedTranscript,'Paris');
+});
