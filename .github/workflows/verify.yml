@@ -13,3 +13,24 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
+
+  pp0007-pilot-observation:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pp-0007-benchmark'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Deterministic pilot and honest unsupported-domain measurements
+        run: |
+          echo '__PP0007_MOCK_BEGIN__'
+          node bin/benchmark-pp0007.mjs
+          echo '__PP0007_MOCK_END__'
+      - name: Real read-only public GitHub provider pilot
+        run: |
+          echo '__PP0007_LIVE_BEGIN__'
+          node bin/benchmark-pp0007.mjs --live-research
+          echo '__PP0007_LIVE_END__'
