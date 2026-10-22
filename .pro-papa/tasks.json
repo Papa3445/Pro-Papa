@@ -549,8 +549,8 @@
       "dependsOn": [
         "PP-0005"
       ],
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "chatgpt-implementation",
       "blockedReason": null,
       "evidence": [],
       "requiresAdapter": true
@@ -575,5 +575,5 @@
       "evidence": []
     }
   ],
-  "revision": 31
+  "revision": 32
 }
