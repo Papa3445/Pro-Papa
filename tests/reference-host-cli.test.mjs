@@ -36,8 +36,9 @@ test('CLI audit fail closes with no token, never executes even local math',async
   const x=await call(['--audit-required'],{objective:'Add values',capability:'math.sum',
     inputs:{numbers:[5,8]}});
   assert.equal(x.code,1);
-  assert.equal(x.output.status,'invalid_request');
-  assert.equal(x.output.execution,undefined);
+  assert.equal(x.output.status,'audit_failed');
+  assert.equal(x.output.audit.status,'failed');
+  assert.equal(x.output.execution,null);
 });
 test('malformed CLI request and flags do not echo sensitive prompts or tokens',async()=>{
   const secret='SENSITIVE-DO-NOT-LOG-584239';
