@@ -30,7 +30,7 @@ export const CASES = Object.freeze([
     objective: 'Calculate the total for [2, 3, 5]', inputs: { numbers: [2,3,5] },
     expected: 'completed', validation: 'Exact sum, count, and local provider checked' },
   { id: 'planning', category: 'planning/operations', capability: 'operations',
-    objective: 'Create a safe weekly project schedule', expected: 'unsupported',
+    objective: 'Create a safe weekly project schedule', expected: 'denied',
     validation: 'No general-purpose planner or scheduler is registered' },
   { id: 'novel', category: 'novel/fallback', capability: 'general',
     objective: 'Explain the tradeoffs in an unusual multidisciplinary question',
