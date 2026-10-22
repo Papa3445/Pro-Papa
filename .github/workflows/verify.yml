@@ -13,3 +13,23 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
+
+  pp0005-closeout-verification:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pp-0005-closeout'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Authenticate original reviewed head and run formal closeout
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node bin/pro-papa.mjs proof --id PP-0005 --kind review --file .pro-papa/evidence/PP-0005/independent-github-review.md --actor papa4568 --note "Actual independent APPROVED GitHub review 5607668332 on exact PR6 head 9824a80b236a27d09b9d023c019bc7a51cf715de"
+          node bin/pro-papa.mjs review-status --id PP-0005
+          node bin/pro-papa.mjs close --id PP-0005
+          node bin/pro-papa.mjs validate --root .
+          echo '__PP0005_STATE_BEGIN__'
+          cat .pro-papa/tasks.json
+          echo '__PP0005_STATE_END__'
