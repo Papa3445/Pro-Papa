@@ -95,7 +95,7 @@ test('reference host executes real local math/text handlers and rejects missing 
   assert.equal(words.status,'completed');
   assert.equal(words.execution.output.words,4);
   const unsupported=await host.execute(request);
-  assert.equal(unsupported.status,'denied');
+  assert.equal(unsupported.status,'unsupported');
   assert.equal(f.calls.length,0);
 });
 
