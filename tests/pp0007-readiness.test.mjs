@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { analyzeReadiness, loadReadiness } from '../bin/pp0007-readiness.mjs';
+import { CASES } from '../bin/benchmark-pp0007.mjs';
 
 const actual=async()=>{
   const [a,b]=await Promise.all([
@@ -50,4 +51,30 @@ test('PP-0007 structured mock quality, receipts or LLM baseline cannot silently 
     x=>{x.observedReport.pilots[0].provider='github'},
     x=>{x.githubActions.headSha='a'.repeat(40)},
   ]){const bad=copy(study);rewrite(bad);assert.throws(()=>analyzeReadiness(canon,bad),/integrity failure/);}
+});
+
+test('PP-0007 matched direct-assistant trial template keeps all seven original tasks and no invented outputs',async()=>{
+  const raw=await readFile(new URL('../fixtures/pp0007-paired-trial-collection-template.json',import.meta.url),'utf8');
+  const template=JSON.parse(raw);
+  assert.equal(template.kind,'prospective-matched-trial-collection-template');
+  assert.equal(template.status,'not_collected');
+  assert.equal(template.taskId,'PP-0007');
+  assert.equal(template.collection.baselineExecutionCount,0);
+  assert.equal(template.collection.proPapaNewExecutionCount,0);
+  for(const value of ['modelName','modelVersion','modelSettings','fixtureFreezeCommit',
+    'testEnvironment','comparableToolPermissions','externalProviderRecordUri']){
+    assert.equal(template.collection[value],null);
+  }
+  assert.equal(template.trials.length,CASES.length);
+  for(let i=0;i<CASES.length;i++){
+    const x=CASES[i],t=template.trials[i];
+    assert.equal(t.id,x.id);
+    assert.equal(t.category,x.category);
+    assert.equal(t.canonicalObjective,x.objective);
+    assert.equal(t.canonicalCapability,x.capability);
+    assert.deepEqual(t.canonicalInputs,x.inputs??null);
+    for(const k of ['baselineTrial','hostTrial','independentQualityAssessment','correctionInteractions',
+      'latencyMs','toolCalls','providerReportedTokens','observedComparison'])assert.equal(t[k],null);
+  }
+  assert.equal(new Set(template.trials.map(x=>x.id)).size,7);
 });

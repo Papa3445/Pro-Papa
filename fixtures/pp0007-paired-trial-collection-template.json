@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "prospective-matched-trial-collection-template",
+  "status": "not_collected",
+  "source": "bin/benchmark-pp0007.mjs CASES",
+  "guidance": "Blank fields are not outcomes. Store raw provider/assistant outputs and private user data only in access-controlled storage, then independently verify record identifiers, hashes and quality.",
+  "collection": {
+    "testEnvironment": null,
+    "modelName": null,
+    "modelVersion": null,
+    "modelSettings": null,
+    "comparableToolPermissions": null,
+    "fixtureFreezeCommit": null,
+    "trialOperator": null,
+    "independentGrader": null,
+    "externalProviderRecordUri": null,
+    "baselineExecutionCount": 0,
+    "proPapaNewExecutionCount": 0
+  },
+  "trials": [
+    {
+      "id": "qa",
+      "category": "quick Q&A",
+      "canonicalObjective": "What is the capital city of France?",
+      "canonicalCapability": "general",
+      "canonicalInputs": null,
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    },
+    {
+      "id": "research",
+      "category": "sourced research",
+      "canonicalObjective": "Research repository metadata with a provider URL",
+      "canonicalCapability": "research",
+      "canonicalInputs": {
+        "repository": "Papa3445/Pro-Papa"
+      },
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    },
+    {
+      "id": "software",
+      "category": "software",
+      "canonicalObjective": "Implement and test a function that parses dates",
+      "canonicalCapability": "software",
+      "canonicalInputs": null,
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    },
+    {
+      "id": "document",
+      "category": "document creation",
+      "canonicalObjective": "Draft a formal business memo with clear recommendations",
+      "canonicalCapability": "document",
+      "canonicalInputs": null,
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    },
+    {
+      "id": "data",
+      "category": "calculation/data analysis",
+      "canonicalObjective": "Calculate the total for [2, 3, 5]",
+      "canonicalCapability": "math.sum",
+      "canonicalInputs": {
+        "numbers": [
+          2,
+          3,
+          5
+        ]
+      },
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    },
+    {
+      "id": "planning",
+      "category": "planning/operations",
+      "canonicalObjective": "Create a safe weekly project schedule",
+      "canonicalCapability": "operations",
+      "canonicalInputs": null,
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    },
+    {
+      "id": "novel",
+      "category": "novel/fallback",
+      "canonicalObjective": "Explain the tradeoffs in an unusual multidisciplinary question",
+      "canonicalCapability": "general",
+      "canonicalInputs": null,
+      "baselineTrial": null,
+      "hostTrial": null,
+      "independentQualityAssessment": null,
+      "correctionInteractions": null,
+      "latencyMs": null,
+      "toolCalls": null,
+      "providerReportedTokens": null,
+      "observedComparison": null
+    }
+  ]
+}
