@@ -2,7 +2,7 @@
 
 The benchmark now has **two explicit observation arms** bound to the same independently reviewed seven-case JSON fixture. The [API collector](PP0007-API-BASELINE.md) sends a model the canonical objective plus serialized input data. This **host** collector invokes the actual bounded Pro-Papa reference host with the **unchanged objective**, **same canonical inputs**, and the fixture's **original requested capability**. Both arms expose the same `objectiveSha256`, `inputsSha256` and `fixtureGitBlobSha`, enabling a later investigator to pair records by identity without rewriting the original questions.
 
-This tool **does not** call an LLM, compare output quality, generate extra capabilities, grade an answer, create an audit receipt or persist a task. By default it uses only local fixed handlers. Q&A, general software authoring, document generation, general planning and novel/fallback remain unsupported on the original prompts; numeric `math.sum` can complete. A different structured-input experiment in `bin/benchmark-structured-pp0007.mjs` cannot be substituted for these cases.
+This tool **does not** call an LLM, compare output quality, generate extra capabilities, grade an answer, create an audit receipt or persist a task. By default it uses only local fixed handlers. Q&A, general software authoring, document generation and novel/fallback remain `unsupported` on the original prompts; original planning/operations is **`denied`** because no external-effect approval exists. Numeric `math.sum` can complete. A different structured-input experiment in `bin/benchmark-structured-pp0007.mjs` cannot be substituted for these cases.
 
 ## Run an original host case
 
