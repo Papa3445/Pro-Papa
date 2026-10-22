@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "comparison-readiness-actual-provider-log",
+  "sourceHeadAtRun": "7054a08ab3f16a5a5579cb431e97ba8631069f22",
+  "source": {
+    "path": "bin/pp0007-readiness.mjs",
+    "gitBlobSha": "fc5d9346e8aaa80b599e294ae25cde82274f0227",
+    "sha256": "4fafe1763e30c48cc2dcfade7eec2a23a593da1b2b406f291651549f410e645a"
+  },
+  "tests": {
+    "path": "tests/pp0007-readiness.test.mjs",
+    "gitBlobSha": "95b7ff3d27407197df1bb4de439dcf2454ca7381",
+    "sha256": "3dfb711828a178c3cbef2ff37272bb26eb1efc39b62af99eeb687586cfc1490c"
+  },
+  "githubActions": {
+    "runId": 39727091691,
+    "jobId": 119653385644,
+    "event": "pull_request",
+    "headSha": "7054a08ab3f16a5a5579cb431e97ba8631069f22",
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39727091691",
+    "tests": 159,
+    "passed": 159,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true
+  },
+  "observedReport": {
+    "schemaVersion": 1,
+    "taskId": "PP-0007",
+    "kind": "evidence-readiness-gap-assessment",
+    "evaluated": {
+      "canonical": "seven original unstructured requests; mock research",
+      "structured": "four distinct explicit-input local tasks",
+      "comparableTasks": false
+    },
+    "canonicalUserRequests": {
+      "count": 7,
+      "completed": 2,
+      "safelyUnsupported": 5,
+      "completionRate": 0.286
+    },
+    "separateStructuredLocalTasks": {
+      "count": 4,
+      "mechanicallyValidated": 4,
+      "negativeCallsValidated": 5,
+      "hostCalls": 9,
+      "observedTotalHostMs": 4.749
+    },
+    "measuredDirectAssistantBaseline": false,
+    "realPerPilotAuditReceipts": 0,
+    "correctiveInteractionCounts": null,
+    "tokenUsage": null,
+    "evidenceIntegrityChecked": true,
+    "conditions": [
+      {
+        "id": "six-domain-general-user-outcomes",
+        "met": false,
+        "reason": "Only 2 of 7 original freeform user requests completed; structured pilots are different requests"
+      },
+      {
+        "id": "per-pilot-audit-and-output-quality",
+        "met": false,
+        "reason": "Structured run disabled audit and checks mechanically, not independent response quality"
+      },
+      {
+        "id": "paired-assistant-outcomes-and-cost",
+        "met": false,
+        "reason": "No authentic direct-assistant paired trial, correction/latency parity, or LLM token measurements"
+      },
+      {
+        "id": "final-independent-milestone-review",
+        "met": false,
+        "reason": "Previous scoped approvals do not independently close PP-0007"
+      }
+    ],
+    "milestoneAcceptanceMet": false,
+    "comparativeSuperiority": "not_established",
+    "nextEvidence": "Collect matching real direct-assistant trials for identical tasks, verify output with independent grader and actual tool/latency/correction/token evidence where available.",
+    "sourceIntegrity": {
+      "structuredSourceSha256": "885d3d9dae3172b8aa33c9aad0aa04e1bfff610c8eeafa8871f1b4872ad95b8e",
+      "structuredTestsSha256": "55eca53f706e96b2c7be4df8ab8434aad8256a9a1fa2dc4e04c3de5a2cd8b4e9",
+      "canonicalReportSha256": "46c51e3c91c02c3a1a21cd836dbfba8228552ed528e4abcccc99fc69543bd80c",
+      "structuredObservationSha256": "62e3446a49dac2fe6d8b676142b3c94b0101aaf118206f4c43b7c238a283f41e",
+      "note": "Local SHA-256 integrity only; provider run identity not independently queried by this CLI"
+    }
+  },
+  "limitations": "Audits only repository records and local SHA-256; no live source authentication by CLI, no direct assistant trial, no genuine paired baseline, no user corrections, no per-case private usage receipts; milestone not met."
+}

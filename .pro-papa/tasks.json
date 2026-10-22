@@ -906,16 +906,115 @@
           "sha256": "f38c573c8294b935c066580e5bff8a86f1c3ac9e41073a42927429b7e74a92a4",
           "note": "Trusted review target PR#14 cannot reuse merged PR#13 approval.",
           "recordedAt": "2026-10-22T04:34:17.408Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-readiness.mjs",
+          "sha256": "4fafe1763e30c48cc2dcfade7eec2a23a593da1b2b406f291651549f410e645a",
+          "note": "Fail-closed Node audit of original and structured results, no LLM baseline invented.",
+          "recordedAt": "2026-10-22T05:16:13.068Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-readiness.test.mjs",
+          "sha256": "3dfb711828a178c3cbef2ff37272bb26eb1efc39b62af99eeb687586cfc1490c",
+          "note": "Tests reject fake baseline, fake receipts, changed scores, and emit real comparison readiness report; final CI pending.",
+          "recordedAt": "2026-10-22T05:16:13.068Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-READINESS.md",
+          "sha256": "df9a8872b7120bac0bafa9febfcfe769809fffb75f0c0868d3ec7f099ea64ef8",
+          "note": "Honest non-equivalent local studies and original PP-0007 requirements; no broad quality claim.",
+          "recordedAt": "2026-10-22T05:16:13.068Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "847c1e2b93b92cb8136a108342fc3f9eebfbcae84fd287facee30b6038cbb377",
+          "note": "PR #15 independently pinned to previously reviewed base; old PR #14 approval cannot count.",
+          "recordedAt": "2026-10-22T05:16:13.068Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real exact source-head Actions run 39727091691 job 119653385644, 159/159 tests, report explicitly NOT milestone-ready; evidence-final-head CI and independent review pending.",
+          "path": ".pro-papa/evidence/PP-0007/comparison-readiness-ci.json",
+          "sha256": "c792df2b410633e13f700cee8e92a9472539d28dc0bbba1606a23a892b1aa5c7",
+          "recordedAt": "2026-10-22T05:17:49.004Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "fixtures/pp0007-paired-trial-collection-template.json",
+          "sha256": "54839255b06084f5c09c762786d6d0e8b8f09db620ac0492ad75f6ed5845ed1b",
+          "note": "Blank prospective matched-trial collection fixture with exact original seven case IDs, objectives/inputs; no assistant trials or invented results.",
+          "recordedAt": "2026-10-22T13:20:25.553Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-PAIRED-TRIAL-PROTOCOL.md",
+          "sha256": "173234707ec099bcc4e5c19a158a668d6c3fd951be47a231931985b8812d4eb9",
+          "note": "Execution protocol for actual comparable baseline, independent grading, cost/correction capture, source privacy and strict noncomparability.",
+          "recordedAt": "2026-10-22T13:20:25.553Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-readiness.test.mjs",
+          "sha256": "3e7af81fd8a12eca5dc65bade4daf694718e219537526ed12e22b1b4363a0474",
+          "note": "Regression enforces identical canonical objectives across seven cases and null/uncollected baseline, host, grade and measurement fields; CI not yet verified.",
+          "recordedAt": "2026-10-22T13:20:25.553Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-readiness.mjs",
+          "sha256": "cb2e6025dccbd58f2fa3cdbba438a084f080f2ca35fdf29aa41a4d08b6226ee0",
+          "note": "Fix reviewer-reproduced P2: historic SHA-pinned byte/parsed records; independent negative oracle; output, timing and provenance guards.",
+          "recordedAt": "2026-10-22T15:13:07.678Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-readiness.test.mjs",
+          "sha256": "eac6a076c4ff8ca31fe8a1600098fdfaea603265efc6392584733da27dd093d6",
+          "note": "Regression mutations reproduce reviewer P2 laundering and metric fabrication; await real exact-head CI.",
+          "recordedAt": "2026-10-22T15:13:07.678Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-READINESS.md",
+          "sha256": "445c8de04cf376b34be586a4b5f2c4df6244ec93355505e275c97733f01c66d3",
+          "note": "Transparent prior rejected reviewer finding and revised limited digest trust model; no fabricated paired baseline.",
+          "recordedAt": "2026-10-22T15:13:07.678Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 14,
+        "pullRequest": 15,
         "baseRef": "main",
-        "baseSha": "554fa5fca2b3dbffb785108a949023f9726e8d0d"
+        "baseSha": "3e58f0f5c757d72da8a79274aa6d6565bc49287a"
       }
     }
   ],
-  "revision": 46
+  "revision": 50
 }
