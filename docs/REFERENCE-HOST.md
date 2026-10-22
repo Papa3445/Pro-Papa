@@ -54,3 +54,10 @@ The optional Github issue-creation handler operates under `operations` and is di
 - There is no native ChatGPT Project turn interception, general-purpose LLM, deployed web service, background scheduler, or independently authenticated third-party answer-quality verifier.
 
 This is a reference **executable path** for external hosts that explicitly invoke it; it does not enforce audits on messages sent only to ChatGPT.
+
+
+### Verified authorized private-audit host smoke
+
+The required **successful** native production smoke was executed using a temporary GitHub Actions workflow in the separate private audit repository (not the public framework repo): [private Actions run 39704656986](https://github.com/Papa3445/Pro-Papa-Audit/actions/runs/39704656986). That workflow checked out reference-host source commit `a3f6e731b26bfb71379da97dd27df391afafe377` and supplied its own repo-scoped write-capable ephemeral `GITHUB_TOKEN` only as a runtime environment secret. The real `--audit-required` host created and read back the minimal [private receipt at pinned commit](https://github.com/Papa3445/Pro-Papa-Audit/blob/84fe6dd9186c4d24ec19d9ca32e90d0126469e01/usage-receipts/2026/10/d4a60c7e-8a60-4387-b554-c91acd711220.json), returned `audit.status:confirmed` and **then** completed `math.sum([9,8,4]) = 21`. The private repo's visibility, metadata-only receipt shape and immutable Git blob were independently verified. The disposable test workflow was deleted from its private branch afterward; none was merged into its main branch.
+
+This complements—not replaces—the negative native smoke where access to the private store was unavailable and the host returned `audit_failed` without invoking math. More detail is in `.pro-papa/evidence/PP-0006/private-audit-host-positive-smoke.json`. A reviewer without authorization for the private audit repo can inspect this public evidence summary but cannot directly read its private receipt.
