@@ -1041,6 +1041,42 @@
           "sha256": "25c921efc4d56f308ef46b35f88800fd9af08cda921db92e704f6d5cddea9a51",
           "note": "Verified actual pull_request CI 39828694516 job 119998744752 at implementation head 92d2e992: 170/170 tests, project valid; current evidence-head CI and independent reviewer approval pending.",
           "recordedAt": "2026-10-22T18:10:14.477Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-api-baseline.mjs",
+          "sha256": "170372d37515b173d314b5706373ce5d4c7a499720ce69de6d0fa0a1708d6ded",
+          "note": "Corrected Responses alias/snapshot and lifecycle parsing. No real model request executed.",
+          "recordedAt": "2026-10-22T19:31:27.519Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-api-baseline.test.mjs",
+          "sha256": "d325a30df40bf9f3280cf7ed8c63dbfd3c6fd13707a98a936f190134e6db2c28",
+          "note": "Four targeted P2 adversarial regressions and full 174-test provider run passed.",
+          "recordedAt": "2026-10-22T19:31:27.519Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-API-BASELINE.md",
+          "sha256": "53938a2bd1ee7502a1cfab2d38430ed8a377a0d51ecbd7a079998e64c43cfbfc",
+          "note": "Documented distinct actual vs requested model, incomplete/failed metering and ungraded outcome scope.",
+          "recordedAt": "2026-10-22T19:31:27.519Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/api-baseline-p2-fix-ci.json",
+          "sha256": "d2affe87ba9f69a21bcef482f314c82fd7259cab7153ea0acd58b2eae4717840",
+          "note": "Authenticated exact implementation-head GitHub Actions 39839882290 job 120037773251: 174/174, valid; final evidence-head CI and fresh independent review still required.",
+          "recordedAt": "2026-10-22T19:31:27.519Z"
         }
       ],
       "requiresTrustedReview": true,
@@ -1052,5 +1088,5 @@
       }
     }
   ],
-  "revision": 52
+  "revision": 53
 }
