@@ -57,7 +57,8 @@ async function textFromTranscript(path) {
   if(!info.isFile()||info.isSymbolicLink()||info.size<1||info.size>262144)fail();
   const bytes=await readFile(path);
   if(bytes.length!==info.size)fail();
-  const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+  let text;
+  try {text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);} catch {fail();}
   if(!text.trim()||text.includes('\u0000'))fail();
   return {text,sha256:hash(bytes),byteLength:bytes.length};
 }
