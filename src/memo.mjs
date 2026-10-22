@@ -2,7 +2,7 @@
 const fail = () => { throw Error('Invalid bounded memo inputs'); };
 const plain = v => v !== null && typeof v === 'object' && !Array.isArray(v) &&
   (Object.getPrototypeOf(v) === Object.prototype || Object.getPrototypeOf(v) === null);
-const controls = /[\u0000-\u001f\u007f-\u009f\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/u;
+const controls = /[\u0000-\u001f\u007f-\u009f\u061c\u200e\u200f\u2028-\u202e\u2066-\u2069]/u;
 const text = (v, max) => typeof v === 'string' && v.length > 0 &&
   v.length <= max && v.trim() === v && !controls.test(v);
 const boundedStrings = (v, maxCount) => Array.isArray(v) &&
