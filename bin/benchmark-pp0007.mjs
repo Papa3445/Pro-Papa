@@ -63,7 +63,7 @@ function verdict(pilot, response) {
       Number.isSafeInteger(response.output?.stars) &&
       response.output.stars >= 0;
   }
-  return response.status === 'unsupported';
+  return response.status === pilot.expected;
 }
 function simulatedProvider(calls) {
   return async (url, options) => {
