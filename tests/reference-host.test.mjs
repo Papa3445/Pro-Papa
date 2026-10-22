@@ -5,7 +5,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { initializeProject, loadProject } from '../src/core.mjs';
-import { createReferenceHost } from '../src/reference-host.mjs';
+import { createReferenceHost, issueApprovalDigest } from '../src/reference-host.mjs';
 
 const repository = 'Papa3445/Pro-Papa', store = 'Papa3445/Pro-Papa-Audit';
 const sha = 'a'.repeat(40), commit = 'b'.repeat(40);
@@ -14,6 +14,9 @@ const request = { id, objective: 'Research this repository', capability: 'resear
   inputs: { repository } };
 const issueRequest = { id, objective: 'Create authorized issue', capability: 'operations',
   inputs: { repository, action: 'github.create_issue', title: 'Verified host fixture', body: 'No secrets' } };
+const approvedIssue={requestId:id,repository,
+  payloadSha256:issueApprovalDigest({requestId:id,repository,
+    title:'Verified host fixture',body:'No secrets'})};
 function resource(path, content) {
   const bytes = Buffer.from(content);
   return { type:'file', path, size: bytes.length, encoding:'base64',
@@ -81,7 +84,10 @@ const durable=async(t,options={})=>({ durableProject:await project(t),
   durableSecret:'a-locally-managed-durable-secret-123456', ...options });
 const config=(mock,overrides={})=>({
   allowedRepositories:[repository],githubResearch:true,token:'fixture-private-token',
-  fetchImpl:mock.fetchImpl,auditFetchImpl:mock.fetchImpl,...overrides,
+  fetchImpl:mock.fetchImpl,
+  ...(overrides.auditMode === 'required' ? {
+    auditTransport:'simulation',auditFetchImpl:mock.fetchImpl } : {}),
+  ...overrides,
 });
 
 test('reference host executes real local math/text handlers and rejects missing providers',async()=>{
@@ -135,18 +141,19 @@ test('private audit fail-closed before tool or task state on public store',async
   assert.equal((await loadProject(dir)).state.tasks.length,0);
 });
 
-test('private audit receipt authenticates real PP-0004 write/readback before tools',async()=>{
+test('injected GitHub API simulation never yields confirmed audit or dispatches a tool',async()=>{
   const f=service(),host=createReferenceHost(config(f,{
     auditMode:'required',auditRepository:store }));
   const result=await host.execute({...request, objective:'Never put this secret in the audit receipt'});
-  assert.equal(result.status,'completed');
-  assert.equal(result.audit.status,'confirmed');
-  assert.equal(result.audit.receiptCommit,commit);
+  assert.equal(result.status,'audit_unverified');
+  assert.equal(result.audit.status,'simulated');
+  assert.equal(result.audit.receiptCommit,undefined);
+  assert.equal(result.execution,null);
   assert.equal(f.receipts.size,1);
   assert.ok(![...f.receipts.values()][0].includes('Never put this secret'));
   assert.deepEqual(f.calls.map(c=>c.method),
-    ['GET','GET','GET','GET','GET','PUT','GET','GET','GET']);
-  assert.equal(f.calls.at(-1).path,'/repos/'+repository);
+    ['GET','GET','GET','GET','GET','PUT','GET','GET']);
+  assert.ok(!f.calls.some(c=>c.path==='/repos/'+repository && c.method==='GET'));
   assert.ok(f.calls.filter(c=>c.method==='PUT').every(c=>c.path.includes(store)));
 });
 
@@ -184,7 +191,7 @@ test('durable duplicate retries and concurrent same-ID requests execute only onc
 
 test('effects are denied without exact host authorization, even via heuristic routing',async t=>{
   const f=service(),opts=await durable(t),host=createReferenceHost(config(f,{
-    ...opts,approvedIssue:{requestId:id,repository} }));
+    ...opts,approvedIssue }));
   const blocked=await host.execute({...issueRequest,id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'});
   assert.equal(blocked.status,'denied');
   const { capability, ...withoutCapability } = issueRequest;
@@ -196,7 +203,7 @@ test('effects are denied without exact host authorization, even via heuristic ro
 
 test('explicitly approved durable GitHub issue creates once; retry never resends',async t=>{
   const f=service(),opts=await durable(t),host=createReferenceHost(config(f,{
-    ...opts,approvedIssue:{requestId:id,repository} }));
+    ...opts,approvedIssue }));
   const first=await host.execute(issueRequest);
   assert.equal(first.status,'completed');
   assert.equal(first.execution.output.issueNumber,22);
@@ -209,7 +216,7 @@ test('explicitly approved durable GitHub issue creates once; retry never resends
 
 test('failed external effect is ambiguous and never automatically retried',async t=>{
   const f=service({failEffect:true}),opts=await durable(t),host=createReferenceHost(config(f,{
-    ...opts,approvedIssue:{requestId:id,repository} }));
+    ...opts,approvedIssue }));
   const first=await host.execute(issueRequest);
   assert.equal(first.status,'provider_unavailable');
   assert.equal(first.tracking.runState,'ambiguous');
@@ -230,7 +237,7 @@ test('invalid input and host configuration fail before any provider request',asy
 
 test('untrusted request accessors and stateful serialization cannot bypass host grants',async t=>{
   const f=service(),opts=await durable(t);
-  const host=createReferenceHost(config(f,{...opts,approvedIssue:{requestId:id,repository}}));
+  const host=createReferenceHost(config(f,{...opts,approvedIssue}));
   let accesses=0;
   const getterRequest={ ...issueRequest, get id() {
     accesses++; return accesses === 1 ? id : 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -255,4 +262,50 @@ test('request snapshot excludes mutable input references while executing an exte
   assert.equal(result.status,'completed');
   assert.equal(result.execution.output.repository,repository);
   assert.equal(f.calls[0].url,'https://api.github.com/repos/'+repository);
+});
+
+
+test('host approval digest binds exact GitHub issue title and body before first task reservation',async t=>{
+  const mock=service(),options=await durable(t);
+  const host=createReferenceHost(config(mock,{...options,approvedIssue}));
+  const badTitle=await host.execute({...issueRequest,inputs:{
+    ...issueRequest.inputs,title:'ATTACKER-CONTROLLED announcement'}});
+  assert.equal(badTitle.status,'denied');
+  assert.equal(badTitle.reason,'effect_not_approved');
+  const badBody=await host.execute({...issueRequest,inputs:{
+    ...issueRequest.inputs,body:'Unapproved publication'}});
+  assert.equal(badBody.status,'denied');
+  assert.equal(mock.calls.length,0);
+  assert.equal((await loadProject(options.durableProject)).state.tasks.length,0);
+  const good=await host.execute(issueRequest);
+  assert.equal(good.status,'completed');
+  assert.equal(mock.calls.filter(x=>x.method==='POST').length,1);
+  const later=await host.execute({...issueRequest,inputs:{
+    ...issueRequest.inputs,body:'Changed after original authorized issue'}});
+  assert.equal(later.status,'denied');
+  assert.equal(mock.calls.filter(x=>x.method==='POST').length,1);
+});
+test('audit simulation is explicit; native confirmation refuses injected custom client',async()=>{
+  const fake=service();
+  assert.throws(()=>createReferenceHost(config(fake,{
+    auditMode:'required',auditRepository:store,
+    auditTransport:'native',auditFetchImpl:fake.fetchImpl
+  })),/Unverified host/);
+  assert.throws(()=>createReferenceHost(config(fake,{
+    auditMode:'off',auditTransport:'simulation',
+    auditFetchImpl:fake.fetchImpl
+  })),/Unverified host/);
+});
+test('effect approval requires out-of-band host content digest',async t=>{
+  const mock=service(),options=await durable(t);
+  for(const payloadSha256 of [undefined,'f'.repeat(63),'G'.repeat(64)]) {
+    assert.throws(()=>createReferenceHost(config(mock,{...options,
+      approvedIssue:{requestId:id,repository,payloadSha256}})),/Unverified host/);
+  }
+  assert.notEqual(issueApprovalDigest({requestId:id,repository,
+    title:'Verified host fixture',body:'No secrets'}),
+    issueApprovalDigest({requestId:id,repository,
+      title:'Verified host fixture',body:'No secrets added'}));
+  assert.equal(issueApprovalDigest({requestId:id.toUpperCase(),repository:repository.toUpperCase(),
+    title:'Verified host fixture',body:'No secrets'}), approvedIssue.payloadSha256);
 });
