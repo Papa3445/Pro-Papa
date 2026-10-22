@@ -51,7 +51,7 @@ test('actual local reference host computes canonical sum without network, audit 
 });
 
 test('unsupported original objectives remain unsupported; no request may grant itself a handler',async()=>{
-  for (const id of ['qa','software','document','novel','research']){
+  for (const id of ['qa','software','document','novel']){
     const x=await runHostOne({id});
     assert.equal(x.resultStatus,'unsupported',id);
     assert.equal(x.execution,null);
@@ -59,12 +59,14 @@ test('unsupported original objectives remain unsupported; no request may grant i
     assert.equal(x.taskSuccess,null);
     assert.equal(x.auditStatus,'not_requested');
   }
-  const planning=await runHostOne({id:'planning'});
-  assert.equal(planning.resultStatus,'denied');
-  assert.equal(planning.execution,null);
-  assert.equal(planning.githubTransportAttemptsObserved,0);
-  assert.equal(planning.auditStatus,'not_requested');
-  assert.equal(planning.taskSuccess,null);
+  for (const id of ['planning','research']) {
+    const withheld=await runHostOne({id});
+    assert.equal(withheld.resultStatus,'denied',id);
+    assert.equal(withheld.execution,null);
+    assert.equal(withheld.githubTransportAttemptsObserved,0);
+    assert.equal(withheld.auditStatus,'not_requested');
+    assert.equal(withheld.taskSuccess,null);
+  }
 });
 
 test('explicit research grant invokes only fixed allowlisted public GitHub GET, simulation is labeled',async()=>{
