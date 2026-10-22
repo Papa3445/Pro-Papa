@@ -44,35 +44,76 @@ function extract(response) {
   if (!response || response.ok !== true || response.status !== 200) fail();
   return response.text();
 }
+// API aliases may resolve to a dated snapshot in response.model.
+// Only accept an exact identity or a calendar-valid YYYY-MM-DD snapshot of the
+// exact requested alias. A different family remains unverified, never success.
+function modelIdentity(requested, actual) {
+  if (requested === actual) return 'exact';
+  if (!actual.startsWith(requested + '-')) return 'unverified';
+  const date = actual.slice(requested.length + 1);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return 'unverified';
+  const instant = new Date(date + 'T00:00:00.000Z');
+  return Number.isFinite(instant.getTime()) &&
+    instant.toISOString().slice(0, 10) === date ? 'dated_snapshot' : 'unverified';
+}
+const LIFECYCLE_STATES = new Set([
+  'completed', 'incomplete', 'failed', 'cancelled', 'in_progress', 'queued',
+]);
+
 function readOutput(raw, requestedModel) {
   if (typeof raw !== 'string' || Buffer.byteLength(raw) > 1048576) fail();
   const j = JSON.parse(raw);
   if (!j || j.object !== 'response' || !RESPONSE_ID.test(j.id) ||
-      j.status !== 'completed' || typeof j.model !== 'string' ||
-      !MODEL.test(j.model) || j.model !== requestedModel || !Array.isArray(j.output) || !j.output.length ||
-      typeof requestedModel !== 'string') fail();
-  const contents=[]; let refusal=false;
+      !LIFECYCLE_STATES.has(j.status) || typeof j.model !== 'string' ||
+      !MODEL.test(j.model) || !Array.isArray(j.output)) fail();
+
+  // Preserve observable provider identity and metering BEFORE determining
+  // whether task content or the lifecycle is a valid completed text answer.
+  let usage = null;
+  if (j.usage != null) {
+    const { input_tokens: input, output_tokens: output, total_tokens: total } = j.usage;
+    if (![input, output, total].every(x => Number.isSafeInteger(x) && x >= 0) ||
+        total < input + output) fail();
+    usage = { inputTokens: input, outputTokens: output, totalTokens: total };
+  }
+  const identity = modelIdentity(requestedModel, j.model);
+  const observed = {
+    providerResponseId: j.id, actualModel: j.model,
+    providerLifecycleStatus: j.status, modelIdentityStatus: identity, usage,
+    text: null,
+  };
+  // Incomplete, failed and cancelled calls may have consumed billed tokens.
+  // They are known provider outcomes, not unknown network outcomes. Neither
+  // partial output nor a provider ID establishes task completion.
+  if (j.status !== 'completed') {
+    return { ...observed, responseStatus: j.status };
+  }
+  if (identity === 'unverified') {
+    return { ...observed, responseStatus: 'model_identity_unverified' };
+  }
+
+  const contents = [];
+  let refusal = false;
   for (const item of j.output) {
     if (item.type === 'reasoning') continue;
     if (item.type !== 'message' || item.role !== 'assistant' ||
-        !Array.isArray(item.content)) fail();
+        !Array.isArray(item.content)) {
+      return { ...observed, responseStatus: 'outcome_ambiguous' };
+    }
     for (const part of item.content) {
-      if (part.type === 'refusal') { refusal=true; continue; }
-      if (part.type !== 'output_text' || typeof part.text !== 'string') fail();
+      if (part.type === 'refusal') { refusal = true; continue; }
+      if (part.type !== 'output_text' || typeof part.text !== 'string') {
+        return { ...observed, responseStatus: 'outcome_ambiguous' };
+      }
       contents.push(part.text);
     }
   }
-  const text=contents.join('\n');
-  if (!refusal && (!text.trim() || text.length > 65536)) fail();
-  let usage=null;
-  if (j.usage != null) {
-    const { input_tokens:input, output_tokens:output, total_tokens:total }=j.usage;
-    if (![input,output,total].every(x=>Number.isSafeInteger(x)&&x>=0) ||
-        total < input + output) fail();
-    usage={inputTokens:input,outputTokens:output,totalTokens:total};
+  const text = contents.join('\n');
+  if (!refusal && (!text.trim() || text.length > 65536)) {
+    return { ...observed, responseStatus: 'outcome_ambiguous' };
   }
-  return { providerResponseId:j.id,actualModel:j.model,
-    responseStatus:refusal?'refused':'completed',text:refusal?null:text,usage };
+  return { ...observed, responseStatus: refusal ? 'refused' : 'completed',
+    text: refusal ? null : text };
 }
 
 export async function runOne({ id, model, apiKey, mode = 'native', fetchImpl } = {}) {
