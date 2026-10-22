@@ -3,6 +3,10 @@
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { initializeProject, loadProject } from '../src/core.mjs';
 import { createReferenceHost } from '../src/reference-host.mjs';
 
 const REPOSITORY = 'Papa3445/Pro-Papa';
@@ -73,6 +77,33 @@ function simulatedProvider(calls) {
     return { ok: true, status: 200, json: async () => ({ ...FIXTURE_REPO }) };
   };
 }
+// A separate disposable project demonstrates real file-backed retry evidence.
+async function durableProbe() {
+  const directory=await mkdtemp(join(tmpdir(),'pp-benchmark-durable-'));
+  try {
+    await initializeProject(directory,'PP-0007 disposable persistence probe');
+    const host=createReferenceHost({durableProject:directory,
+      durableSecret:'host-managed-benchmark-only-secret-00001'});
+    const request={id:'8a0dc3bd-e94f-427a-a277-aaabf621047b',
+      objective:'Calculate approved project sum',
+      capability:'math.sum',inputs:{numbers:[9,11]}};
+    const start=performance.now();
+    const first=await host.execute(request);
+    const retry=await host.execute(request);
+    const data=(await loadProject(directory)).state;
+    const stored=data.tasks[0];
+    return {
+      firstStatus:first.status,retryStatus:retry.status,output:first.execution?.output?.total ?? null,
+      persistedTaskCount:data.tasks.length,storedRunState:stored?.gatewayRun ?? null,
+      elapsedMs:Math.round(Math.max(0,performance.now()-start)*1000)/1000,
+      valid:first.status==='completed' && retry.status==='already_executed' &&
+        first.execution?.output?.total===20 && data.tasks.length===1 &&
+        stored?.gatewayRun==='completed',
+      scope:'Isolated temporary project; directory deleted after proof. Not a production user's task ledger.'
+    };
+  } finally {await rm(directory,{recursive:true,force:true});}
+}
+
 /**
  * Measured against fixed expected outcomes, NOT an AI answering baseline.
  * Each case runs once; host-only timings exclude process startup, provider
@@ -136,7 +167,8 @@ export async function runBenchmark({ liveResearch = false, fetchImpl } = {}) {
   ];
   const completed=pilots.filter(p=>p.requirementMet).length;
   const safe=pilots.filter(p=>p.safeFailure).length;
-  const noUnsafe=negatives.every(x=>x.passed)&&pilots.every(x=>x.validationPassed);
+  const durable=await durableProbe();
+  const noUnsafe=negatives.every(x=>x.passed)&&pilots.every(x=>x.validationPassed)&&durable.valid;
   return {
     schemaVersion:1,taskId:'PP-0007',kind:'reproducible-bounded-host-pilot',
     mode:liveResearch?'live_read_only_github':'deterministic_fake_github',
@@ -153,7 +185,7 @@ export async function runBenchmark({ liveResearch = false, fetchImpl } = {}) {
     actualUserCorrections:'not_observed_in_single_pass_automated_fixtures',
     tokenUsage:null, directAssistantBaseline:null,
     baselineReason:'No comparable direct LLM/assistant invocation or token metering in this Node host or CI runner. Deterministic host fixture timings cannot establish superiority over a direct assistant.',
-    persistedTaskCount:0,receiptCount:0,
+    persistedTaskCount:durable.persistedTaskCount,durableProbe:durable,receiptCount:0,
     receiptExplanation:'auditMode off in these fixtures; PP-0006 positive private receipt is separately provider-verified and not claimed to have been issued for each pilot.',
     validationLimits:'Research validates one provider record (or a deterministic mock), not multiple independent sources; software/document/planning/quick Q&A/fallback are genuinely unsupported.',
     pilots,negatives,guardrailsPassed:noUnsafe,
