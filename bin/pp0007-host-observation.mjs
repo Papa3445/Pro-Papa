@@ -10,7 +10,7 @@ import { performance } from 'node:perf_hooks';
 
 const ROOT=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const REPO='Papa3445/Pro-Papa';
-const URL='https://api.github.com/repos/'+REPO;
+const RESEARCH_URL='https://api.github.com/repos/'+REPO;
 const fail=()=>{throw Error('Invalid PP-0007 host observation invocation')};
 
 /**
@@ -27,7 +27,7 @@ export async function runHostOne({id,githubRead=false,mode='native',fetchImpl}={
   if(typeof trial.canonicalCapability!=='string'||trial.canonicalCapability.length>64)fail();
   const observedCalls=[];
   const transport=(url,options)=>{
-    if(!githubRead||url!==URL||options?.method!=='GET')fail();
+    if(!githubRead||url!==RESEARCH_URL||options?.method!=='GET')fail();
     observedCalls.push({method:'GET',path:'/repos/'+REPO});
     return (mode==='native'?globalThis.fetch:fetchImpl)(url,options);
   };
