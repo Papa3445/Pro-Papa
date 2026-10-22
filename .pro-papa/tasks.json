@@ -1032,6 +1032,15 @@
           "sha256": "d050503030bf4f9fb16f0be088a1de296edade29b11d5da2a39c8292f97893b2",
           "note": "Documents absence of any real model/API baseline evidence and privacy/cost/evaluation limits; PP-0007 acceptance remains unmet.",
           "recordedAt": "2026-10-22T18:05:26.462Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/api-baseline-ci.json",
+          "sha256": "25c921efc4d56f308ef46b35f88800fd9af08cda921db92e704f6d5cddea9a51",
+          "note": "Verified actual pull_request CI 39828694516 job 119998744752 at implementation head 92d2e992: 170/170 tests, project valid; current evidence-head CI and independent reviewer approval pending.",
+          "recordedAt": "2026-10-22T18:10:14.477Z"
         }
       ],
       "requiresTrustedReview": true,
@@ -1043,5 +1052,5 @@
       }
     }
   ],
-  "revision": 51
+  "revision": 52
 }
