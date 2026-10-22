@@ -744,6 +744,33 @@
           "path": ".pro-papa/evidence/PP-0007/provider-observation-current.json",
           "sha256": "a3bcb070abe9ac4262c75215fadaacc8a25cdf7a54b80f6d62784e2dab708700",
           "recordedAt": "2026-10-22T02:32:06.017Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Source of bounded local read-only plan.week with strict Monday/day, dependency and capacity controls; source blob 8f16bdb0bb79bd56cdea6dc7bbccf10b9342cca6",
+          "path": "src/planning.mjs",
+          "sha256": "206861aa13262a4f6de06b91042b17d9d540eb0aeebf50c999ae3b775bd48df9",
+          "recordedAt": "2026-10-22T02:50:57.191Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real exact-head Actions CI 146/146 tests on implementation head 2f873c05e39cb07955c3322cc0df43103c0d65b2, negative cases and project validation; no independent review yet.",
+          "path": ".pro-papa/evidence/PP-0007/weekly-planning-ci.json",
+          "sha256": "46518d87e1462b86b566d50669cb950fcac026a42ad59cb6f9f96862beb87ef3",
+          "recordedAt": "2026-10-22T02:50:57.191Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Read-only planning pilot documented honestly, distinct from unstructured original benchmark, no calendar or LLM baseline.",
+          "path": "docs/PP0007-PLANNING-PILOT.md",
+          "sha256": "29b00e965033c66cb58aa9fedd503a6f8c9eda36468846a8422943da10389914",
+          "recordedAt": "2026-10-22T02:50:57.191Z"
         }
       ],
       "requiresTrustedReview": true,
@@ -755,5 +782,5 @@
       }
     }
   ],
-  "revision": 39
+  "revision": 40
 }
