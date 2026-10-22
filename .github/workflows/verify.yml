@@ -13,3 +13,20 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
+
+  pp0006-live-smoke:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pp-0006-reference-host'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Actual authorized public GitHub read through executable reference host
+        run: |
+          printf '%s\n' '{"objective":"Read verified public repository metadata","capability":"research","inputs":{"repository":"Papa3445/Pro-Papa"}}' | node bin/reference-host.mjs --github-read --github-repo Papa3445/Pro-Papa
+      - name: Real built-in PP-0006 software adapter execution
+        run: |
+          node bin/pro-papa.mjs adapter-check --id PP-0006 --file src/reference-host.mjs --actor chatgpt-implementation
