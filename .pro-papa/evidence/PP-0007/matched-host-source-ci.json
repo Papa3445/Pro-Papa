@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "authenticated-exact-source-head-host-observation-ci",
+  "sourceHead": "d78c1da406031fc501d36580a238f83ea03081b1",
+  "sourceBase": "b3a1c8049cc4dc4aa711fe1d780d18e0d66409b6",
+  "providerRun": {
+    "repository": "Papa3445/Pro-Papa",
+    "runId": 39846210709,
+    "jobId": 120060036510,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39846210709",
+    "headSha": "d78c1da406031fc501d36580a238f83ea03081b1",
+    "tests": 182,
+    "passed": 182,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true
+  },
+  "sourceFiles": [
+    {
+      "path": "bin/pp0007-api-baseline.mjs",
+      "sha256": "e8f5d3040ddb4044b24e1aca5bcce8970a2f4d50eb773f768eac8ad86a3bbb35",
+      "gitBlobSha": "f2b01bcc0caa2881a245b8b4ec381646b1a8ffe6"
+    },
+    {
+      "path": "bin/pp0007-host-observation.mjs",
+      "sha256": "01f3f88d589cd166fcc0463a747b303ba56dee6dccf087717196738b9a4dd039",
+      "gitBlobSha": "6d89113942651ac8801e0ba471cdd0a9e0c1f420"
+    },
+    {
+      "path": "tests/pp0007-host-observation.test.mjs",
+      "sha256": "a0a6342aed248350fd44e3c90d9599ddc67f0fc5196731e42cc3e67573235486",
+      "gitBlobSha": "ab03e466c4426c67211cf815c8ca156b78ab4091"
+    },
+    {
+      "path": "docs/PP0007-HOST-OBSERVATIONS.md",
+      "sha256": "c3883094846bde49cdd650cb7370e65db1c04bab1b81b08b0e8cce86bf927450",
+      "gitBlobSha": "58bd69c470f7e10b6dc452fccb0330ee372bd072"
+    },
+    {
+      "path": "tests/review-github.test.mjs",
+      "sha256": "dd285094c72e23a3da5287885ad58c48d1cd46237929759c9902c771c969a2f9",
+      "gitBlobSha": "25213c97a4942d384c8d34c540cfee91848f74a8"
+    }
+  ],
+  "correctiveHistory": [
+    {
+      "run": 39845555009,
+      "issue": "startup error: URL global shadowed"
+    },
+    {
+      "run": 39845635444,
+      "issue": "planning correctly denied, not unsupported"
+    },
+    {
+      "run": 39845968942,
+      "issue": "research without grant correctly denied"
+    }
+  ],
+  "newExecutionObserved": "real local-node reference-host math.sum and ephemeral private file via Node CI; read-only GitHub transport simulated in tests",
+  "limitations": "No paid OpenAI API call, no authentic paired provider baseline, no independent grade, no real research GET in this collector test suite, no real per-pilot private audit receipt. Host status is not answer quality."
+}
