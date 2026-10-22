@@ -99,7 +99,7 @@ async function durableProbe() {
       valid:first.status==='completed' && retry.status==='already_executed' &&
         first.execution?.output?.total===20 && data.tasks.length===1 &&
         stored?.gatewayRun==='completed',
-      scope:'Isolated temporary project; directory deleted after proof. Not a production user's task ledger.'
+      scope:"Isolated temporary project; directory deleted after proof. Not a production user's task ledger."
     };
   } finally {await rm(directory,{recursive:true,force:true});}
 }
