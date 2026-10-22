@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "reviewer-P2-response-preservation-provider-CI",
+  "reviewer": {
+    "account": "papa4568",
+    "decision": "CHANGES_REQUESTED",
+    "reviewedHead": "7dabe1ab0bd499ebdccc6ce5b8c3105f3c0a7f52",
+    "url": "https://github.com/Papa3445/Pro-Papa/pull/16"
+  },
+  "corrections": [
+    "Exact alias or calendar-valid dated snapshot recognized; unrelated returned model unverified, nonpassing",
+    "Preserve provider response ID, actual model, known incomplete/failed lifecycle and provider token usage even without a complete answer"
+  ],
+  "repairedFiles": [
+    {
+      "path": "bin/pp0007-api-baseline.mjs",
+      "sha256": "170372d37515b173d314b5706373ce5d4c7a499720ce69de6d0fa0a1708d6ded"
+    },
+    {
+      "path": "tests/pp0007-api-baseline.test.mjs",
+      "sha256": "d325a30df40bf9f3280cf7ed8c63dbfd3c6fd13707a98a936f190134e6db2c28"
+    },
+    {
+      "path": "docs/PP0007-API-BASELINE.md",
+      "sha256": "53938a2bd1ee7502a1cfab2d38430ed8a377a0d51ecbd7a079998e64c43cfbfc"
+    }
+  ],
+  "providerRun": {
+    "repository": "Papa3445/Pro-Papa",
+    "id": 39839882290,
+    "jobId": 120037773251,
+    "event": "pull_request",
+    "head": "03498f144f9ac7d871edcefb39b98533fc5ae265",
+    "status": "completed",
+    "conclusion": "success",
+    "tests": 174,
+    "passed": 174,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true,
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39839882290"
+  },
+  "limitations": "Actual GitHub Actions execution of mocked Responses API regression tests; no paid OpenAI API call, authentic baseline, independent quality grade or PP-0007 milestone closeout. New independent review on final PR head remains required."
+}
