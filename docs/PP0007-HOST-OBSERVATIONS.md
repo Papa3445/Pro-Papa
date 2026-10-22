@@ -14,7 +14,7 @@ node bin/pp0007-host-observation.mjs \
   --out /private/pp0007/host-data.json
 ```
 
-The research case is **read-only**. To permit its single public GitHub repository GET, supply a separate explicit flag:
+Without `--github-read`, the research request is **`denied`** by the host's missing tool grant and makes no outbound calls. The research case is **read-only**. To permit its single public GitHub repository GET, supply a separate explicit flag:
 
 ```sh
 node bin/pp0007-host-observation.mjs \
