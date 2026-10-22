@@ -8,9 +8,15 @@ Evaluate the **actual, bounded PP-0006 reference host** against representative u
 
 ## Actual provider-backed execution
 
-- [GitHub Actions run 39708019331](https://github.com/Papa3445/Pro-Papa/actions/runs/39708019331), `check` job `119592520093`: **142 tests passed, 0 failed, 0 skipped**; repository `valid:true`.
-- The `pp0007-pilot-observation` job `119592520497` ran both `node bin/benchmark-pp0007.mjs` (deterministic fixture) and `node bin/benchmark-pp0007.mjs --live-research` (actual read-only HTTPS GitHub API request to the single allowlisted repository). Both complete JSON stdout reports were recovered from authenticated job logs and saved byte-for-byte after normalization to `.pro-papa/evidence/PP-0007/deterministic-fixtures.json` and `live-read-only-github.json`.
-- Mock result SHA-256: `13bb1681593ec3979a494744803e7bfefe1ddbae825b6ce00ae315bf3fa855d3`. Real provider result SHA-256: `5f134362591337b004a5d852c91ed7a39e8f9be192410f529e3e162f89e70067`.
+- Historical [GitHub Actions run 39708019331](https://github.com/Papa3445/Pro-Papa/actions/runs/39708019331), `check` job `119592520093`: **142 tests passed, 0 failed, 0 skipped**; repository `valid:true`.
+- The `pp0007-pilot-observation` job `119592520497` ran both `node bin/benchmark-pp0007.mjs` (deterministic fixture) and `node bin/benchmark-pp0007.mjs --live-research` (actual read-only HTTPS GitHub API request to the single allowlisted repository). Both original complete JSON stdout reports were recovered from authenticated job logs and preserved in `.pro-papa/evidence/PP-0007/historical/`, unchanged; new canonical reports are identified below.
+- Historical mock SHA-256: `13bb1681593ec3979a494744803e7bfefe1ddbae825b6ce00ae315bf3fa855d3`; historical live SHA-256: `5f134362591337b004a5d852c91ed7a39e8f9be192410f529e3e162f89e70067`. These are not the current canonical digests.
+
+## Corrected canonical and historical benchmark records
+
+The independent [CHANGES_REQUESTED review](https://github.com/Papa3445/Pro-Papa/pull/10#pullrequestreview-5608563544) identified a real data-integrity problem: an older mock JSON counted a stub as a GitHub GET. The unaltered original mock and live stdout and original observation summary now live at `.pro-papa/evidence/PP-0007/historical/` (original [run 39708019331](https://github.com/Papa3445/Pro-Papa/actions/runs/39708019331)). The previous paths `deterministic-fixtures.json` and `live-read-only-github.json` now contain **new verbatim runner output**, not edited historical data.
+
+Current [GitHub Actions observation run 39711547417](https://github.com/Papa3445/Pro-Papa/actions/runs/39711547417), job `119603801824`, executed unchanged benchmark source blob `347f36e4a28454168ea8e66f6c9973a70b556ce2` using both deterministic fixture and real native public GitHub GET. Exact captured canonical report hashes: fixture `46c51e3c91c02c3a1a21cd836dbfba8228552ed528e4abcccc99fc69543bd80c`, live `b55d8a1d7c6e2bb427cbf969ebbb8b78ac4fb9d4e8df73e585e714b65dcaf938`. Fixture: `totalGitHubCallsObserved=0`, `totalResearchTransportCallsObserved=1`, research `providerCalls=0`, `transportCalls=1`. Live: real GET count `1`, transport calls `1`. The manifest at `.pro-papa/evidence/PP-0007/provider-observation-current.json` binds observed run, source blob, both raw report paths and historic provenance. These counts are source-instrumented host observations, **not packet-level network tracing**. No output-quality superiority or paired direct assistant baseline was measured.
 
 ## Seven measured requests
 

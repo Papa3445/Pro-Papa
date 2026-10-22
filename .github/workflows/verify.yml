@@ -13,26 +13,3 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
-  pp0007-observe:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Observe mock and native GET without writes
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "__PP0007_SOURCE_START__"
-          git rev-parse HEAD
-          git hash-object bin/benchmark-pp0007.mjs
-          echo "__PP0007_SOURCE_END__"
-          echo "__PP0007_MOCK_START__"
-          node bin/benchmark-pp0007.mjs
-          echo "__PP0007_MOCK_END__"
-          echo "__PP0007_LIVE_START__"
-          node bin/benchmark-pp0007.mjs --live-research
-          echo "__PP0007_LIVE_END__"

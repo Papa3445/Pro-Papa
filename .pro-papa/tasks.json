@@ -704,37 +704,46 @@
           "kind": "test",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Real Actions run 39708019331: 142 actual tests passed; 7 category pilots, 4 negatives, 2/7 user tasks completed, one actual GitHub GET.",
+          "note": "Current-code real Actions dual-mode run 39711547417; mock 0 real GET/1 stub call, live 1 real GET; original record preserved under historical.",
           "path": ".pro-papa/evidence/PP-0007/github-actions-142-tests.json",
-          "sha256": "8910dc05f835a6eb552a375ce545a09c2c8398e1878a422dfc95fbd167e00cf4",
-          "recordedAt": "2026-10-22T01:58:04.290Z"
+          "sha256": "ab1ac276135c395fc5cfc84ff88c705feb68776c472c39806e7790d7b953a964",
+          "recordedAt": "2026-10-22T02:32:06.017Z"
         },
         {
           "kind": "validation",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Partial acceptance; task remains in_progress due absent direct-assistant baseline, domain execution gaps and independent review.",
+          "note": "Independent P2 review addressed through immutable archived reports, verified current provider logs, documented remaining acceptance gaps.",
           "path": ".pro-papa/evidence/PP-0007/acceptance-validation.md",
-          "sha256": "3512af0a9db8f1d2d52a66dc2a574b49c9127e9b94118207c7636d7302f38b16",
-          "recordedAt": "2026-10-22T01:58:04.290Z"
+          "sha256": "0d31d71be1357aacef8d91a784d108fbeba50f11fac32f08f786fbd2022ad61b",
+          "recordedAt": "2026-10-22T02:32:06.017Z"
         },
         {
           "kind": "sources",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Actually observed real public GitHub API GET by host in Actions job 119592520497, with seven pilot statuses and latencies.",
+          "note": "Real native GitHub GET after corrected source; job 119603801824 source git blob 347f36e4a28454168ea8e66f6c9973a70b556ce2; observed 2/7 user tasks completed.",
           "path": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
-          "sha256": "5f134362591337b004a5d852c91ed7a39e8f9be192410f529e3e162f89e70067",
-          "recordedAt": "2026-10-22T01:58:04.290Z"
+          "sha256": "b55d8a1d7c6e2bb427cbf969ebbb8b78ac4fb9d4e8df73e585e714b65dcaf938",
+          "recordedAt": "2026-10-22T02:32:06.017Z"
         },
         {
           "kind": "validation",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Corrected limitation: historical fixture counters include mock transport calls, not independent provider GETs.",
+          "note": "Current canonical actual GitHub GET count separated from stub transport; historical source unchanged; review resubmission pending.",
           "path": "docs/PP0007-BENCHMARK.md",
-          "sha256": "68525fe9e287855144cac6881778c6e683da2f99758198e78f5e047e0aaeffc8",
-          "recordedAt": "2026-10-22T02:13:38.831Z"
+          "sha256": "d58ec4cbc99e08bcf3c85827953fe6dc1f9366324abc5b5f3ffebe58544b84f4",
+          "recordedAt": "2026-10-22T02:32:06.017Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Source-pinned current provider observation manifest; real runner and both reports, historical archive paths and digests.",
+          "path": ".pro-papa/evidence/PP-0007/provider-observation-current.json",
+          "sha256": "a3bcb070abe9ac4262c75215fadaacc8a25cdf7a54b80f6d62784e2dab708700",
+          "recordedAt": "2026-10-22T02:32:06.017Z"
         }
       ],
       "requiresTrustedReview": true,

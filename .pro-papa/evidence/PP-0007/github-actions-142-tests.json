@@ -4,11 +4,11 @@
   "result": "pass",
   "testType": "provider-observed-reproducible-host-boundary-benchmark",
   "sourceBranch": "feature/pp-0007-benchmark",
-  "sourceHeadAtExecution": "b3c711926907bbf6131fcba77edaaa8727d9714c",
-  "workflowRunId": 39708019331,
-  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39708019331",
-  "ciJobId": 119592520093,
-  "benchmarkJobId": 119592520497,
+  "sourceHeadAtExecution": "943d2addc2d886e93379cd4bc0c5512ae6a7d8f9",
+  "workflowRunId": 39711547417,
+  "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39711547417",
+  "ciJobId": 119603802073,
+  "benchmarkJobId": 119603801824,
   "ci": {
     "tests": 142,
     "passed": 142,
@@ -24,18 +24,35 @@
     "unsafeEndpointsCalled": 0,
     "durableTemporaryProjectPassed": true,
     "realGitHubGet": true,
-    "liveResearchElapsedMs": 212.754
+    "liveResearchElapsedMs": 291.26,
+    "mockActualGitHubGetCount": 0,
+    "mockTransportInvocationCount": 1,
+    "liveActualGitHubGetCount": 1,
+    "liveTransportInvocationCount": 1
   },
   "reports": {
     "mock": ".pro-papa/evidence/PP-0007/deterministic-fixtures.json",
-    "mockSha256": "13bb1681593ec3979a494744803e7bfefe1ddbae825b6ce00ae315bf3fa855d3",
+    "mockSha256": "46c51e3c91c02c3a1a21cd836dbfba8228552ed528e4abcccc99fc69543bd80c",
     "live": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
-    "liveSha256": "5f134362591337b004a5d852c91ed7a39e8f9be192410f529e3e162f89e70067"
+    "liveSha256": "b55d8a1d7c6e2bb427cbf969ebbb8b78ac4fb9d4e8df73e585e714b65dcaf938",
+    "manifest": ".pro-papa/evidence/PP-0007/provider-observation-current.json",
+    "historical": {
+      "runId": 39708019331,
+      "kind": "archived unmodified provider stdout from previous benchmark revision; does not use current network counter definitions",
+      "fixturePath": ".pro-papa/evidence/PP-0007/historical/deterministic-fixtures.json",
+      "fixtureSha256": "13bb1681593ec3979a494744803e7bfefe1ddbae825b6ce00ae315bf3fa855d3",
+      "livePath": ".pro-papa/evidence/PP-0007/historical/live-read-only-github.json",
+      "liveSha256": "5f134362591337b004a5d852c91ed7a39e8f9be192410f529e3e162f89e70067",
+      "jobPath": ".pro-papa/evidence/PP-0007/historical/github-actions-142-tests.json",
+      "jobSha256": "8910dc05f835a6eb552a375ce545a09c2c8398e1878a422dfc95fbd167e00cf4"
+    }
   },
   "baseline": {
     "directAssistant": "not_measured",
     "tokens": "not_measured",
     "correctiveHumanInteractions": "not_measured"
   },
-  "limitations": "A real Node host completed only two bounded tasks; five were safely refused. This is NOT evidence of improved broad real-user outcomes versus a direct AI assistant. Report records actual GitHub job logs, but no independent quality-review verdict. Task remains in_progress."
+  "limitations": "Corrected current-code reports captured verbatim from authentic Actions stdout; historical original reports archived unchanged. Only two of seven tasks completed. No paired direct LLM baseline, human corrections or token meter.",
+  "sourceScriptBlob": "347f36e4a28454168ea8e66f6c9973a70b556ce2",
+  "sourceScriptSha256": "4c3599771b9fe87bf4ca19f5b806a72d1b7e284b1a1fdde6c3f8ccd9402b6deb"
 }
