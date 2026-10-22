@@ -1077,16 +1077,61 @@
           "sha256": "d2affe87ba9f69a21bcef482f314c82fd7259cab7153ea0acd58b2eae4717840",
           "note": "Authenticated exact implementation-head GitHub Actions 39839882290 job 120037773251: 174/174, valid; final evidence-head CI and fresh independent review still required.",
           "recordedAt": "2026-10-22T19:31:27.519Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-api-baseline.mjs",
+          "sha256": "e8f5d3040ddb4044b24e1aca5bcce8970a2f4d50eb773f768eac8ad86a3bbb35",
+          "note": "Exposes SHA-pinned canonical original objective, capability and inputs for matched host arm.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-host-observation.mjs",
+          "sha256": "01f3f88d589cd166fcc0463a747b303ba56dee6dccf087717196738b9a4dd039",
+          "note": "Original fixture-exact reference-host observation source; native Node and clearly labeled simulated transport, no real model baseline.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-host-observation.test.mjs",
+          "sha256": "f48186a33aaa3f674edb0074de66fb201907ced92bb7c75b2a871fdf83c5f847",
+          "note": "Source of regression/review-target checks; actual GitHub Actions CI must be observed separately.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-HOST-OBSERVATIONS.md",
+          "sha256": "7d010872443e21e1312b10eea5387d19a956c3b0cfb0f20fc1147349e41fcaa8",
+          "note": "Documents permission differences, no user-task grading, null human corrections/tokens, private output and audit limits.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "dd285094c72e23a3da5287885ad58c48d1cd46237929759c9902c771c969a2f9",
+          "note": "Source of regression/review-target checks; actual GitHub Actions CI must be observed separately.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 16,
+        "pullRequest": 17,
         "baseRef": "main",
-        "baseSha": "7a38689a02af9eb51d5f4299304654611186ec92"
+        "baseSha": "b3a1c8049cc4dc4aa711fe1d780d18e0d66409b6"
       }
     }
   ],
-  "revision": 53
+  "revision": 54
 }
