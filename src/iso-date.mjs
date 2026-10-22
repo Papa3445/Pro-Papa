@@ -2,7 +2,7 @@
 export function parseIsoCalendarDate(value) {
   // Supported grammar intentionally excludes timestamps, offsets, and 00-99 JS year quirks.
   if (typeof value !== 'string' ||
-      !/^[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$/.test(value)) return null;
+      !/^[12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value)) return null;
   const [year, month, day] = value.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
   if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 ||

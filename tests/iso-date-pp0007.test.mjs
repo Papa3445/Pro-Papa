@@ -29,6 +29,13 @@ test('PP-0007 ISO-date generated software source is runnable and identical to te
   assert.equal(product.examples[3].parsed,null);
   assert.equal(product.examples[4].parsed,null);
   assert.equal(product.examples[5].parsed,null);
+  assert.equal(parseIsoCalendarDate('2000-02-29')?.day,29);
+  assert.equal(parseIsoCalendarDate('2100-02-29'),null);
+  assert.equal(parseIsoCalendarDate('0999-12-31'),null);
+  assert.equal(parseIsoCalendarDate('3000-01-01'),null);
+  assert.equal(parseIsoCalendarDate('2026-03-00'),null);
+  assert.equal(product.source,generateIsoDateModule({examples:['2020-01-01']}).source,
+    'untrusted sample values must not be inserted into generated code');
 });
 test('PP-0007 reference host executes code.iso-date and returns verifiable source/provenance',async()=>{
   const host=createReferenceHost({githubResearch:false,auditMode:'off'});
