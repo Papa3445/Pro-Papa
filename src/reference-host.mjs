@@ -1,5 +1,5 @@
 // PP-0006 — executable host; user requests never define tool grants or audit policy.
-import { runGateway } from './gateway.mjs';
+import { runGateway, routeObjective } from './gateway.mjs';
 import { issueUsageReceipt } from './usage-receipts.mjs';
 const REPO = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -155,9 +155,10 @@ export function createReferenceHost({
           request.objective.length > 16384)
         return { status: 'invalid_request', audit: { status: 'not_requested' } };
       // Approval is bound to one request ID and action before any handler call.
-      if (approvedIssue && request.capability === 'operations' &&
+      if (approvedIssue && routeObjective(request) === 'operations' &&
           (!same(request.id, approvedIssue.requestId) ||
-            request.inputs?.action !== 'github.create_issue'))
+            request.inputs?.action !== 'github.create_issue' ||
+            !same(request.inputs?.repository, approvedIssue.repository)))
         return { status: 'denied', reason: 'effect_not_approved',
           audit: { status: 'not_requested' } };
       return exclusive(durableProject, async () => {
