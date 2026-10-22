@@ -593,6 +593,47 @@
             "path": "src/reference-host.mjs",
             "sha256": "641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2"
           }
+        },
+        {
+          "kind": "artifact",
+          "path": "src/reference-host.mjs",
+          "sha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c",
+          "note": "Fixed host payload approval and audit transport boundary, source SHA256 recomputed from GitHub bytes and matched genuine adapter input.",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z"
+        },
+        {
+          "kind": "test",
+          "path": ".pro-papa/evidence/PP-0006/github-actions-139-tests.json",
+          "sha256": "11eeef3fca04552e7c8f51279af019b05698bdde5687958397f93f42a083422b",
+          "note": "Actual GitHub Actions 39702580231: 139/139, native read-only GITHUB_TOKEN audit denial smoke; not a successful privileged receipt.",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z"
+        },
+        {
+          "kind": "validation",
+          "path": ".pro-papa/evidence/PP-0006/acceptance-validation.md",
+          "sha256": "44b91ab221bccef3be492a3d44ed3f339a478a41b06ca53ea440a63d8bf8237b",
+          "note": "Independent CHANGES_REQUESTED 5607966661 remediation and explicit unmet positive private-audit host smoke acceptance.",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z"
+        },
+        {
+          "kind": "adapter",
+          "path": ".pro-papa/evidence/PP-0006/software-829cb5fc-d1b0-4ebc-9521-0c90ffbc390c.json",
+          "sha256": "88d3c5d4a6945f1b11fd2b8f807395a48182f0ada11ff9d6b88d76ec4cb080aa",
+          "note": "Authentic built-in syntax:node adapter check in GitHub Actions 39702580231 on source digest 1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/reference-host.mjs",
+            "sha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c"
+          }
         }
       ],
       "requiresAdapter": true,
@@ -624,5 +665,5 @@
       "evidence": []
     }
   ],
-  "revision": 33
+  "revision": 34
 }
