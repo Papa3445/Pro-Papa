@@ -224,3 +224,33 @@ test('invalid input and host configuration fail before any provider request',asy
   assert.throws(()=>createReferenceHost({allowedRepositories:['https://evil.com'],
     githubResearch:true}),/Unverified host/);
 });
+
+
+test('untrusted request accessors and stateful serialization cannot bypass host grants',async t=>{
+  const f=service(),opts=await durable(t);
+  const host=createReferenceHost(config(f,{...opts,approvedIssue:{requestId:id,repository}}));
+  let accesses=0;
+  const getterRequest={ ...issueRequest, get id() {
+    accesses++; return accesses === 1 ? id : 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  } };
+  const invalid=await host.execute(getterRequest);
+  assert.equal(invalid.status,'invalid_request');
+  assert.equal(accesses,0);
+  assert.equal(f.calls.length,0);
+  const input={repository, action:'github.create_issue',
+    get title() { accesses++; return 'Hidden mutable title'; } };
+  const nested=await host.execute({...issueRequest,inputs:input});
+  assert.equal(nested.status,'invalid_request');
+  assert.equal(accesses,0);
+  assert.equal(f.calls.length,0);
+});
+test('request snapshot excludes mutable input references while executing an external provider',async()=>{
+  const f=service();
+  const requestObject={...request, inputs:{repository}};
+  const h=createReferenceHost(config(f));
+  const result=await h.execute(requestObject);
+  requestObject.inputs.repository='attacker/hijack';
+  assert.equal(result.status,'completed');
+  assert.equal(result.execution.output.repository,repository);
+  assert.equal(f.calls[0].url,'https://api.github.com/repos/'+repository);
+});
