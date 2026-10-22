@@ -204,7 +204,9 @@ async function settleTracking(tracking, outcome) {
     const { state, profiles } = await loadProject(tracking.root);
     const task = state.tasks.find(t => t.id === tracking.taskId);
     if (!task || task.gatewayRun !== 'executing') return { mode: 'durable', taskId: tracking.taskId, runState: 'needs_reconciliation' };
-    task.gatewayRun = outcome === 'completed' ? 'completed' : outcome === 'provider_unavailable' ? 'retryable' : 'ambiguous';
+    const readOnly = CAPABILITIES[task.gatewayRequest?.capability]?.effect === 'read';
+    task.gatewayRun = outcome === 'completed' ? 'completed' :
+      outcome === 'provider_unavailable' && readOnly ? 'retryable' : 'ambiguous';
     await saveIsolatedProject(tracking.root, state, profiles);
     return publicTracking(task);
   } catch {

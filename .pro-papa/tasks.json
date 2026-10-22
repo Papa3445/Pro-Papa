@@ -549,11 +549,119 @@
       "dependsOn": [
         "PP-0005"
       ],
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "chatgpt-implementation",
       "blockedReason": null,
-      "evidence": [],
-      "requiresAdapter": true
+      "evidence": [
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Provider-returned PP-0006 reference host source blob 1b926292bb0dc095c1d75b5fee4ac8333c63b39c; actual built-in software adapter bound to this exact source SHA-256.",
+          "path": "src/reference-host.mjs",
+          "sha256": "641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2",
+          "recordedAt": "2026-10-22T00:37:45.861Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real GitHub Actions run 39700311869 check job 119567666047 passed 136/136; live smoke job 119567665710 invoked actual host and queried public GitHub API.",
+          "path": ".pro-papa/evidence/PP-0006/github-actions-136-tests.json",
+          "sha256": "45b5b2af900b01ac29c8e293eb502e477e8c80670ac853e601500eab5fd4be51",
+          "recordedAt": "2026-10-22T00:37:45.861Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Substantive implementer validation of host, audit, privacy and dependency acceptance; live private audit connector receipt verified separately, but executable CLI with production audit credentials remains untested.",
+          "path": ".pro-papa/evidence/PP-0006/acceptance-validation.md",
+          "sha256": "c448e83b9c2e120ebdcb7dcd8ff8030873232c1469eb3ed07e11fdd29bdea156",
+          "recordedAt": "2026-10-22T00:37:45.861Z"
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Authentic built-in syntax:node adapter run 39700311869 job 119567665710, input SHA256 641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2",
+          "path": ".pro-papa/evidence/PP-0006/software-846ffc51-72bd-487c-abef-4b2e5ddeafe3.json",
+          "sha256": "6182341cc5727817ea0cc21c827b69ad462c3a2982fcde68d59958745d697f42",
+          "recordedAt": "2026-10-22T00:37:45.861Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/reference-host.mjs",
+            "sha256": "641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2"
+          }
+        },
+        {
+          "kind": "artifact",
+          "path": "src/reference-host.mjs",
+          "sha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c",
+          "note": "Fixed host payload approval and audit transport boundary, source SHA256 recomputed from GitHub bytes and matched genuine adapter input.",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z"
+        },
+        {
+          "kind": "test",
+          "path": ".pro-papa/evidence/PP-0006/github-actions-139-tests.json",
+          "sha256": "11eeef3fca04552e7c8f51279af019b05698bdde5687958397f93f42a083422b",
+          "note": "Actual GitHub Actions 39702580231: 139/139, native read-only GITHUB_TOKEN audit denial smoke; not a successful privileged receipt.",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z"
+        },
+        {
+          "kind": "validation",
+          "path": ".pro-papa/evidence/PP-0006/acceptance-validation.md",
+          "sha256": "44b91ab221bccef3be492a3d44ed3f339a478a41b06ca53ea440a63d8bf8237b",
+          "note": "Independent CHANGES_REQUESTED 5607966661 remediation and explicit unmet positive private-audit host smoke acceptance.",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z"
+        },
+        {
+          "kind": "adapter",
+          "path": ".pro-papa/evidence/PP-0006/software-829cb5fc-d1b0-4ebc-9521-0c90ffbc390c.json",
+          "sha256": "88d3c5d4a6945f1b11fd2b8f807395a48182f0ada11ff9d6b88d76ec4cb080aa",
+          "note": "Authentic built-in syntax:node adapter check in GitHub Actions 39702580231 on source digest 1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "recordedAt": "2026-10-22T01:00:21.515Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/reference-host.mjs",
+            "sha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c"
+          }
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0006/private-audit-host-positive-smoke.json",
+          "sha256": "9482217756f72a10d68698540b53da7ea3741c71917c2aa020a34a6acef8f743",
+          "note": "Real private Actions 39704656986 job 119581729402 executed Node reference-host --audit-required via ephemeral private-store token, confirmed private receipt and completed math=21; repo privacy, receipt immutable byte readback verified. No prompt/token persisted; reviewer approval pending.",
+          "recordedAt": "2026-10-22T01:22:51.217Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0006/acceptance-validation.md",
+          "sha256": "2abda551025cce0d98353eb2333319a1a8e2b03b4cc14a848427187c361cded5",
+          "note": "Positive private audit host end-to-end acceptance now executed, supersedes historical missing positive smoke. Independent review still required; no PP-0007 started.",
+          "recordedAt": "2026-10-22T01:22:51.220Z"
+        }
+      ],
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 8,
+        "baseRef": "main",
+        "baseSha": "203394eaea45092c26c341fc44bc4efe15c61781"
+      }
     },
     {
       "id": "PP-0007",
@@ -575,5 +683,5 @@
       "evidence": []
     }
   ],
-  "revision": 31
+  "revision": 35
 }

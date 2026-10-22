@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0006",
+  "result": "pass",
+  "evidenceType": "provider-observed-positive-private-audit-reference-host-smoke",
+  "scope": "Actual reference-host CLI called with --audit-required using the private audit repository's GitHub Actions ephemeral GITHUB_TOKEN. A benign local math operation executed only after PP-0004 private source receipt was issued and verified. Audit receipt content and private credentials are not included.",
+  "source": {
+    "repository": "Papa3445/Pro-Papa",
+    "codeCommit": "a3f6e731b26bfb71379da97dd27df391afafe377",
+    "baseCommit": "203394eaea45092c26c341fc44bc4efe15c61781",
+    "cli": "node bin/reference-host.mjs --audit-required",
+    "capability": "math.sum",
+    "expectedTotal": 21
+  },
+  "execution": {
+    "runId": 39704656986,
+    "jobId": 119581729402,
+    "status": "success",
+    "url": "https://github.com/Papa3445/Pro-Papa-Audit/actions/runs/39704656986",
+    "repositoryVisibility": "private",
+    "workflowBranch": "test/pp-0006-private-host-smoke",
+    "toolStatus": "completed",
+    "auditStatus": "confirmed",
+    "resultTotal": 21
+  },
+  "privateReceipt": {
+    "url": "https://github.com/Papa3445/Pro-Papa-Audit/blob/84fe6dd9186c4d24ec19d9ca32e90d0126469e01/usage-receipts/2026/10/d4a60c7e-8a60-4387-b554-c91acd711220.json",
+    "commit": "84fe6dd9186c4d24ec19d9ca32e90d0126469e01",
+    "gitBlobSha": "a13c2cfbaaeeaffd43c4b7f103b16454cc11999e",
+    "id": "d4a60c7e-8a60-4387-b554-c91acd711220",
+    "sourceCommit": "203394eaea45092c26c341fc44bc4efe15c61781",
+    "byteIntegrity": "checked against GitHub Git blob and immutable commit readback",
+    "visibility": "private",
+    "fields": [
+      "schemaVersion",
+      "receiptId",
+      "recordedAt",
+      "operation",
+      "sourceRepository",
+      "sourceCommit",
+      "consulted",
+      "verificationScope"
+    ]
+  },
+  "negativeControl": {
+    "runId": 39702580231,
+    "jobId": 119575049769,
+    "outcome": "audit_failed",
+    "reason": "repository-scoped read-only token could not reach separate private audit store; math was not dispatched"
+  },
+  "security": [
+    "No real GitHub issue was created",
+    "No tokens or private receipt body included in this evidence file",
+    "Temporary positive-smoke workflow was removed from the test branch after successful execution",
+    "Audit required prior to tool execution; positive audit is not an automatic ChatGPT message interception claim"
+  ],
+  "limitations": "Independent reviewer papa4568 currently does not have direct read access to private audit repo using their connected account (404 observed). The public record carries provider-run identifiers and immutable private receipt identifiers but independent byte readback requires separately authorized read access. The host production smoke itself passed."
+}

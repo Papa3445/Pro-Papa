@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0006",
+  "adapter": "software",
+  "capability": "syntax:node",
+  "evidenceKind": "adapter",
+  "input": {
+    "path": "src/reference-host.mjs",
+    "sha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c"
+  },
+  "result": "pass",
+  "checks": [
+    "Node.js syntax check passed on immutable snapshot (no code executed)"
+  ],
+  "limits": [
+    "No claims of factual correctness or product quality",
+    "No independent review performed"
+  ],
+  "timestamp": "2026-10-22T00:55:15.715Z"
+}
