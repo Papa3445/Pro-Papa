@@ -162,8 +162,7 @@ export function createReferenceHost({
         (auditMode !== 'required' || typeof auditFetchImpl !== 'function')) ||
       (auditMode === 'required' &&
         (typeof auditRepository !== 'string' || !REPO.test(auditRepository) ||
-          !REPO.test(sourceRepository) || same(auditRepository, sourceRepository) ||
-          typeof auditFetchImpl !== 'function')) ||
+          !REPO.test(sourceRepository) || same(auditRepository, sourceRepository))) ||
       !(durableProject === null || typeof durableProject === 'string')) fail();
   if (approvedIssue && (!plain(approvedIssue) || !UUID.test(approvedIssue.requestId ?? '') ||
       typeof approvedIssue.payloadSha256 !== 'string' ||
@@ -208,9 +207,9 @@ export function createReferenceHost({
       }, provenance: { provider: 'github', operation: 'research',
         reference: 'repo:' + repo.toLowerCase() + ':' + data.id } };
     },
-    operations: async ({ inputs }) => {
+    operations: async ({ inputs, objective }) => {
       if (!approvedIssue || !plain(inputs) || inputs.action !== ISSUE_ACTION ||
-          !approvedPayload({ id: approvedIssue.requestId, capability: 'operations', inputs },
+          !approvedPayload({ id: approvedIssue.requestId, objective, capability: 'operations', inputs },
             approvedIssue)) fail();
       const repo = allowedRepo(inputs, allowedRepositories);
       if (!same(repo, approvedIssue.repository) || typeof inputs.title !== 'string' ||
