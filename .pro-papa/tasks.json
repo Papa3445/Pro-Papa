@@ -1101,7 +1101,7 @@
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "tests/pp0007-host-observation.test.mjs",
-          "sha256": "04e98262b5dc4efb577a46da3ce5beed99f7de562ceaffb79774415996f40233",
+          "sha256": "a0a6342aed248350fd44e3c90d9599ddc67f0fc5196731e42cc3e67573235486",
           "note": "Current test source, corrected native planning-denied oracle after real failing CI; fresh full-suite CI required.",
           "recordedAt": "2026-10-22T20:05:30.833Z"
         },
@@ -1110,7 +1110,7 @@
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "docs/PP0007-HOST-OBSERVATIONS.md",
-          "sha256": "6da802d6936d8566b34f700481ff9cbd914a2c0002404b22ea7a6b7f5dfaca31",
+          "sha256": "c3883094846bde49cdd650cb7370e65db1c04bab1b81b08b0e8cce86bf927450",
           "note": "Current verified docs distinguish planning denial from unsupported, demonstrate unchanged seven prompts and private/evidence limits.",
           "recordedAt": "2026-10-22T20:05:30.833Z"
         },
@@ -1122,6 +1122,15 @@
           "sha256": "dd285094c72e23a3da5287885ad58c48d1cd46237929759c9902c771c969a2f9",
           "note": "Source of regression/review-target checks; actual GitHub Actions CI must be observed separately.",
           "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/matched-host-source-ci.json",
+          "sha256": "8bd3a4cb5f283fb6d6a4dbc83fca61125f9a54e2ff1b7423a799f4d9f47b85b5",
+          "recordedAt": "2026-10-22T20:09:56.279Z",
+          "note": "Actual source-head pull_request GitHub Actions 39846210709 job 120060036510, 182/182 tests, valid project, real local math case; final ledger-head CI and independent review pending."
         }
       ],
       "requiresTrustedReview": true,
@@ -1133,5 +1142,5 @@
       }
     }
   ],
-  "revision": 55
+  "revision": 56
 }
