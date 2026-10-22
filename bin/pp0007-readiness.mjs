@@ -17,7 +17,31 @@ const ids = a => a.map(x=>x.id);
 const sameIds = (a,b) => JSON.stringify(ids(a))===JSON.stringify(ids(b));
 const exactInts = (a,keys) => keys.every(k=>Number.isSafeInteger(a[k])&&a[k]>=0);
 
+// Reviewer-verified immutable historical snapshots, not values read from the same
+// mutable observation. A revised report requires new independently approved hashes.
+// Digests are content-integrity pins, NOT authentication of GitHub or output quality.
+const ORIGINAL_RAW_SHA256='46c51e3c91c02c3a1a21cd836dbfba8228552ed528e4abcccc99fc69543bd80c';
+const STRUCTURED_RAW_SHA256='62e3446a49dac2fe6d8b676142b3c94b0101aaf118206f4c43b7c238a283f41e';
+const ORIGINAL_PARSED_SHA256='cc180231d058d56765ce07aa2cbf0debb006dc6a6baa2359845bce75591f1052';
+const STRUCTURED_PARSED_SHA256='3ef3a906920b858b7247394eaab83a5942ea1035bbf3c77cb933db26801920c4';
+const NEGATIVE_ORACLE=Object.freeze([
+  ['unstructured_qa','unsupported'],
+  ['unstructured_novel','unsupported'],
+  ['unstructured_software','unsupported'],
+  ['unauthorized_issue','denied'],
+  ['memo_action_injection','provider_unavailable'],
+]);
+const finiteMs=x=>typeof x==='number' && Number.isFinite(x) && x>=0;
+function pinnedObject(value, expected, name){
+  let serialized;
+  try { serialized=JSON.stringify(value); } catch { guard(false,name); }
+  guard(typeof serialized==='string' && digest(serialized)===expected,name);
+}
+
 export function analyzeReadiness(canonical,manifest) {
+  // Fail closed on ANY changed historical field, not just summary counters.
+  pinnedObject(canonical,ORIGINAL_PARSED_SHA256,'pinned canonical historical observation');
+  pinnedObject(manifest,STRUCTURED_PARSED_SHA256,'pinned structured historical observation');
   guard(canonical && canonical.taskId==='PP-0007' &&
     canonical.mode==='deterministic_fake_github' &&
     canonical.kind==='reproducible-bounded-host-pilot' && canonical.guardrailsPassed===true,
@@ -57,12 +81,24 @@ export function analyzeReadiness(canonical,manifest) {
       p.mechanicalValidationPassed===true && p.provider==='local-node' &&
       p.auditStatus==='not_requested') &&
     Array.isArray(s.negatives) && s.negatives.length===5 &&
-    s.negatives.every(x=>x.passed===true && x.status===x.expected) &&
+    s.negatives.every((x,i)=>x.id===NEGATIVE_ORACLE[i][0] &&
+      x.expected===NEGATIVE_ORACLE[i][1] && x.status===NEGATIVE_ORACLE[i][1] &&
+      x.passed===true) &&
     s.negativeTestsPassed===5 && s.hostCalls===9 &&
     s.externalToolCallsObserved===0 && s.realGitHubCallsObserved===0 &&
     s.receiptCount===0 && s.tokenUsage===null &&
     s.directAssistantBaseline===null && s.correctiveInteractionsMeasured===false &&
-    s.historicSevenCaseCompletionRate==='2/7 unchanged; not measured by this script',
+    s.historicSevenCaseCompletionRate==='2/7 unchanged; not measured by this script' &&
+    finiteMs(s.totalHostElapsedMs) && finiteMs(s.meanHostElapsedMs) &&
+    s.pilots.every((p,i)=>finiteMs(p.elapsedMs) && p.hostCalls===1 &&
+      p.persistedTask===false && p.externalEffectsObserved===0 &&
+      JSON.stringify(p.outputSummary)===JSON.stringify([
+        {total:10},{scheduledCount:2},{status:'draft_unverified'},
+        {fileName:'parse-iso-date.mjs'}][i])) &&
+    canonical.pilots.every((p,i)=>finiteMs(p.elapsedMs) &&
+      p.auditStatus==='not_requested' && p.persistedTask===false &&
+      p.provenanceProvider===(['qa','research','software','document','data','planning','novel'][i]==='research'?'github':
+        i===4?'local-node':null)),
     'structured local-only outcomes');
   guard(CASES.length===7 && STRUCTURED_PILOTS.length===4 &&
     CASES.some(c=>c.id==='qa') && CASES.some(c=>c.id==='novel') &&
@@ -103,6 +139,11 @@ export async function loadReadiness() {
     readFile(new URL('bin/benchmark-structured-pp0007.mjs',root),'utf8'),
     readFile(new URL('tests/benchmark-structured-pp0007.test.mjs',root),'utf8'),
   ]);
+  // Fixed byte digests independently anchored in the preceding reviewed evidence.
+  // Self-consistent edits to both the report and its embedded source hashes fail.
+  guard(digest(canonicalRaw)===ORIGINAL_RAW_SHA256 &&
+    digest(structuredRaw)===STRUCTURED_RAW_SHA256,
+    'historical original/structured report byte hashes');
   const canonical=JSON.parse(canonicalRaw),structured=JSON.parse(structuredRaw);
   guard(structured.source?.path==='bin/benchmark-structured-pp0007.mjs' &&
     structured.tests?.path==='tests/benchmark-structured-pp0007.test.mjs' &&
@@ -115,7 +156,7 @@ export async function loadReadiness() {
     structuredTestsSha256:digest(tests),
     canonicalReportSha256:digest(canonicalRaw),
     structuredObservationSha256:digest(structuredRaw),
-    note:'Local SHA-256 integrity only; provider run identity not independently queried by this CLI',
+    note:'Locally recomputed SHA-256 matches independently reviewed pinned historical bytes, but GitHub provider identity is not queried by this CLI',
   }};
 }
 async function main(){

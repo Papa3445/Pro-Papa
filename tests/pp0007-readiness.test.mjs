@@ -25,7 +25,7 @@ test('PP-0007 readiness auditor reports real noncomparable case coverage and unr
   assert.equal(a.comparativeSuperiority,'not_established');
   assert.equal(a.conditions.length,4);
   assert.ok(a.conditions.every(c=>c.met===false));
-  assert.match(a.sourceIntegrity.note,/not independently queried/);
+  assert.match(a.sourceIntegrity.note,/not queried by this CLI/);
   assert.match(a.sourceIntegrity.structuredSourceSha256,/^[a-f0-9]{64}$/);
   console.log('PP0007_READINESS_REPORT_JSON='+JSON.stringify(a));
 });
@@ -51,6 +51,43 @@ test('PP-0007 structured mock quality, receipts or LLM baseline cannot silently 
     x=>{x.observedReport.pilots[0].provider='github'},
     x=>{x.githubActions.headSha='a'.repeat(40)},
   ]){const bad=copy(study);rewrite(bad);assert.throws(()=>analyzeReadiness(canon,bad),/integrity failure/);}
+});
+
+
+test('PP-0007 P2 review: independent safe-status oracle refuses laundering of negatives',async()=>{
+  const [canonical,structured]=await actual();
+  for (const alter of [
+    x=>{const p=x.observedReport.negatives[3];p.expected='completed';p.status='completed';p.passed=true;},
+    x=>{x.observedReport.negatives[3].id='harmless_case';},
+    x=>{x.observedReport.negatives[4].expected='completed';x.observedReport.negatives[4].status='completed';},
+    x=>{x.observedReport.negatives.reverse();},
+  ]){const modified=copy(structured);alter(modified);
+    assert.throws(()=>analyzeReadiness(canonical,modified),/integrity failure/);}
+});
+test('PP-0007 P2 review: changed output, timing, audit, provenance and source metadata refuse integrity proof',async()=>{
+  const [canonical,structured]=await actual();
+  for(const mutate of [
+    x=>{x.observedReport.totalHostElapsedMs=-9999;},
+    x=>{x.observedReport.totalHostElapsedMs='4.749';},
+    x=>{x.observedReport.meanHostElapsedMs=Infinity;},
+    x=>{x.observedReport.pilots[0].outputSummary.total=999;},
+    x=>{x.observedReport.pilots[2].outputSummary.status='approved';},
+    x=>{x.observedReport.pilots[0].elapsedMs=-1;},
+    x=>{x.observedReport.pilots[1].auditStatus='confirmed';},
+    x=>{x.source.sha256='0'.repeat(64);},
+    x=>{x.githubActions.runId=1;},
+  ]){const modified=copy(structured);mutate(modified);
+    assert.throws(()=>analyzeReadiness(canonical,modified),/integrity failure/);}
+  for(const mutate of [
+    x=>{x.pilots[1].auditStatus='confirmed';},
+    x=>{x.pilots[1].provenanceProvider='untrusted-fixture';},
+    x=>{x.pilots[4].outputSummary.total=999;},
+    x=>{x.pilots[4].elapsedMs=-100;},
+    x=>{x.pilots[1].transportCalls=0;},
+    x=>{x.meanHostTimeMs=-99;},
+    x=>{x.negatives[2].status='completed';x.negatives[2].passed=true;},
+  ]){const modified=copy(canonical);mutate(modified);
+    assert.throws(()=>analyzeReadiness(modified,structured),/integrity failure/);}
 });
 
 test('PP-0007 matched direct-assistant trial template keeps all seven original tasks and no invented outputs',async()=>{

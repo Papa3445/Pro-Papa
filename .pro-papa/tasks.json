@@ -978,6 +978,33 @@
           "sha256": "3e7af81fd8a12eca5dc65bade4daf694718e219537526ed12e22b1b4363a0474",
           "note": "Regression enforces identical canonical objectives across seven cases and null/uncollected baseline, host, grade and measurement fields; CI not yet verified.",
           "recordedAt": "2026-10-22T13:20:25.553Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-readiness.mjs",
+          "sha256": "cb2e6025dccbd58f2fa3cdbba438a084f080f2ca35fdf29aa41a4d08b6226ee0",
+          "note": "Fix reviewer-reproduced P2: historic SHA-pinned byte/parsed records; independent negative oracle; output, timing and provenance guards.",
+          "recordedAt": "2026-10-22T15:13:07.678Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-readiness.test.mjs",
+          "sha256": "eac6a076c4ff8ca31fe8a1600098fdfaea603265efc6392584733da27dd093d6",
+          "note": "Regression mutations reproduce reviewer P2 laundering and metric fabrication; await real exact-head CI.",
+          "recordedAt": "2026-10-22T15:13:07.678Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-READINESS.md",
+          "sha256": "445c8de04cf376b34be586a4b5f2c4df6244ec93355505e275c97733f01c66d3",
+          "note": "Transparent prior rejected reviewer finding and revised limited digest trust model; no fabricated paired baseline.",
+          "recordedAt": "2026-10-22T15:13:07.678Z"
         }
       ],
       "requiresTrustedReview": true,
@@ -989,5 +1016,5 @@
       }
     }
   ],
-  "revision": 49
+  "revision": 50
 }
