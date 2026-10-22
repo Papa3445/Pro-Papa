@@ -861,6 +861,15 @@
           "path": "tests/review-github.test.mjs",
           "sha256": "e9c9f4029696201dbd2e704203b832bc23154b609c9d5bb32b6a595e3ea2a330",
           "recordedAt": "2026-10-22T04:04:27.090Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual code-head pull_request CI 39720335188, 155/155 and valid project, generated parser imported and parity-tested. Earlier failed run explicitly archived as metadata; final evidence-head CI pending.",
+          "path": ".pro-papa/evidence/PP-0007/iso-date-ci.json",
+          "sha256": "d7c5133d638fa14d3752fb342df1ad481c56348d9e3127539a9665716dba5512",
+          "recordedAt": "2026-10-22T04:07:15.828Z"
         }
       ],
       "requiresTrustedReview": true,
@@ -872,5 +881,5 @@
       }
     }
   ],
-  "revision": 44
+  "revision": 45
 }
