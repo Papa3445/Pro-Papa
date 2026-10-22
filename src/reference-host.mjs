@@ -1,5 +1,6 @@
 // PP-0006 — executable host; user requests never define tool grants or audit policy.
 import { runGateway, routeObjective } from './gateway.mjs';
+import { createHash, timingSafeEqual } from 'node:crypto';
 import { issueUsageReceipt } from './usage-receipts.mjs';
 const REPO = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -8,6 +9,36 @@ const fail = () => { throw Error('Unverified host configuration or provider outp
 const same = (a, b) => typeof a === 'string' && typeof b === 'string' &&
   a.toLowerCase() === b.toLowerCase();
 const queues = new Map();
+
+const SHA256 = /^[0-9a-f]{64}$/;
+const ISSUE_ACTION = 'github.create_issue';
+/**
+ * Review the exact issue contents before issuing this digest out-of-band.
+ * The digest is an approval identity, NOT authorization on its own.
+ */
+export function issueApprovalDigest({ requestId, repository, title, body = '' }) {
+  if (typeof requestId !== 'string' || !UUID.test(requestId) ||
+      typeof repository !== 'string' || !REPO.test(repository) ||
+      typeof title !== 'string' || !title.trim() || title.length > 120 ||
+      typeof body !== 'string' || body.length > 2048) fail();
+  const payload = JSON.stringify({ requestId: requestId.toLowerCase(),
+    repository: repository.toLowerCase(), action: ISSUE_ACTION, title, body });
+  return createHash('sha256').update(payload, 'utf8').digest('hex');
+}
+function approvedPayload(request, expected) {
+  try {
+    if (!expected || !same(request.id, expected.requestId) ||
+        routeObjective(request) !== 'operations' ||
+        request.inputs?.action !== ISSUE_ACTION ||
+        !same(request.inputs?.repository, expected.repository)) return false;
+    const digest = issueApprovalDigest({ requestId: request.id,
+      repository: request.inputs.repository,
+      title: request.inputs.title, body: request.inputs.body ?? '' });
+    return timingSafeEqual(Buffer.from(digest, 'hex'),
+      Buffer.from(expected.payloadSha256, 'hex'));
+  } catch { return false; }
+}
+
 
 function snapshotRequest(input) {
   const visited = new Set();
@@ -117,19 +148,26 @@ export function createReferenceHost({
   allowedRepositories = [], githubResearch = false, approvedIssue = null,
   auditMode = 'off', auditRepository = null,
   sourceRepository = 'Papa3445/Pro-Papa', token = process.env.GITHUB_TOKEN,
-  fetchImpl = globalThis.fetch, auditFetchImpl = fetchImpl,
+  fetchImpl = globalThis.fetch, auditFetchImpl = undefined,
+  auditTransport = 'native',
   durableProject = null, durableSecret = process.env.PRO_PAPA_GATEWAY_SECRET,
 } = {}) {
   if (!Array.isArray(allowedRepositories) || allowedRepositories.length > 16 ||
       allowedRepositories.some(repo => typeof repo !== 'string' || !REPO.test(repo)) ||
       typeof githubResearch !== 'boolean' || typeof fetchImpl !== 'function' ||
       !['off', 'required'].includes(auditMode) ||
+      !['native', 'simulation'].includes(auditTransport) ||
+      (auditTransport === 'native' && auditFetchImpl !== undefined) ||
+      (auditTransport === 'simulation' &&
+        (auditMode !== 'required' || typeof auditFetchImpl !== 'function')) ||
       (auditMode === 'required' &&
         (typeof auditRepository !== 'string' || !REPO.test(auditRepository) ||
           !REPO.test(sourceRepository) || same(auditRepository, sourceRepository) ||
           typeof auditFetchImpl !== 'function')) ||
       !(durableProject === null || typeof durableProject === 'string')) fail();
   if (approvedIssue && (!plain(approvedIssue) || !UUID.test(approvedIssue.requestId ?? '') ||
+      typeof approvedIssue.payloadSha256 !== 'string' ||
+      !SHA256.test(approvedIssue.payloadSha256) ||
       !allowedRepositories.some(repo => same(repo, approvedIssue.repository)) ||
       !durableProject || typeof durableSecret !== 'string' ||
       durableSecret.length < 16 || typeof token !== 'string' || !token)) fail();
@@ -171,7 +209,9 @@ export function createReferenceHost({
         reference: 'repo:' + repo.toLowerCase() + ':' + data.id } };
     },
     operations: async ({ inputs }) => {
-      if (!approvedIssue || !plain(inputs) || inputs.action !== 'github.create_issue') fail();
+      if (!approvedIssue || !plain(inputs) || inputs.action !== ISSUE_ACTION ||
+          !approvedPayload({ id: approvedIssue.requestId, capability: 'operations', inputs },
+            approvedIssue)) fail();
       const repo = allowedRepo(inputs, allowedRepositories);
       if (!same(repo, approvedIssue.repository) || typeof inputs.title !== 'string' ||
           !inputs.title.trim() || inputs.title.length > 120 ||
@@ -197,9 +237,7 @@ export function createReferenceHost({
         return { status: 'invalid_request', audit: { status: 'not_requested' } };
       // Approval is bound to one request ID and action before any handler call.
       if (approvedIssue && routeObjective(safeRequest) === 'operations' &&
-          (!same(safeRequest.id, approvedIssue.requestId) ||
-            safeRequest.inputs?.action !== 'github.create_issue' ||
-            !same(safeRequest.inputs?.repository, approvedIssue.repository)))
+          !approvedPayload(safeRequest, approvedIssue))
         return { status: 'denied', reason: 'effect_not_approved',
           audit: { status: 'not_requested' } };
       return exclusive(durableProject, async () => {
@@ -209,9 +247,16 @@ export function createReferenceHost({
             // Only the actual PP-0004 issuer can return a confirmed audit.
             const receipt = await issueUsageReceipt({
               sourceRepository, storeRepository: auditRepository,
-              token, fetchImpl: auditFetchImpl,
+              token, fetchImpl: auditTransport === 'simulation' ?
+                auditFetchImpl : globalThis.fetch,
             });
             if (!verifyReceipt(receipt, auditRepository)) fail();
+            if (auditTransport === 'simulation') {
+              // Mocked GitHub transport is never provider-backed confirmation
+              // and never authorizes tool execution under required auditing.
+              return { status: 'audit_unverified', audit: { status: 'simulated' },
+                execution: null };
+            }
             audit = { status: 'confirmed', receiptUrl: receipt.receiptUrl,
               receiptCommit: receipt.receiptCommit, sourceCommit: receipt.sourceCommit };
           } catch {
