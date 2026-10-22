@@ -1131,16 +1131,61 @@
           "sha256": "8bd3a4cb5f283fb6d6a4dbc83fca61125f9a54e2ff1b7423a799f4d9f47b85b5",
           "recordedAt": "2026-10-22T20:09:56.279Z",
           "note": "Actual source-head pull_request GitHub Actions 39846210709 job 120060036510, 182/182 tests, valid project, real local math case; final ledger-head CI and independent review pending."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-manual-chatgpt-baseline.mjs",
+          "sha256": "b98960778c45a9a0dfab4014ee16db6fa17d513eb7379ebbb27b365e3fd1f810",
+          "recordedAt": "2026-10-22T23:33:31.778Z",
+          "note": "Manual ChatGPT prompt/capture source, no API key, only operator-supplied unverified transcript. No actual model trial performed."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-manual-chatgpt-baseline.test.mjs",
+          "sha256": "fb97c60ad16748b58d8d80a074b87a6d17590af66ea49d7b56475fa24f0f670d",
+          "recordedAt": "2026-10-22T23:33:31.778Z",
+          "note": "Candidate adversarial tests or review-target guard; actual exact-head CI and independent PR #18 review still pending."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-NO-API-CHATGPT-BASELINE.md",
+          "sha256": "19e5efc050c50a1e7f7e51cc5948bb7f95a0fc47be358dee029c10290c8655a3",
+          "recordedAt": "2026-10-22T23:33:31.778Z",
+          "note": "Official no-key operator workflow; retains seven canonical fixtures and independent paired trial/quality requirements."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-PAIRED-TRIAL-PROTOCOL.md",
+          "sha256": "f2f03eecaaf94306df54e7bef86621d8a5033974ac06c2c98ee1edabe90aa924",
+          "recordedAt": "2026-10-22T23:33:31.778Z",
+          "note": "Official no-key operator workflow; retains seven canonical fixtures and independent paired trial/quality requirements."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "4cdea00b7ccaf9c6023737db3932951e9cb209856a19e0ca8c34d739b9780602",
+          "recordedAt": "2026-10-22T23:33:31.778Z",
+          "note": "Candidate adversarial tests or review-target guard; actual exact-head CI and independent PR #18 review still pending."
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 17,
+        "pullRequest": 18,
         "baseRef": "main",
-        "baseSha": "b3a1c8049cc4dc4aa711fe1d780d18e0d66409b6"
+        "baseSha": "a6acacd6344be05bc8f9caffbd3f18abaf9a276d"
       }
     }
   ],
-  "revision": 56
+  "revision": 57
 }
