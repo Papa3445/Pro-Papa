@@ -159,8 +159,9 @@ test('failed audit PUT, corrupt readback, privacy race and invalid token do not 
     assert.equal(f.calls.some(c=>c.path==='/repos/'+repository && c.method==='GET'),false);
     assert.equal(result.execution,null);
   }
-  assert.throws(()=>createReferenceHost({auditMode:'required',auditRepository:store,
-    token:''}));
+  const missing = createReferenceHost({auditMode:'required',auditRepository:store,
+    token:'', fetchImpl:service().fetchImpl});
+  assert.equal((await missing.execute(request)).status,'audit_failed');
 });
 
 test('network/provider failure remains truthfully unresolved rather than successful',async()=>{
