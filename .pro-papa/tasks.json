@@ -552,8 +552,57 @@
       "status": "in_progress",
       "owner": "chatgpt-implementation",
       "blockedReason": null,
-      "evidence": [],
-      "requiresAdapter": true
+      "evidence": [
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Provider-returned PP-0006 reference host source blob 1b926292bb0dc095c1d75b5fee4ac8333c63b39c; actual built-in software adapter bound to this exact source SHA-256.",
+          "path": "src/reference-host.mjs",
+          "sha256": "641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2",
+          "recordedAt": "2026-10-22T00:37:45.861Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real GitHub Actions run 39700311869 check job 119567666047 passed 136/136; live smoke job 119567665710 invoked actual host and queried public GitHub API.",
+          "path": ".pro-papa/evidence/PP-0006/github-actions-136-tests.json",
+          "sha256": "45b5b2af900b01ac29c8e293eb502e477e8c80670ac853e601500eab5fd4be51",
+          "recordedAt": "2026-10-22T00:37:45.861Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Substantive implementer validation of host, audit, privacy and dependency acceptance; live private audit connector receipt verified separately, but executable CLI with production audit credentials remains untested.",
+          "path": ".pro-papa/evidence/PP-0006/acceptance-validation.md",
+          "sha256": "c448e83b9c2e120ebdcb7dcd8ff8030873232c1469eb3ed07e11fdd29bdea156",
+          "recordedAt": "2026-10-22T00:37:45.861Z"
+        },
+        {
+          "kind": "adapter",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Authentic built-in syntax:node adapter run 39700311869 job 119567665710, input SHA256 641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2",
+          "path": ".pro-papa/evidence/PP-0006/software-846ffc51-72bd-487c-abef-4b2e5ddeafe3.json",
+          "sha256": "6182341cc5727817ea0cc21c827b69ad462c3a2982fcde68d59958745d697f42",
+          "recordedAt": "2026-10-22T00:37:45.861Z",
+          "origin": "builtin-adapter",
+          "input": {
+            "path": "src/reference-host.mjs",
+            "sha256": "641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2"
+          }
+        }
+      ],
+      "requiresAdapter": true,
+      "requiresTrustedReview": true,
+      "reviewTarget": {
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 8,
+        "baseRef": "main",
+        "baseSha": "203394eaea45092c26c341fc44bc4efe15c61781"
+      }
     },
     {
       "id": "PP-0007",
@@ -575,5 +624,5 @@
       "evidence": []
     }
   ],
-  "revision": 32
+  "revision": 33
 }
