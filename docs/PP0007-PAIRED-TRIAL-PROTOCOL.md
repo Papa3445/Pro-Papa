@@ -2,6 +2,10 @@
 
 This file is an **operator-ready collection protocol**, not a claim that direct-assistant or newly comparable host trials have run. [The blank JSON fixture](../fixtures/pp0007-paired-trial-collection-template.json) copies the original seven user-task categories, objectives, input payloads and requested host capabilities from `bin/benchmark-pp0007.mjs`. Its collection status is `not_collected`, and each unobserved trial, grade, token count, timing and correction count is `null`. Do not edit source case prompts to make the narrower host handlers look equivalent.
 
+## No-key ChatGPT direct-assistant baseline (approved study mode)
+
+The operator has selected the direct ChatGPT product as the baseline rather than the optional model API. This **requires no OpenAI API key**: see [the exact-prompt preparation and operator-capture workflow](PP0007-NO-API-CHATGPT-BASELINE.md). Genuine separate ChatGPT conversation outputs are still required; copied transcripts are operator-supplied and locally hashed, **not independently provider attested**. Preserve matched task identities and genuine human grading, and record unavailable tokens or costs as unknown. This choice does not change the original seven cases, historical results, outcome-quality gate, or milestone state.
+
 ## Conduct an authentic paired trial
 
 1. Freeze the exact Git commit and the identical **canonical objective and canonical inputs** for both conditions, with predeclared expectations, evaluation rubric and tool-permission policy. The original research case is bounded repository metadata; `novel` and the memo/planning cases lack detailed user context and may require a separately approved, *new* study with both arms restarted. Such a change cannot be retroactively substituted for the original case.
