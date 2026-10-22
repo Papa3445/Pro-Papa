@@ -942,6 +942,15 @@
           "sha256": "847c1e2b93b92cb8136a108342fc3f9eebfbcae84fd287facee30b6038cbb377",
           "note": "PR #15 independently pinned to previously reviewed base; old PR #14 approval cannot count.",
           "recordedAt": "2026-10-22T05:16:13.068Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real exact source-head Actions run 39727091691 job 119653385644, 159/159 tests, report explicitly NOT milestone-ready; evidence-final-head CI and independent review pending.",
+          "path": ".pro-papa/evidence/PP-0007/comparison-readiness-ci.json",
+          "sha256": "c792df2b410633e13f700cee8e92a9472539d28dc0bbba1606a23a892b1aa5c7",
+          "recordedAt": "2026-10-22T05:17:49.004Z"
         }
       ],
       "requiresTrustedReview": true,
@@ -953,5 +962,5 @@
       }
     }
   ],
-  "revision": 47
+  "revision": 48
 }
