@@ -6,7 +6,8 @@ import { createReferenceHost } from '../src/reference-host.mjs';
 
 function parse(args) {
   const allowed = new Set(['--github-read', '--github-repo', '--audit-required',
-    '--durable', '--project', '--approve-create-issue-id', '--issue-repository']);
+    '--durable', '--project', '--approve-create-issue-id', '--issue-repository',
+    '--issue-payload-sha256']);
   const boolean = new Set(['--github-read', '--audit-required', '--durable']);
   const result = {};
   for (let i = 0; i < args.length; i++) {
@@ -21,8 +22,12 @@ function parse(args) {
   }
   if (result['--project'] && !result['--durable']) throw Error('Project requires durable mode');
   if (result['--durable'] && !result['--project']) throw Error('Missing project');
-  if (Boolean(result['--approve-create-issue-id']) !==
-      Boolean(result['--issue-repository'])) throw Error('Effect needs exact ID and repository');
+  if ([result['--approve-create-issue-id'], result['--issue-repository'],
+    result['--issue-payload-sha256']].filter(Boolean).length % 3 !== 0)
+    throw Error('Effect needs exact ID, repository and payload SHA-256');
+  if (result['--issue-payload-sha256'] &&
+      !/^[0-9a-f]{64}$/.test(result['--issue-payload-sha256']))
+    throw Error('Invalid issue approval digest');
   if (result['--approve-create-issue-id'] && !result['--durable'])
     throw Error('External effects require durable tracking');
   return result;
@@ -54,6 +59,7 @@ export async function main(argv = process.argv.slice(2),
     approvedIssue: flags['--approve-create-issue-id'] ? {
       requestId: flags['--approve-create-issue-id'],
       repository: flags['--issue-repository'],
+      payloadSha256: flags['--issue-payload-sha256'],
     } : null,
     auditMode: flags['--audit-required'] ? 'required' : 'off',
     auditRepository: process.env.PRO_PAPA_AUDIT_REPO,
