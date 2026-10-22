@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "structured-local-provider-observation",
+  "sourceHeadAtMeasurement": "7a13a89305e279f41433e20fb33c5c4d4d8cff76",
+  "source": {
+    "path": "bin/benchmark-structured-pp0007.mjs",
+    "gitBlobSha": "00abf4fc8d45ff037f481d2680599d99e06fc531",
+    "sha256": "885d3d9dae3172b8aa33c9aad0aa04e1bfff610c8eeafa8871f1b4872ad95b8e"
+  },
+  "tests": {
+    "path": "tests/benchmark-structured-pp0007.test.mjs",
+    "gitBlobSha": "cffe7a0e7a494f0c9ced76c7028f59c9ec3cc369",
+    "sha256": "55eca53f706e96b2c7be4df8ab8434aad8256a9a1fa2dc4e04c3de5a2cd8b4e9"
+  },
+  "githubActions": {
+    "runId": 39722383548,
+    "jobId": 119638570920,
+    "event": "pull_request",
+    "headSha": "7a13a89305e279f41433e20fb33c5c4d4d8cff76",
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39722383548",
+    "tests": 156,
+    "passed": 156,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true
+  },
+  "observedReport": {
+    "schemaVersion": 1,
+    "taskId": "PP-0007",
+    "kind": "structured-local-pilots-separate-from-canonical",
+    "mode": "deterministic_real_local_host",
+    "pilotCount": 4,
+    "mechanicallyValidatedCompletions": 4,
+    "structuredPilotCompletionRate": 1,
+    "negativeCount": 5,
+    "negativeTestsPassed": 5,
+    "hostCalls": 9,
+    "externalToolCallsObserved": 0,
+    "realGitHubCallsObserved": 0,
+    "receiptCount": 0,
+    "receiptScope": "auditMode off; no per-case receipts issued",
+    "totalHostElapsedMs": 4.749,
+    "meanHostElapsedMs": 1.187,
+    "actualHumanCorrections": null,
+    "correctiveInteractionsMeasured": false,
+    "tokenUsage": null,
+    "directAssistantBaseline": null,
+    "comparisonStatus": "not_performed_no_llm_provider_or_paired_direct_assistant_runs",
+    "historicSevenCaseCompletionRate": "2/7 unchanged; not measured by this script",
+    "qualityScope": "Deterministic mechanical checks and executable generated code only; no independent memo quality review or general multi-domain reasoning",
+    "limitations": "Four explicitly structured local tasks; excludes Q&A, novel user requests, live sourced research, publication, persistent writes, subjective content quality and true end-to-end ChatGPT comparison.",
+    "pilots": [
+      {
+        "id": "calculation",
+        "category": "data",
+        "requestedCapability": "math.sum",
+        "status": "completed",
+        "requirementMet": true,
+        "mechanicalValidationPassed": true,
+        "provider": "local-node",
+        "auditStatus": "not_requested",
+        "hostCalls": 1,
+        "elapsedMs": 2.553,
+        "persistedTask": false,
+        "externalEffectsObserved": 0,
+        "outputSummary": {
+          "total": 10
+        }
+      },
+      {
+        "id": "schedule",
+        "category": "operations",
+        "requestedCapability": "plan.week",
+        "status": "completed",
+        "requirementMet": true,
+        "mechanicalValidationPassed": true,
+        "provider": "local-node",
+        "auditStatus": "not_requested",
+        "hostCalls": 1,
+        "elapsedMs": 1.12,
+        "persistedTask": false,
+        "externalEffectsObserved": 0,
+        "outputSummary": {
+          "scheduledCount": 2
+        }
+      },
+      {
+        "id": "memo",
+        "category": "document",
+        "requestedCapability": "memo.draft",
+        "status": "completed",
+        "requirementMet": true,
+        "mechanicalValidationPassed": true,
+        "provider": "local-node",
+        "auditStatus": "not_requested",
+        "hostCalls": 1,
+        "elapsedMs": 0.487,
+        "persistedTask": false,
+        "externalEffectsObserved": 0,
+        "outputSummary": {
+          "status": "draft_unverified"
+        }
+      },
+      {
+        "id": "software",
+        "category": "software",
+        "requestedCapability": "code.iso-date",
+        "status": "completed",
+        "requirementMet": true,
+        "mechanicalValidationPassed": true,
+        "provider": "local-node",
+        "auditStatus": "not_requested",
+        "hostCalls": 1,
+        "elapsedMs": 0.589,
+        "persistedTask": false,
+        "externalEffectsObserved": 0,
+        "outputSummary": {
+          "fileName": "parse-iso-date.mjs"
+        }
+      }
+    ],
+    "negatives": [
+      {
+        "id": "unstructured_qa",
+        "status": "unsupported",
+        "expected": "unsupported",
+        "passed": true
+      },
+      {
+        "id": "unstructured_novel",
+        "status": "unsupported",
+        "expected": "unsupported",
+        "passed": true
+      },
+      {
+        "id": "unstructured_software",
+        "status": "unsupported",
+        "expected": "unsupported",
+        "passed": true
+      },
+      {
+        "id": "unauthorized_issue",
+        "status": "denied",
+        "expected": "denied",
+        "passed": true
+      },
+      {
+        "id": "memo_action_injection",
+        "status": "provider_unavailable",
+        "expected": "provider_unavailable",
+        "passed": true
+      }
+    ],
+    "guardrailsPassed": true
+  },
+  "limitations": "4/4 narrow structured local tasks only; not original 2/7 canonical user benchmark, no direct-assistant baseline, no measured correction or LLM token usage, no external calls or private per-pilot receipts."
+}

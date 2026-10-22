@@ -284,19 +284,16 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-// Previous PR #12 approval must not authorize the newer PP-0007 software contribution.
-test('PP-0007 active task target rejects the prior approved memo PR when reviewing software code',async()=>{
+test('PP-0007 must use new PR #14, not old independently approved PR #13',async()=>{
   const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
   assert.equal(task.status,'in_progress');
   assert.equal(task.requiresTrustedReview,true);
-  assert.deepEqual(task.reviewTarget,{
-    repository:'Papa3445/Pro-Papa',pullRequest:13,baseRef:'main',baseSha:'244617ba9f9e44538e1756d9320c0c6a9fb6472a',
-  });
-  const current={number:13,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'244617ba9f9e44538e1756d9320c0c6a9fb6472a'},
+  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:14,baseRef:'main',baseSha:'554fa5fca2b3dbffb785108a949023f9726e8d0d'});
+  const p={number:14,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'554fa5fca2b3dbffb785108a949023f9726e8d0d'},
     head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
-  const previous=review('APPROVED',{commit_id:'d'.repeat(40)});
-  assert.throws(()=>evalReviews(task.reviewTarget,{...current,number:12},[previous]),/identity/);
-  assert.equal(evalReviews(task.reviewTarget,current,[previous]).verdict,'FAIL');
-  assert.equal(evalReviews(task.reviewTarget,current,[review('APPROVED',{commit_id:current.head.sha})]).verdict,'PASS');
-  assert.ok(task.evidence.some(e=>e.path==='src/iso-date.mjs'));
+  const old=review('APPROVED',{commit_id:'d'.repeat(40)});
+  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:13},[old]),/identity/);
+  assert.equal(evalReviews(task.reviewTarget,p,[old]).verdict,'FAIL');
+  assert.equal(evalReviews(task.reviewTarget,p,[review('APPROVED',{commit_id:p.head.sha})]).verdict,'PASS');
+  assert.ok(task.evidence.some(e=>e.path==='bin/benchmark-structured-pp0007.mjs'));
 });

@@ -12,12 +12,13 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check src/core.mjs && node --check src/adapters.mjs && node --check src/review-github.mjs && node --check src/usage-receipts.mjs && node --check src/gateway.mjs && node --check src/reference-host.mjs && node --check src/planning.mjs && node --check src/memo.mjs && node --check src/iso-date.mjs && node --check bin/benchmark-pp0007.mjs && node --check bin/reference-host.mjs && node --check bin/gateway.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .",
+    "check": "node --check src/core.mjs && node --check src/adapters.mjs && node --check src/review-github.mjs && node --check src/usage-receipts.mjs && node --check src/gateway.mjs && node --check src/reference-host.mjs && node --check src/planning.mjs && node --check src/memo.mjs && node --check src/iso-date.mjs && node --check bin/benchmark-pp0007.mjs && node --check bin/benchmark-structured-pp0007.mjs && node --check bin/reference-host.mjs && node --check bin/gateway.mjs && node --check bin/pro-papa.mjs && npm test && node bin/pro-papa.mjs validate --root .",
     "next": "node bin/pro-papa.mjs next",
     "status": "node bin/pro-papa.mjs status",
     "gateway": "node bin/gateway.mjs",
     "reference-host": "node bin/reference-host.mjs",
-    "benchmark:pp0007": "node bin/benchmark-pp0007.mjs"
+    "benchmark:pp0007": "node bin/benchmark-pp0007.mjs",
+    "benchmark:pp0007:structured": "node bin/benchmark-structured-pp0007.mjs"
   },
   "license": "UNLICENSED"
 }
