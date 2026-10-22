@@ -90,8 +90,8 @@ test('provider HTTP failure and network exception remain ambiguous with no retry
 
 test('fake provider token accounting, status or tool-call output cannot count as success',async()=>{
   const variations=[
-    x=>{x.status='incomplete'},x=>{x.object='chat.completion'},
-    x=>{x.id='forged'},x=>{x.model='unexpected-model'},x=>{x.usage.total_tokens=-1},
+    x=>{x.object='chat.completion'},
+    x=>{x.id='forged'},x=>{x.status='unknown'},x=>{x.usage.total_tokens=-1},
     x=>{x.usage.total_tokens=1},
     x=>{x.output[0].type='function_call'},
     x=>{x.output[0].content[0].text=''},
@@ -102,6 +102,82 @@ test('fake provider token accounting, status or tool-call output cannot count as
     const v=await simulate(service(r));
     assert.equal(v.responseStatus,'outcome_ambiguous');assert.equal(v.taskSuccess,null);
   }
+});
+
+
+test('P2: legitimate requested model alias resolves to a recorded dated snapshot',async()=>{
+  const r=fixed();
+  r.model='gpt-4o-mini-2024-07-18';
+  const f=service(r);
+  const observed=await runOne({id:'qa',model:'gpt-4o-mini',apiKey:'fixture-secret-value',
+    mode:'simulation',fetchImpl:f.fetchImpl});
+  assert.equal(f.calls.length,1);
+  assert.equal(observed.requestedModel,'gpt-4o-mini');
+  assert.equal(observed.actualModel,'gpt-4o-mini-2024-07-18');
+  assert.equal(observed.modelIdentityStatus,'dated_snapshot');
+  assert.equal(observed.providerLifecycleStatus,'completed');
+  assert.equal(observed.providerResponseId,'resp_abcdef12345');
+  assert.equal(observed.responseStatus,'completed');
+  assert.deepEqual(observed.usage,{inputTokens:12,outputTokens:2,totalTokens:14});
+  assert.equal(observed.taskSuccess,null);
+  const exact=await simulate(service(fixed()));
+  assert.equal(exact.modelIdentityStatus,'exact');
+});
+
+test('P2: unrelated, prefix-overlap and impossible-date models never count as completed',async()=>{
+  for (const returned of [
+    'gpt-4o-2024-08-06','gpt-4o-mini-special-2024-07-18',
+    'gpt-4o-mini-2024-99-99','gpt-4o-mini-2024-02-30',
+  ]) {
+    const r=fixed();r.model=returned;
+    const result=await runOne({id:'qa',model:'gpt-4o-mini',
+      apiKey:'fixture-secret-value',mode:'simulation',fetchImpl:service(r).fetchImpl});
+    assert.equal(result.modelIdentityStatus,'unverified');
+    assert.equal(result.providerLifecycleStatus,'completed');
+    assert.equal(result.responseStatus,'model_identity_unverified');
+    assert.equal(result.providerResponseId,'resp_abcdef12345');
+    assert.deepEqual(result.usage,{inputTokens:12,outputTokens:2,totalTokens:14});
+    assert.equal(result.text,null);
+    assert.equal(result.taskSuccess,null);
+  }
+});
+
+test('P2: incomplete HTTP-200 response preserves provider identity and metering',async()=>{
+  const r=fixed();
+  r.status='incomplete';r.model='gpt-4o-mini-2024-07-18';r.output=[];
+  r.incomplete_details={reason:'max_output_tokens'};
+  const f=service(r);
+  const result=await runOne({id:'qa',model:'gpt-4o-mini',
+    apiKey:'fixture-secret-value',mode:'simulation',fetchImpl:f.fetchImpl});
+  assert.equal(f.calls.length,1);
+  assert.equal(result.responseStatus,'incomplete');
+  assert.equal(result.providerLifecycleStatus,'incomplete');
+  assert.equal(result.providerResponseId,'resp_abcdef12345');
+  assert.equal(result.actualModel,'gpt-4o-mini-2024-07-18');
+  assert.equal(result.modelIdentityStatus,'dated_snapshot');
+  assert.deepEqual(result.usage,{inputTokens:12,outputTokens:2,totalTokens:14});
+  assert.equal(result.text,null);
+  assert.equal(result.taskSuccess,null);
+  assert.equal(result.qualityGrade,null);
+});
+
+test('P2: failed, cancelled, queued and in-progress provider replies remain nonpassing with tokens when given',async()=>{
+  for(const status of ['failed','cancelled','queued','in_progress']) {
+    const r=fixed();r.status=status;r.output=[];
+    const result=await simulate(service(r));
+    assert.equal(result.providerLifecycleStatus,status);
+    assert.equal(result.responseStatus,status);
+    assert.equal(result.providerResponseId,'resp_abcdef12345');
+    assert.equal(result.actualModel,'gpt-test');
+    assert.deepEqual(result.usage,{inputTokens:12,outputTokens:2,totalTokens:14});
+    assert.equal(result.text,null);
+    assert.equal(result.taskSuccess,null);
+  }
+  const withoutUsage=fixed();withoutUsage.status='failed';withoutUsage.output=[];
+  withoutUsage.usage=null;
+  const result=await simulate(service(withoutUsage));
+  assert.equal(result.responseStatus,'failed');
+  assert.equal(result.usage,null);
 });
 
 test('model refusal remains refusal, never completed answer',async()=>{
