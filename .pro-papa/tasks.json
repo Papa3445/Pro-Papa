@@ -1077,16 +1077,70 @@
           "sha256": "d2affe87ba9f69a21bcef482f314c82fd7259cab7153ea0acd58b2eae4717840",
           "note": "Authenticated exact implementation-head GitHub Actions 39839882290 job 120037773251: 174/174, valid; final evidence-head CI and fresh independent review still required.",
           "recordedAt": "2026-10-22T19:31:27.519Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-api-baseline.mjs",
+          "sha256": "e8f5d3040ddb4044b24e1aca5bcce8970a2f4d50eb773f768eac8ad86a3bbb35",
+          "note": "Exposes SHA-pinned canonical original objective, capability and inputs for matched host arm.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-host-observation.mjs",
+          "sha256": "01f3f88d589cd166fcc0463a747b303ba56dee6dccf087717196738b9a4dd039",
+          "note": "Original fixture-exact reference-host observation source; native Node and clearly labeled simulated transport, no real model baseline.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/pp0007-host-observation.test.mjs",
+          "sha256": "a0a6342aed248350fd44e3c90d9599ddc67f0fc5196731e42cc3e67573235486",
+          "note": "Current test source, corrected native planning-denied oracle after real failing CI; fresh full-suite CI required.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-HOST-OBSERVATIONS.md",
+          "sha256": "c3883094846bde49cdd650cb7370e65db1c04bab1b81b08b0e8cce86bf927450",
+          "note": "Current verified docs distinguish planning denial from unsupported, demonstrate unchanged seven prompts and private/evidence limits.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "dd285094c72e23a3da5287885ad58c48d1cd46237929759c9902c771c969a2f9",
+          "note": "Source of regression/review-target checks; actual GitHub Actions CI must be observed separately.",
+          "recordedAt": "2026-10-22T20:05:30.833Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/matched-host-source-ci.json",
+          "sha256": "8bd3a4cb5f283fb6d6a4dbc83fca61125f9a54e2ff1b7423a799f4d9f47b85b5",
+          "recordedAt": "2026-10-22T20:09:56.279Z",
+          "note": "Actual source-head pull_request GitHub Actions 39846210709 job 120060036510, 182/182 tests, valid project, real local math case; final ledger-head CI and independent review pending."
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 16,
+        "pullRequest": 17,
         "baseRef": "main",
-        "baseSha": "7a38689a02af9eb51d5f4299304654611186ec92"
+        "baseSha": "b3a1c8049cc4dc4aa711fe1d780d18e0d66409b6"
       }
     }
   ],
-  "revision": 53
+  "revision": 56
 }

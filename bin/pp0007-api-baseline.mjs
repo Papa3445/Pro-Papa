@@ -35,6 +35,9 @@ export async function canonicalTrial(id, raw = null) {
   const prompt = objective + (trial.canonicalInputs === null ? '' :
     '\nCanonical inputs (JSON): ' + JSON.stringify(trial.canonicalInputs));
   return { id, category: trial.category, prompt,
+    canonicalObjective: objective,
+    canonicalInputs: trial.canonicalInputs,
+    canonicalCapability: trial.canonicalCapability,
     objectiveSha256: digest(Buffer.from(objective)),
     inputsSha256: digest(Buffer.from(JSON.stringify(trial.canonicalInputs))),
     fixtureGitBlobSha: FIXTURE_BLOB };
