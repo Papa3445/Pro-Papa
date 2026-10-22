@@ -744,16 +744,52 @@
           "path": ".pro-papa/evidence/PP-0007/provider-observation-current.json",
           "sha256": "a3bcb070abe9ac4262c75215fadaacc8a25cdf7a54b80f6d62784e2dab708700",
           "recordedAt": "2026-10-22T02:32:06.017Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Planner hardened after independent review: sparse arrays and Unicode direction/control output rejected.",
+          "path": "src/planning.mjs",
+          "sha256": "cdd20e5ea66a1a8c9c1184a236c1e532e19350d20837a36efe056116e3719441",
+          "recordedAt": "2026-10-22T03:11:16.177Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real exact-head Actions CI 146/146 tests on implementation head 2f873c05e39cb07955c3322cc0df43103c0d65b2, negative cases and project validation; no independent review yet.",
+          "path": ".pro-papa/evidence/PP-0007/weekly-planning-ci.json",
+          "sha256": "46518d87e1462b86b566d50669cb950fcac026a42ad59cb6f9f96862beb87ef3",
+          "recordedAt": "2026-10-22T02:50:57.191Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Documents PR #11 trusted review pin correction, old evidence preservation and standalone helper hardening.",
+          "path": "docs/PP0007-PLANNING-PILOT.md",
+          "sha256": "1c62de639ee8aae03a1a8198062d48635a5f0b5d6d1b377ddfcbbc06e8acf1f3",
+          "recordedAt": "2026-10-22T03:11:16.177Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "New regression source prevents active task pin pointing to prior merged PR; does not replace independent GitHub review or verified CI.",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "70d8174036b7df1f0aa9673ed22755dc27339e2aa654b57657268bb786a7cb1d",
+          "recordedAt": "2026-10-22T03:11:16.177Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 10,
+        "pullRequest": 11,
         "baseRef": "main",
-        "baseSha": "15be314644711da9227511b390dc80f638f3d787"
+        "baseSha": "2c08c3db37bfd6ebea405008403243cc40762612"
       }
     }
   ],
-  "revision": 39
+  "revision": 41
 }

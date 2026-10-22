@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { evaluateGitHubReviews as evalReviews, validateReviewTarget, verifyGitHubReview } from '../src/review-github.mjs';
@@ -282,4 +282,23 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>evalReviews(target,pull,[approved,review('CHANGES_REQUESTED ')]),/Unknown GitHub review state/);
   assert.throws(()=>validateReviewTarget({...target,baseRef:'main'}),/exact GitHub repository/);
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
+});
+
+// The already-reviewed PR #10 must not authorize PP-0007 work proposed in PR #11.
+test('PP-0007 active review target never reuses approval of a previously merged PR',async()=>{
+  const root=new URL('../.pro-papa/tasks.json',import.meta.url);
+  const task=JSON.parse(await readFile(root,'utf8')).tasks.find(t=>t.id==='PP-0007');
+  assert.equal(task.status,'in_progress');
+  assert.equal(task.requiresTrustedReview,true);
+  assert.deepEqual(task.reviewTarget,{
+    repository:'Papa3445/Pro-Papa',pullRequest:11,baseRef:'main',
+    baseSha:'2c08c3db37bfd6ebea405008403243cc40762612',
+  });
+  const candidate={number:11,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'2c08c3db37bfd6ebea405008403243cc40762612'},
+    head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
+  const priorApproval=review('APPROVED',{commit_id:'d'.repeat(40)});
+  assert.throws(()=>evalReviews(task.reviewTarget,{...candidate,number:10},[priorApproval]),/identity/);
+  assert.equal(evalReviews(task.reviewTarget,candidate,[priorApproval]).verdict,'FAIL');
+  assert.equal(evalReviews(task.reviewTarget,candidate,[review('APPROVED',{commit_id:candidate.head.sha})]).verdict,'PASS');
+  assert.ok(task.evidence.some(e=>e.path==='src/planning.mjs'));
 });

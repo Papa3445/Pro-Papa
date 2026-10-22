@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "bounded-read-only-planning-pilot-ci",
+  "sourceHeadAtTest": "2f873c05e39cb07955c3322cc0df43103c0d65b2",
+  "sourceFile": "src/planning.mjs",
+  "sourceFileGitBlobSha": "8f16bdb0bb79bd56cdea6dc7bbccf10b9342cca6",
+  "sourceFileSha256": "206861aa13262a4f6de06b91042b17d9d540eb0aeebf50c999ae3b775bd48df9",
+  "testFile": "tests/planning-pp0007.test.mjs",
+  "testFileGitBlobSha": "b0bb2392026903d0798bfe6d61f581616119268a",
+  "testFileSha256": "cff65130a71bb55e5fd7dd2e1466d7b277b0ab8dfc0bb84d898f5403a5bf9f63",
+  "documentationFile": "docs/PP0007-PLANNING-PILOT.md",
+  "documentationSha256": "29b00e965033c66cb58aa9fedd503a6f8c9eda36468846a8422943da10389914",
+  "workflowRunId": 39713388235,
+  "workflowRunUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39713388235",
+  "jobId": 119609726687,
+  "runnerEvent": "pull_request",
+  "tests": {
+    "total": 146,
+    "passed": 146,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true
+  },
+  "planningTestAssertions": [
+    "Valid Monday-starting UTC 3-task plan with dependency validation and bounded output",
+    "12 malformed input cases fail closed",
+    "External GitHub issue creation cannot be granted by a plan.week hint"
+  ],
+  "scope": "The test invokes genuine local Node host handlers, not an LLM, external calendar, persistent user-task scheduling, or broad task benchmark. Existing seven-case benchmark still records 2/7 completed; task remains in_progress.",
+  "independentReview": "not_yet_obtained"
+}
