@@ -1101,8 +1101,8 @@
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "tests/pp0007-host-observation.test.mjs",
-          "sha256": "f48186a33aaa3f674edb0074de66fb201907ced92bb7c75b2a871fdf83c5f847",
-          "note": "Source of regression/review-target checks; actual GitHub Actions CI must be observed separately.",
+          "sha256": "04e98262b5dc4efb577a46da3ce5beed99f7de562ceaffb79774415996f40233",
+          "note": "Current test source, corrected native planning-denied oracle after real failing CI; fresh full-suite CI required.",
           "recordedAt": "2026-10-22T20:05:30.833Z"
         },
         {
@@ -1110,8 +1110,8 @@
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "docs/PP0007-HOST-OBSERVATIONS.md",
-          "sha256": "7d010872443e21e1312b10eea5387d19a956c3b0cfb0f20fc1147349e41fcaa8",
-          "note": "Documents permission differences, no user-task grading, null human corrections/tokens, private output and audit limits.",
+          "sha256": "6da802d6936d8566b34f700481ff9cbd914a2c0002404b22ea7a6b7f5dfaca31",
+          "note": "Current verified docs distinguish planning denial from unsupported, demonstrate unchanged seven prompts and private/evidence limits.",
           "recordedAt": "2026-10-22T20:05:30.833Z"
         },
         {
@@ -1133,5 +1133,5 @@
       }
     }
   ],
-  "revision": 54
+  "revision": 55
 }
