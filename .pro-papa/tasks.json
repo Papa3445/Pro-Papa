@@ -780,16 +780,52 @@
           "path": "tests/review-github.test.mjs",
           "sha256": "70d8174036b7df1f0aa9673ed22755dc27339e2aa654b57657268bb786a7cb1d",
           "recordedAt": "2026-10-22T03:11:16.177Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual local Node read-only memo formatter; exact implementation-head GitHub CI 151/151.",
+          "path": "src/memo.mjs",
+          "sha256": "2ea10097ead08e33e4e19964afd931dbe316460a478bcdb77a8b9875239c2e97",
+          "recordedAt": "2026-10-22T03:26:22.368Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real GitHub Actions implementation-head CI 39716604675 observed 151 passing tests; exact-head final evidence commit CI must be checked separately.",
+          "path": ".pro-papa/evidence/PP-0007/memo-draft-ci.json",
+          "sha256": "80cb80249b4091155ffc58a8b8f8c13a7b37f8b2115ae430578b3be86a113ba5",
+          "recordedAt": "2026-10-22T03:26:22.368Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Honest memo scope: only user-supplied text, no general document creation or baseline; source-pinned PR #12.",
+          "path": "docs/PP0007-MEMO-PILOT.md",
+          "sha256": "f422bcacddb86f412844ee7f46bf76e40733b1efc6772837ad4a9e23f609be41",
+          "recordedAt": "2026-10-22T03:26:22.368Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Regression denies reliance on prior PR #11 approval; new PR #12 active pin.",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "079f100b65677ec5fa4f57ad6795e64410d8c985f84c3df96e7506b5a2a4d619",
+          "recordedAt": "2026-10-22T03:26:22.368Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 11,
+        "pullRequest": 12,
         "baseRef": "main",
-        "baseSha": "2c08c3db37bfd6ebea405008403243cc40762612"
+        "baseSha": "1881851dcba46e3dc3ece44e4a355619b337b3c5"
       }
     }
   ],
-  "revision": 41
+  "revision": 42
 }

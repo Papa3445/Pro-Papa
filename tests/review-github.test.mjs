@@ -284,21 +284,20 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-// The already-reviewed PR #10 must not authorize PP-0007 work proposed in PR #11.
-test('PP-0007 active review target never reuses approval of a previously merged PR',async()=>{
-  const root=new URL('../.pro-papa/tasks.json',import.meta.url);
-  const task=JSON.parse(await readFile(root,'utf8')).tasks.find(t=>t.id==='PP-0007');
+// Former PR #11 approval cannot authorize the newly contributed PP-0007 memo.
+test('PP-0007 active task target rejects approval on previously merged planner PR',async()=>{
+  const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
   assert.equal(task.status,'in_progress');
   assert.equal(task.requiresTrustedReview,true);
   assert.deepEqual(task.reviewTarget,{
-    repository:'Papa3445/Pro-Papa',pullRequest:11,baseRef:'main',
-    baseSha:'2c08c3db37bfd6ebea405008403243cc40762612',
+    repository:'Papa3445/Pro-Papa',pullRequest:12,baseRef:'main',
+    baseSha:'1881851dcba46e3dc3ece44e4a355619b337b3c5',
   });
-  const candidate={number:11,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'2c08c3db37bfd6ebea405008403243cc40762612'},
+  const candidate={number:12,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'1881851dcba46e3dc3ece44e4a355619b337b3c5'},
     head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
-  const priorApproval=review('APPROVED',{commit_id:'d'.repeat(40)});
-  assert.throws(()=>evalReviews(task.reviewTarget,{...candidate,number:10},[priorApproval]),/identity/);
-  assert.equal(evalReviews(task.reviewTarget,candidate,[priorApproval]).verdict,'FAIL');
+  const previouslyApproved=review('APPROVED',{commit_id:'d'.repeat(40)});
+  assert.throws(()=>evalReviews(task.reviewTarget,{...candidate,number:11},[previouslyApproved]),/identity/);
+  assert.equal(evalReviews(task.reviewTarget,candidate,[previouslyApproved]).verdict,'FAIL');
   assert.equal(evalReviews(task.reviewTarget,candidate,[review('APPROVED',{commit_id:candidate.head.sha})]).verdict,'PASS');
-  assert.ok(task.evidence.some(e=>e.path==='src/planning.mjs'));
+  assert.ok(task.evidence.some(e=>e.path==='src/memo.mjs'));
 });

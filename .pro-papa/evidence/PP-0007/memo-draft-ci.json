@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "pilot": "bounded-structured-memo-draft",
+  "sourceHeadAtRun": "82a0ac0e5c5fee5bdc436ed9e274d4bb58e878e9",
+  "sourceGitBlob": "1efbfc55293b5f4922d4c6ee60b01a64e07e47e2",
+  "sourceSha256": "2ea10097ead08e33e4e19964afd931dbe316460a478bcdb77a8b9875239c2e97",
+  "testsGitBlob": "547b6594eca7eea248920ae9b43c7868c14b6fdc",
+  "testsSha256": "32b2196e409b2f912a85cf6c5996c0c267a1771224a32b40ebc691af3ef46fb3",
+  "runId": 39716604675,
+  "jobId": 119620088758,
+  "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39716604675",
+  "event": "push",
+  "result": {
+    "tests": 151,
+    "passed": 151,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true
+  },
+  "limits": "Validates local structured, user-supplied memo draft only; not a general generative document author, output PDF/DOCX, paired direct-LLM comparison or any private per-pilot audit.",
+  "review": "not yet independently reviewed"
+}
