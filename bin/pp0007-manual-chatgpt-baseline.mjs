@@ -88,11 +88,13 @@ export async function main(argv=process.argv.slice(2),log=console.log) {
   const args=argsParse(argv);
   await outsideProject(args['--out']);
   if(args['--capture'] && resolve(args['--transcript'])===resolve(args['--out']))fail();
-  // Reserve new file before reading a possibly sensitive transcript. No overwrite.
+  // Validate the entire input before reserving the destination. A malformed
+  // transcript must not leave an empty file that prevents safe user retry.
+  const packet=args['--prepare']?await promptPacket(args['--case']):
+    await capturedPacket(args['--case'],args['--transcript']);
+  // Only after prevalidation: exclusive private creation, never overwrite.
   const handle=await open(args['--out'],'wx',0o600);
   try{
-    const packet=args['--prepare']?await promptPacket(args['--case']):
-      await capturedPacket(args['--case'],args['--transcript']);
     await handle.writeFile(JSON.stringify(packet,null,2)+'\n');
     await handle.sync();
     log(JSON.stringify({status:args['--prepare']?'prompt_packet_saved':'operator_transcript_saved',
