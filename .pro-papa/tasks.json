@@ -749,10 +749,10 @@
           "kind": "artifact",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Source of bounded local read-only plan.week with strict Monday/day, dependency and capacity controls; source blob 8f16bdb0bb79bd56cdea6dc7bbccf10b9342cca6",
+          "note": "Planner hardened after independent review: sparse arrays and Unicode direction/control output rejected.",
           "path": "src/planning.mjs",
-          "sha256": "206861aa13262a4f6de06b91042b17d9d540eb0aeebf50c999ae3b775bd48df9",
-          "recordedAt": "2026-10-22T02:50:57.191Z"
+          "sha256": "cdd20e5ea66a1a8c9c1184a236c1e532e19350d20837a36efe056116e3719441",
+          "recordedAt": "2026-10-22T03:11:16.177Z"
         },
         {
           "kind": "test",
@@ -767,20 +767,29 @@
           "kind": "validation",
           "result": "pass",
           "actor": "chatgpt-implementation",
-          "note": "Read-only planning pilot documented honestly, distinct from unstructured original benchmark, no calendar or LLM baseline.",
+          "note": "Documents PR #11 trusted review pin correction, old evidence preservation and standalone helper hardening.",
           "path": "docs/PP0007-PLANNING-PILOT.md",
-          "sha256": "29b00e965033c66cb58aa9fedd503a6f8c9eda36468846a8422943da10389914",
-          "recordedAt": "2026-10-22T02:50:57.191Z"
+          "sha256": "1c62de639ee8aae03a1a8198062d48635a5f0b5d6d1b377ddfcbbc06e8acf1f3",
+          "recordedAt": "2026-10-22T03:11:16.177Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "New regression source prevents active task pin pointing to prior merged PR; does not replace independent GitHub review or verified CI.",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "70d8174036b7df1f0aa9673ed22755dc27339e2aa654b57657268bb786a7cb1d",
+          "recordedAt": "2026-10-22T03:11:16.177Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 10,
+        "pullRequest": 11,
         "baseRef": "main",
-        "baseSha": "15be314644711da9227511b390dc80f638f3d787"
+        "baseSha": "2c08c3db37bfd6ebea405008403243cc40762612"
       }
     }
   ],
-  "revision": 40
+  "revision": 41
 }

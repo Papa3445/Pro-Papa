@@ -49,6 +49,25 @@ test('PP-0007 weekly planner fails closed on unsupported inputs, invalid dates a
     assert.equal(result.execution,null);
   }
 });
+test('PP-0007 exported planner rejects array holes and display-control characters', async () => {
+  const withHole=input();
+  withHole.tasks=new Array(1);
+  assert.throws(()=>buildWeeklyPlan(withHole));
+  const sparseDependencies=input();
+  sparseDependencies.tasks[1].dependsOn=new Array(1);
+  assert.throws(()=>buildWeeklyPlan(sparseDependencies));
+  for (const codePoint of [0x7f,0x85,0x61c,0x200e,0x200f,0x202e,0x2066]) {
+    const x=input();
+    x.tasks[0].title='Unsafe'+String.fromCodePoint(codePoint)+'Output';
+    assert.throws(()=>buildWeeklyPlan(x));
+    const host=createReferenceHost();
+    const response=await host.execute({objective:'Weekly plan',capability:'plan.week',inputs:x});
+    assert.equal(response.status,'provider_unavailable');
+  }
+  const host=createReferenceHost();
+  const result=await host.execute({objective:'Weekly plan',capability:'plan.week',inputs:withHole});
+  assert.equal(result.status,'invalid_request','snapshot rejects sparse arrays before running the planner');
+});
 test('PP-0007 planning hint cannot authorize a GitHub issue or other external action', async () => {
   const host = createReferenceHost();
   const external = await host.execute({
