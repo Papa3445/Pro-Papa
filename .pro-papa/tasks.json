@@ -825,16 +825,61 @@
           "path": "tests/memo-pp0007.test.mjs",
           "sha256": "5c8d22e3cdcf7b1a109a21c7ed131ac3325a21f1cbba5a5a9ec1ae68970232fc",
           "recordedAt": "2026-10-22T03:39:50.955Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Fixed actual parseIsoCalendarDate local source, identical to returned runnable ES module code.",
+          "path": "src/iso-date.mjs",
+          "sha256": "1434c169820b3711af3d05d0da9e11c7ccb927a9d702fe322b01d02b116446ce",
+          "recordedAt": "2026-10-22T04:04:27.090Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Test sources assert generated runnable module parity, leap years and host execution/authorization; CI pending.",
+          "path": "tests/iso-date-pp0007.test.mjs",
+          "sha256": "a7b2a32b3f91d91a350dab9634ab24f4eccc25bb0678657ae19e13907184819c",
+          "recordedAt": "2026-10-22T04:04:27.090Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Bounded software-pilot input/output contract and candid initial CI regression; no broad baseline.",
+          "path": "docs/PP0007-ISO-DATE-PILOT.md",
+          "sha256": "6dc7ebc0cb081d8a425461a579e101c5c1392f5a16e967524fc12311571e11ee",
+          "recordedAt": "2026-10-22T04:04:27.090Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Active trusted review pin rejects earlier approved PR #12 identity and prior SHA.",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "e9c9f4029696201dbd2e704203b832bc23154b609c9d5bb32b6a595e3ea2a330",
+          "recordedAt": "2026-10-22T04:04:27.090Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual code-head pull_request CI 39720335188, 155/155 and valid project, generated parser imported and parity-tested. Earlier failed run explicitly archived as metadata; final evidence-head CI pending.",
+          "path": ".pro-papa/evidence/PP-0007/iso-date-ci.json",
+          "sha256": "d7c5133d638fa14d3752fb342df1ad481c56348d9e3127539a9665716dba5512",
+          "recordedAt": "2026-10-22T04:07:15.828Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 12,
+        "pullRequest": 13,
         "baseRef": "main",
-        "baseSha": "1881851dcba46e3dc3ece44e4a355619b337b3c5"
+        "baseSha": "244617ba9f9e44538e1756d9320c0c6a9fb6472a"
       }
     }
   ],
-  "revision": 43
+  "revision": 45
 }

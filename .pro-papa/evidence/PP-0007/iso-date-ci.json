@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "pilot": "bounded-executable-iso-calendar-date-software",
+  "observedSourceHead": "bb01eceb160311d6e59ed3e9c2df89cae0b252d1",
+  "source": {
+    "path": "src/iso-date.mjs",
+    "gitBlobSha": "e3ddec72afd05199edf976961b17aeabf8e77a80",
+    "sha256": "1434c169820b3711af3d05d0da9e11c7ccb927a9d702fe322b01d02b116446ce"
+  },
+  "tests": {
+    "path": "tests/iso-date-pp0007.test.mjs",
+    "gitBlobSha": "e00464ccc339f6000e687c4402447156a0da0bc3",
+    "sha256": "a7b2a32b3f91d91a350dab9634ab24f4eccc25bb0678657ae19e13907184819c"
+  },
+  "githubActions": {
+    "runId": 39720335188,
+    "jobId": 119632087399,
+    "event": "pull_request",
+    "headSha": "bb01eceb160311d6e59ed3e9c2df89cae0b252d1",
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39720335188",
+    "total": 155,
+    "passed": 155,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true
+  },
+  "previousFailedTestRun": {
+    "runId": 39720063272,
+    "sourceHead": "9ecbbba94aad5123bd4d6c08f11245e3e044e0d2",
+    "passed": 153,
+    "failed": 2,
+    "reason": "Doubly escaped regex digits in original date parser; corrected and retested"
+  },
+  "limitations": "Fixed Gregorian YYYY-MM-DD parser emitted from tested code; not general software synthesis, 7-case benchmark completion or a measured direct-assistant baseline, LLM token count or a per-pilot private audit receipt."
+}

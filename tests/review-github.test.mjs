@@ -284,20 +284,19 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-// Former PR #11 approval cannot authorize the newly contributed PP-0007 memo.
-test('PP-0007 active task target rejects approval on previously merged planner PR',async()=>{
+// Previous PR #12 approval must not authorize the newer PP-0007 software contribution.
+test('PP-0007 active task target rejects the prior approved memo PR when reviewing software code',async()=>{
   const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
   assert.equal(task.status,'in_progress');
   assert.equal(task.requiresTrustedReview,true);
   assert.deepEqual(task.reviewTarget,{
-    repository:'Papa3445/Pro-Papa',pullRequest:12,baseRef:'main',
-    baseSha:'1881851dcba46e3dc3ece44e4a355619b337b3c5',
+    repository:'Papa3445/Pro-Papa',pullRequest:13,baseRef:'main',baseSha:'244617ba9f9e44538e1756d9320c0c6a9fb6472a',
   });
-  const candidate={number:12,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'1881851dcba46e3dc3ece44e4a355619b337b3c5'},
+  const current={number:13,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'244617ba9f9e44538e1756d9320c0c6a9fb6472a'},
     head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
-  const previouslyApproved=review('APPROVED',{commit_id:'d'.repeat(40)});
-  assert.throws(()=>evalReviews(task.reviewTarget,{...candidate,number:11},[previouslyApproved]),/identity/);
-  assert.equal(evalReviews(task.reviewTarget,candidate,[previouslyApproved]).verdict,'FAIL');
-  assert.equal(evalReviews(task.reviewTarget,candidate,[review('APPROVED',{commit_id:candidate.head.sha})]).verdict,'PASS');
-  assert.ok(task.evidence.some(e=>e.path==='src/memo.mjs'));
+  const previous=review('APPROVED',{commit_id:'d'.repeat(40)});
+  assert.throws(()=>evalReviews(task.reviewTarget,{...current,number:12},[previous]),/identity/);
+  assert.equal(evalReviews(task.reviewTarget,current,[previous]).verdict,'FAIL');
+  assert.equal(evalReviews(task.reviewTarget,current,[review('APPROVED',{commit_id:current.head.sha})]).verdict,'PASS');
+  assert.ok(task.evidence.some(e=>e.path==='src/iso-date.mjs'));
 });
