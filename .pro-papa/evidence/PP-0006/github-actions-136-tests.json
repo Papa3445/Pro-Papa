@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0006",
+  "result": "pass",
+  "evidenceType": "GitHub-Actions-actual-execution",
+  "repository": "Papa3445/Pro-Papa",
+  "sourceBranch": "feature/pp-0006-reference-host",
+  "observedHeadSha": "a0eae084289bcca377e03e8935af23148890fbaf",
+  "workflowRunId": 39700311869,
+  "workflowUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39700311869",
+  "testJobId": 119567666047,
+  "liveSmokeJobId": 119567665710,
+  "tests": {
+    "total": 136,
+    "passed": 136,
+    "failed": 0,
+    "skipped": 0
+  },
+  "repositoryValidation": {
+    "valid": true,
+    "taskCount": 7
+  },
+  "realProviderExecution": {
+    "kind": "GitHub HTTPS GET",
+    "executor": "node bin/reference-host.mjs",
+    "method": "GET",
+    "endpoint": "https://api.github.com/repos/Papa3445/Pro-Papa",
+    "resultStatus": "completed",
+    "operation": "research",
+    "provider": "github",
+    "repository": "Papa3445/Pro-Papa",
+    "outputUrl": "https://github.com/Papa3445/Pro-Papa",
+    "auditStatus": "not_requested"
+  },
+  "adapter": {
+    "file": ".pro-papa/evidence/PP-0006/software-846ffc51-72bd-487c-abef-4b2e5ddeafe3.json",
+    "sourceSha256": "641ac794ffec0ede0e488fc533690f0b6a0e1352f589548d0bb4afa0db1ee3b2",
+    "reportSha256": "6182341cc5727817ea0cc21c827b69ad462c3a2982fcde68d59958745d697f42"
+  },
+  "limitations": "Real read-only GitHub API smoke observed; GitHub issue creation was tested with authorized HTTP fixtures but not published live. PP-0004 receipt protocol exercised with adversarial mock APIs in Node tests. A separate genuine private GitHub connector receipt was written/read back, but the reference-host CLI itself has not received production private audit credentials in CI. Independent reviewer approval pending."
+}
