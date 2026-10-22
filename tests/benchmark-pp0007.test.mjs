@@ -22,7 +22,10 @@ test('PP-0007 synthetic provider pilot does not fabricate cross-domain completio
   assert.equal(report.totalGitHubCallsObserved,1);
   assert.equal(report.requestsToUnapprovedEndpoints,0);
   assert.equal(report.receiptCount,0);
-  assert.equal(report.persistedTaskCount,0);
+  assert.equal(report.persistedTaskCount,1);
+  assert.equal(report.durableProbe.valid,true);
+  assert.equal(report.durableProbe.retryStatus,'already_executed');
+  assert.equal(report.durableProbe.storedRunState,'completed');
   assert.equal(report.tokenUsage,null);
   assert.equal(report.directAssistantBaseline,null);
   assert.ok(report.baselineReason.includes('No comparable direct LLM'));
