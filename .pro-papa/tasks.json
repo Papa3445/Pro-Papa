@@ -634,6 +634,24 @@
             "path": "src/reference-host.mjs",
             "sha256": "1d180c9a3e6e8e17fb0fdf71b6b41f02d1737001ac82b8e9fa6014fd3b1c337c"
           }
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0006/private-audit-host-positive-smoke.json",
+          "sha256": "9482217756f72a10d68698540b53da7ea3741c71917c2aa020a34a6acef8f743",
+          "note": "Real private Actions 39704656986 job 119581729402 executed Node reference-host --audit-required via ephemeral private-store token, confirmed private receipt and completed math=21; repo privacy, receipt immutable byte readback verified. No prompt/token persisted; reviewer approval pending.",
+          "recordedAt": "2026-10-22T01:22:51.217Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0006/acceptance-validation.md",
+          "sha256": "2abda551025cce0d98353eb2333319a1a8e2b03b4cc14a848427187c361cded5",
+          "note": "Positive private audit host end-to-end acceptance now executed, supersedes historical missing positive smoke. Independent review still required; no PP-0007 started.",
+          "recordedAt": "2026-10-22T01:22:51.220Z"
         }
       ],
       "requiresAdapter": true,
@@ -665,5 +683,5 @@
       "evidence": []
     }
   ],
-  "revision": 34
+  "revision": 35
 }
