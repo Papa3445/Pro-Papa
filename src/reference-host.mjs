@@ -3,6 +3,7 @@ import { runGateway, routeObjective } from './gateway.mjs';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { issueUsageReceipt } from './usage-receipts.mjs';
 import { buildWeeklyPlan } from './planning.mjs';
+import { draftMemo } from './memo.mjs';
 const REPO = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const plain = x => x !== null && typeof x === 'object' && !Array.isArray(x);
@@ -172,7 +173,7 @@ export function createReferenceHost({
       !durableProject || typeof durableSecret !== 'string' ||
       durableSecret.length < 16 || typeof token !== 'string' || !token)) fail();
 
-  const grants = ['math.sum', 'text.metrics', 'plan.week'];
+  const grants = ['math.sum', 'text.metrics', 'plan.week', 'memo.draft'];
   if (githubResearch) grants.push('research');
   if (approvedIssue) grants.push('operations');
 
@@ -196,6 +197,11 @@ export function createReferenceHost({
     'plan.week': async ({ inputs }) => ({
       ok: true, output: buildWeeklyPlan(inputs),
       provenance: { provider: 'local-node', operation: 'plan.week' },
+    }),
+    // Local text-only document; no filesystem write, email, publishing or external effect.
+    'memo.draft': async ({ inputs }) => ({
+      ok: true, output: draftMemo(inputs),
+      provenance: { provider: 'local-node', operation: 'memo.draft' },
     }),
     research: async ({ inputs }) => {
       const repo = allowedRepo(inputs, allowedRepositories);
