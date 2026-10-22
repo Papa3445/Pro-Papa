@@ -1137,7 +1137,7 @@
           "result": "pass",
           "actor": "chatgpt-implementation",
           "path": "bin/pp0007-manual-chatgpt-baseline.mjs",
-          "sha256": "b98960778c45a9a0dfab4014ee16db6fa17d513eb7379ebbb27b365e3fd1f810",
+          "sha256": "a693c732a989801ac330092d3593cb8f87a361186193c038a663406a4310df25",
           "recordedAt": "2026-10-22T23:33:31.778Z",
           "note": "Manual ChatGPT prompt/capture source, no API key, only operator-supplied unverified transcript. No actual model trial performed."
         },
@@ -1176,6 +1176,15 @@
           "sha256": "4cdea00b7ccaf9c6023737db3932951e9cb209856a19e0ca8c34d739b9780602",
           "recordedAt": "2026-10-22T23:33:31.778Z",
           "note": "Candidate adversarial tests or review-target guard; actual exact-head CI and independent PR #18 review still pending."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/manual-chatgpt-baseline-ci.json",
+          "sha256": "2399f5661dfe0198c5e90ad99f87799cc7643049b535e6fa0cfc0319e5738153",
+          "recordedAt": "2026-10-22T23:35:30.927Z",
+          "note": "Real source-head pull_request CI 39872666121 job 120150601144: 188/188 tests, 0 failed/skipped, project valid; no real ChatGPT trials; exact evidence-head CI and new independent approval still required."
         }
       ],
       "requiresTrustedReview": true,
@@ -1187,5 +1196,5 @@
       }
     }
   ],
-  "revision": 57
+  "revision": 58
 }
