@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "actual-provider-ci-api-baseline",
+  "githubActions": {
+    "repository": "Papa3445/Pro-Papa",
+    "runId": 39828694516,
+    "jobId": 119998744752,
+    "event": "pull_request",
+    "headSha": "92d2e992aba12350c23fc7a156d56ab7fa6188d9",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39828694516"
+  },
+  "verification": {
+    "tests": 170,
+    "passed": 170,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true,
+    "focusedApiCollectorCases": 8
+  },
+  "source": {
+    "path": "bin/pp0007-api-baseline.mjs",
+    "sha256": "945e0da442f86be0b865e1905abf517635c27dfc8b88470e3a414dcd7259883d"
+  },
+  "tests": {
+    "path": "tests/pp0007-api-baseline.test.mjs",
+    "sha256": "f154cf5de28f6ebf0cf87421be30533de8e0526cdd96d9e06f9a2e2cc3380b4d"
+  },
+  "limitations": "The only new model-path tests used injected HTTP simulations, not a real OpenAI API or ChatGPT UI call. This report captures actual GitHub Actions execution of code and regression tests, not model result quality or PP-0007 milestone readiness."
+}
