@@ -780,16 +780,61 @@
           "path": "tests/review-github.test.mjs",
           "sha256": "70d8174036b7df1f0aa9673ed22755dc27339e2aa654b57657268bb786a7cb1d",
           "recordedAt": "2026-10-22T03:11:16.177Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "After independent P2 review, input guard rejects Unicode U+2028 and U+2029 in all formatted fields.",
+          "path": "src/memo.mjs",
+          "sha256": "f6ca4436f4500ede4457091d52f38d4e310aff91fe980eca881482015714c768",
+          "recordedAt": "2026-10-22T03:39:50.955Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real GitHub Actions implementation-head CI 39716604675 observed 151 passing tests; exact-head final evidence commit CI must be checked separately.",
+          "path": ".pro-papa/evidence/PP-0007/memo-draft-ci.json",
+          "sha256": "80cb80249b4091155ffc58a8b8f8c13a7b37f8b2115ae430578b3be86a113ba5",
+          "recordedAt": "2026-10-22T03:26:22.368Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Memo pilot documents U+2028/U+2029 header spoofing fix and unverified scope.",
+          "path": "docs/PP0007-MEMO-PILOT.md",
+          "sha256": "ee9e8441e9bb0839fdc442ec0f848ab3faf5e6ebcfb327ae4cf28e004f21b950",
+          "recordedAt": "2026-10-22T03:39:50.955Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Regression denies reliance on prior PR #11 approval; new PR #12 active pin.",
+          "path": "tests/review-github.test.mjs",
+          "sha256": "079f100b65677ec5fa4f57ad6795e64410d8c985f84c3df96e7506b5a2a4d619",
+          "recordedAt": "2026-10-22T03:26:22.368Z"
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Regression test source for Unicode line separator and paragraph separator rejection in all five fields and host path. CI is not yet verified at this head.",
+          "path": "tests/memo-pp0007.test.mjs",
+          "sha256": "5c8d22e3cdcf7b1a109a21c7ed131ac3325a21f1cbba5a5a9ec1ae68970232fc",
+          "recordedAt": "2026-10-22T03:39:50.955Z"
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 11,
+        "pullRequest": 12,
         "baseRef": "main",
-        "baseSha": "2c08c3db37bfd6ebea405008403243cc40762612"
+        "baseSha": "1881851dcba46e3dc3ece44e4a355619b337b3c5"
       }
     }
   ],
-  "revision": 41
+  "revision": 43
 }
