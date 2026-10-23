@@ -1194,6 +1194,33 @@
           "sha256": "88a6887094499ac1230362e874ef8f2aa340ebfa5692e6a89a093fe67f32c00d",
           "recordedAt": "2026-10-22T23:50:02.514Z",
           "note": "Verified actual GitHub Actions 39874216368 pull_request job 120155740649 at repair source-head: 189/189 tests, valid project; no actual ChatGPT model trial."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-ui-v2-collector.mjs",
+          "sha256": "bebabe2be2480b669267b4464b4087245129248c4011e607894d235a17b5bab2",
+          "recordedAt": "2026-10-23T23:42:26.921Z",
+          "note": "Real local operator-only tool for preregistered 42-slot UI study. No ChatGPT service interaction."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-UI-V2-COLLECTOR.md",
+          "sha256": "1b21c30bdc2b38279362f73c2469e71bd94822ae21ddc86e3f9c1912f0819835",
+          "recordedAt": "2026-10-23T23:42:26.921Z",
+          "note": "Private exact-prompt workflow and explicit trust/privacy boundary, prospective trial not yet executed."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/ui-v2-collector-ci.json",
+          "sha256": "b6ea0b3c84776dc26228b44767c29c9f652b32a1537fd3c227f569ced11fd992",
+          "recordedAt": "2026-10-23T23:42:26.921Z",
+          "note": "Observed actual GitHub PR run 40041009464 job 120711826601: 200/200 tests and project valid, at source head 73d45ccf; final metadata-head CI and independent review remain."
         }
       ],
       "requiresTrustedReview": true,
@@ -1205,5 +1232,5 @@
       }
     }
   ],
-  "revision": 60
+  "revision": 61
 }
