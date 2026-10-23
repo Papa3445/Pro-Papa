@@ -5,7 +5,7 @@ import {mkdtemp,readFile,writeFile,stat,lstat,rm,symlink,mkdir,chmod} from 'node
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
-import {buildPacket,loadStudy,main} from '../bin/pp0007-ui-v2-collector.mjs';
+import {buildPacket,loadStudy,main,validateSchedule,verifyStudyBytes} from '../bin/pp0007-ui-v2-collector.mjs';
 
 const sha=x=>createHash('sha256').update(x).digest('hex');
 async function privateDir(t){
@@ -18,7 +18,7 @@ test('prospective packet preserves seven frozen prompts and all 42 preregistered
   const {spec,contractSha256,originalFixtureBlob}=await loadStudy();
   assert.match(contractSha256,/^[0-9a-f]{64}$/);
   assert.equal(originalFixtureBlob,'aa07d8296ab8c4ad492ec02863bd4203bb90ead4');
-  let slots=0,firstRegular=0,firstProject=0;
+  let slots=0,firstRegular=0,firstProject=0; const identities=new Set();
   for(const c of spec.caseDefinitions){
     for(let rep=1;rep<=3;rep++){
       const order=spec.orderByCase[c.id][rep-1];
@@ -28,6 +28,9 @@ test('prospective packet preserves seven frozen prompts and all 42 preregistered
         assert.equal(packet.positionInPair,order.indexOf(arm)+1);
         assert.equal(packet.expectedPromptSha256,sha(Buffer.from(c.submittedPrompt,'utf8')));
         assert.equal(packet.contractSha256,contractSha256);
+        const identity=JSON.stringify([packet.caseId,packet.repetition,packet.arm]);
+        assert.equal(identities.has(identity),false,'each prospective slot must be distinct');
+        identities.add(identity);
         assert.equal(packet.status,'not_collected');
         assert.equal(packet.providerAuthenticated,false);
         assert.equal(packet.observedAnswer,null);
@@ -38,8 +41,45 @@ test('prospective packet preserves seven frozen prompts and all 42 preregistered
       if(order[0]==='regular')firstRegular++;else firstProject++;
     }
   }
-  assert.equal(slots,42);
+  assert.equal(slots,42);assert.equal(identities.size,42);
   assert.deepEqual([firstRegular,firstProject],[11,10]);
+});
+
+
+test('P1 independent review: reject duplicate non-QA arms and missing 42-slot identities',async()=>{
+  const original=await readFile(new URL('../fixtures/pp0007-paired-trial-collection-template.json',import.meta.url));
+  const raw=await readFile(new URL('../fixtures/pp0007-ui-v2-contract.json',import.meta.url));
+  const spec=JSON.parse(raw);
+  const bad=structuredClone(spec);
+  bad.orderByCase.software[0]=['regular','regular'];
+  assert.throws(()=>validateSchedule(bad),/Invalid PP-0007/);
+  assert.throws(()=>verifyStudyBytes(Buffer.from(JSON.stringify(bad)),original),/Invalid PP-0007/);
+  const noPair=structuredClone(spec);
+  noPair.orderByCase.software.splice(1,1);
+  assert.throws(()=>validateSchedule(noPair),/Invalid PP-0007/);
+  const extra=structuredClone(spec);
+  extra.orderByCase.injected=[['regular','project'],['project','regular'],['regular','project']];
+  assert.throws(()=>validateSchedule(extra),/Invalid PP-0007/);
+});
+
+test('P1 independent review: immutable predeclared bytes reject balanced reorders and altered formatting',async()=>{
+  const original=await readFile(new URL('../fixtures/pp0007-paired-trial-collection-template.json',import.meta.url));
+  const raw=await readFile(new URL('../fixtures/pp0007-ui-v2-contract.json',import.meta.url));
+  const {contractSha256}=verifyStudyBytes(raw,original);
+  assert.equal(contractSha256,'a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298');
+  const changed=JSON.parse(raw);
+  changed.orderByCase.software[0]=['project','regular'];
+  changed.orderByCase.data[0]=['regular','project'];
+  assert.doesNotThrow(()=>validateSchedule(changed),'still has balanced 11:10 ordering');
+  assert.throws(()=>verifyStudyBytes(Buffer.from(JSON.stringify(changed)),original),/Invalid PP-0007/,
+    'predeclared exact order cannot be rewritten and rehashed');
+  const reformatted=Buffer.from(raw.toString('utf8')+'\\n');
+  assert.throws(()=>verifyStudyBytes(reformatted,original),/Invalid PP-0007/,
+    'even a byte-format mutation needs an independently reviewed new contract');
+  const reordered=JSON.stringify({status:changed.status,...JSON.parse(raw)});
+  assert.throws(()=>verifyStudyBytes(Buffer.from(reordered),original),/Invalid PP-0007/);
+  const corruptedOriginal=Buffer.from(original.toString('utf8')+'\\n');
+  assert.throws(()=>verifyStudyBytes(raw,corruptedOriginal),/Invalid PP-0007/);
 });
 
 test('explicit prepare captures only the selected arm/repetition in owner-private mode',async t=>{
