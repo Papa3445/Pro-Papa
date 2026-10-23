@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "studyId": "PP-0007-UI-PROSPECTIVE-V2",
+  "status": "predeclared_not_executed",
+  "purpose": "Prospective observational regular ChatGPT website vs Pro-Papa2 project ChatGPT. Not retrospective and not the separate Node reference host study.",
+  "sourceRepository": "Papa3445/Pro-Papa",
+  "registrationBaseCommit": "ba301085122b8028377478613a0896ee26846f20",
+  "originalFixturePath": "fixtures/pp0007-paired-trial-collection-template.json",
+  "originalFixtureGitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4",
+  "arms": [
+    {
+      "id": "regular",
+      "setting": "ChatGPT web outside any Pro-Papa project"
+    },
+    {
+      "id": "project",
+      "setting": "ChatGPT web inside Pro-Papa2 with owner-required mandatory per-message live GitHub access unchanged"
+    }
+  ],
+  "repetitionsPerCase": 3,
+  "orderByRepetition": [
+    [
+      "regular",
+      "project"
+    ],
+    [
+      "project",
+      "regular"
+    ],
+    [
+      "regular",
+      "project"
+    ]
+  ],
+  "newConversationPerObservation": true,
+  "rubric": {
+    "kind": "ordinal_predeclared_for_future_only",
+    "graderCountTarget": 2,
+    "blindWhereFeasible": true,
+    "grades": {
+      "0": "Wrong/unsupported/no substantive outcome",
+      "1": "Partial work or appropriate clarification without completing original objective",
+      "2": "Useful answer/artifact with material gaps or unmet validation",
+      "3": "Objective completed with inspectable correct facts or independently tested artifact"
+    },
+    "ambiguityPolicy": "For the novel underspecified prompt, clarification is appropriate. An explicitly marked hypothetical is also appropriate. Record substantive one-turn completion separately; never declare clarification inherently incorrect.",
+    "notRetrospective": true
+  },
+  "measurementPolicy": {
+    "sameUISpecifiedEffort": "High",
+    "modelAndGrantParity": "unknown_until_verified",
+    "wallClockMs": null,
+    "uiWorkedForSeconds": null,
+    "providerTokenCount": null,
+    "toolCallCount": null,
+    "correctionTurns": null,
+    "actualToolTraceRequirement": "Only host/provider evidence; a GitHub footer is an observation not tool attestation",
+    "projectReceiptPolicy": "Mandatory GitHub read remains; verify private receipt commit and readback when one is issued. Do not infer model reasoning.",
+    "sensitiveDataPolicy": "Keep screenshots, private conversations, identities and source ZIPs outside public GitHub; publish only non-sensitive test specification and checked aggregates.",
+    "causalLimit": "Different memory, project instructions, tools or grants mean observational association only."
+  },
+  "caseDefinitions": [
+    {
+      "id": "qa",
+      "canonicalObjective": "What is the capital city of France?",
+      "canonicalCapability": "general",
+      "canonicalInputs": null,
+      "predeclaredEvidenceCheck": "Accurate Paris answer, minimal unsupported claims"
+    },
+    {
+      "id": "research",
+      "canonicalObjective": "Research repository metadata with a provider URL",
+      "canonicalCapability": "research",
+      "canonicalInputs": {
+        "repository": "Papa3445/Pro-Papa"
+      },
+      "predeclaredEvidenceCheck": "Correct timestamped repository metadata and verified provider URL"
+    },
+    {
+      "id": "software",
+      "canonicalObjective": "Implement and test a function that parses dates",
+      "canonicalCapability": "software",
+      "canonicalInputs": null,
+      "predeclaredEvidenceCheck": "Runnable source/artifact plus declared contract and shared independent tests"
+    },
+    {
+      "id": "document",
+      "canonicalObjective": "Draft a formal business memo with clear recommendations",
+      "canonicalCapability": "document",
+      "canonicalInputs": null,
+      "predeclaredEvidenceCheck": "Professional memo with recommendations, assumptions and specific next actions"
+    },
+    {
+      "id": "data",
+      "canonicalObjective": "Calculate the total for [2, 3, 5]",
+      "canonicalCapability": "math.sum",
+      "canonicalInputs": {
+        "numbers": [
+          2,
+          3,
+          5
+        ]
+      },
+      "predeclaredEvidenceCheck": "Exact total 10 and no conflicting totals"
+    },
+    {
+      "id": "planning",
+      "canonicalObjective": "Create a safe weekly project schedule",
+      "canonicalCapability": "operations",
+      "canonicalInputs": null,
+      "predeclaredEvidenceCheck": "Feasible weekly schedule, safety gates, assumptions and contingency"
+    },
+    {
+      "id": "novel",
+      "canonicalObjective": "Explain the tradeoffs in an unusual multidisciplinary question",
+      "canonicalCapability": "general",
+      "canonicalInputs": null,
+      "predeclaredEvidenceCheck": "State ambiguity; an explicitly labeled illustrative worked example and a useful clarification are both defensible, with completion tracked separately"
+    }
+  ],
+  "observationTemplate": {
+    "caseId": null,
+    "arm": null,
+    "repetition": null,
+    "sourceArtifactSha256": null,
+    "providerAuthenticated": null,
+    "qualityGradeRater1": null,
+    "qualityGradeRater2": null,
+    "taskComplete": null,
+    "corrections": null,
+    "measuredWallClockMs": null,
+    "uiWorkedForSeconds": null,
+    "actualToolCalls": null,
+    "providerReportedTokens": null,
+    "verifiedProjectGitHubReceipt": null
+  },
+  "limits": "This file creates no ChatGPT runs, provider attestation, grading evidence, GitHub turn interception, superiority proof or PP-0007 closure. Require separate matched Node-host study and independent authenticated exact-head PR review."
+}
