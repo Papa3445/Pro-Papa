@@ -18,20 +18,6 @@
     }
   ],
   "repetitionsPerCase": 3,
-  "orderByRepetition": [
-    [
-      "regular",
-      "project"
-    ],
-    [
-      "project",
-      "regular"
-    ],
-    [
-      "regular",
-      "project"
-    ]
-  ],
   "newConversationPerObservation": true,
   "rubric": {
     "kind": "ordinal_predeclared_for_future_only",
@@ -44,7 +30,23 @@
       "3": "Objective completed with inspectable correct facts or independently tested artifact"
     },
     "ambiguityPolicy": "For the novel underspecified prompt, clarification is appropriate. An explicitly marked hypothetical is also appropriate. Record substantive one-turn completion separately; never declare clarification inherently incorrect.",
-    "notRetrospective": true
+    "notRetrospective": true,
+    "adjudication": {
+      "baseRaters": 2,
+      "allowedScores": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "twoRatersAgree": "Accept their common integer only after both submitted evidence-backed independent rationales.",
+      "twoRatersDisagree": "Obtain a third independent, preferably blinded, evidence-backed 0-3 score; final grade is the median of the three. Until third score is present, final grade must be null and must not enter an aggregate.",
+      "missingRaterOrEvidence": "Never turn missing or invalid grader entries, required source material, or insufficient visible response into grade 0, pass, or any non-null grade. Mark final grade null with reason; track unanswered/unsupported observed outcomes separately.",
+      "missingSoftwareArchive": "If an output reports tests or links to source but the runnable artifact and shared independent tests are missing, no independent software correctness success can be claimed and grade 3 is prohibited. A substantive visible artifact may receive at most 2 with explanation; if unverifiable or absent, null.",
+      "gradeThreeEvidence": "Require an independently inspectable complete artifact or independently checkable correctness. Claimed test counts, GitHub footers and nonexistent source links cannot alone justify a 3.",
+      "aggregatePolicy": "Report per-case distributions and paired differences only when both arms have resolved numeric grades and parity metadata; report excluded count and reasons. Do not replace null with zero, pool unequal subsets, compute causal superiority or reinterpret historical scores.",
+      "completionRule": "One-turn taskComplete is separately recorded as true/false/null using explicit observed evidence, not inferred from a numerical grade. Appropriate clarification may have taskComplete:false while behavior remains appropriate."
+    }
   },
   "measurementPolicy": {
     "sameUISpecifiedEffort": "High",
@@ -65,7 +67,8 @@
       "canonicalObjective": "What is the capital city of France?",
       "canonicalCapability": "general",
       "canonicalInputs": null,
-      "predeclaredEvidenceCheck": "Accurate Paris answer, minimal unsupported claims"
+      "predeclaredEvidenceCheck": "Accurate Paris answer, minimal unsupported claims",
+      "submittedPrompt": "What is the capital city of France?"
     },
     {
       "id": "research",
@@ -74,21 +77,24 @@
       "canonicalInputs": {
         "repository": "Papa3445/Pro-Papa"
       },
-      "predeclaredEvidenceCheck": "Correct timestamped repository metadata and verified provider URL"
+      "predeclaredEvidenceCheck": "Correct timestamped repository metadata and verified provider URL",
+      "submittedPrompt": "Research repository metadata with a provider URL\nCanonical inputs (JSON): {\"repository\":\"Papa3445/Pro-Papa\"}"
     },
     {
       "id": "software",
       "canonicalObjective": "Implement and test a function that parses dates",
       "canonicalCapability": "software",
       "canonicalInputs": null,
-      "predeclaredEvidenceCheck": "Runnable source/artifact plus declared contract and shared independent tests"
+      "predeclaredEvidenceCheck": "Runnable source/artifact plus declared contract and shared independent tests",
+      "submittedPrompt": "Implement and test a function that parses dates"
     },
     {
       "id": "document",
       "canonicalObjective": "Draft a formal business memo with clear recommendations",
       "canonicalCapability": "document",
       "canonicalInputs": null,
-      "predeclaredEvidenceCheck": "Professional memo with recommendations, assumptions and specific next actions"
+      "predeclaredEvidenceCheck": "Professional memo with recommendations, assumptions and specific next actions",
+      "submittedPrompt": "Draft a formal business memo with clear recommendations"
     },
     {
       "id": "data",
@@ -101,21 +107,24 @@
           5
         ]
       },
-      "predeclaredEvidenceCheck": "Exact total 10 and no conflicting totals"
+      "predeclaredEvidenceCheck": "Exact total 10 and no conflicting totals",
+      "submittedPrompt": "Calculate the total for [2, 3, 5]\nCanonical inputs (JSON): {\"numbers\":[2,3,5]}"
     },
     {
       "id": "planning",
       "canonicalObjective": "Create a safe weekly project schedule",
       "canonicalCapability": "operations",
       "canonicalInputs": null,
-      "predeclaredEvidenceCheck": "Feasible weekly schedule, safety gates, assumptions and contingency"
+      "predeclaredEvidenceCheck": "Feasible weekly schedule, safety gates, assumptions and contingency",
+      "submittedPrompt": "Create a safe weekly project schedule"
     },
     {
       "id": "novel",
       "canonicalObjective": "Explain the tradeoffs in an unusual multidisciplinary question",
       "canonicalCapability": "general",
       "canonicalInputs": null,
-      "predeclaredEvidenceCheck": "State ambiguity; an explicitly labeled illustrative worked example and a useful clarification are both defensible, with completion tracked separately"
+      "predeclaredEvidenceCheck": "State ambiguity; an explicitly labeled illustrative worked example and a useful clarification are both defensible, with completion tracked separately",
+      "submittedPrompt": "Explain the tradeoffs in an unusual multidisciplinary question"
     }
   ],
   "observationTemplate": {
@@ -132,7 +141,126 @@
     "uiWorkedForSeconds": null,
     "actualToolCalls": null,
     "providerReportedTokens": null,
-    "verifiedProjectGitHubReceipt": null
+    "verifiedProjectGitHubReceipt": null,
+    "actualSubmittedPrompt": null,
+    "promptParityVerified": null,
+    "qualityGradeRater3": null,
+    "adjudicatedGrade": null,
+    "graderAgreementStatus": null,
+    "missingEvidenceReason": null,
+    "sharedSoftwareTestsVerified": null,
+    "toolGrantParityVerified": null
   },
-  "limits": "This file creates no ChatGPT runs, provider attestation, grading evidence, GitHub turn interception, superiority proof or PP-0007 closure. Require separate matched Node-host study and independent authenticated exact-head PR review."
+  "limits": "This file creates no ChatGPT runs, provider attestation, grading evidence, GitHub turn interception, superiority proof or PP-0007 closure. Require separate matched Node-host study and independent authenticated exact-head PR review.",
+  "promptRendering": {
+    "method": "UTF-8 exact pasted text, no role instructions and no trailing newline",
+    "rule": "If canonicalInputs is null, submittedPrompt equals canonicalObjective. Otherwise submittedPrompt equals canonicalObjective + '\\nCanonical inputs (JSON): ' + JSON.stringify(canonicalInputs) in fixture key order, compact JSON without added whitespace.",
+    "operatorRequirement": "Both arms paste the identical case submittedPrompt verbatim, and privately preserve the actual user-message text or provider export (plus SHA-256). Mismatch, manual augmentation or missing text invalidates prompt parity; never infer matching from an answer."
+  },
+  "orderByCase": {
+    "qa": [
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ]
+    ],
+    "research": [
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ]
+    ],
+    "software": [
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ]
+    ],
+    "document": [
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ]
+    ],
+    "data": [
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ]
+    ],
+    "planning": [
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ]
+    ],
+    "novel": [
+      [
+        "project",
+        "regular"
+      ],
+      [
+        "regular",
+        "project"
+      ],
+      [
+        "project",
+        "regular"
+      ]
+    ]
+  },
+  "orderBalance": {
+    "totalPairedRepetitions": 21,
+    "regularFirst": 11,
+    "projectFirst": 10,
+    "allocationMethod": "First four frozen cases: R/P, P/R, R/P. Last three: P/R, R/P, P/R. Preassigned, not randomized; one-pair imbalance is minimal for an odd total."
+  }
 }
