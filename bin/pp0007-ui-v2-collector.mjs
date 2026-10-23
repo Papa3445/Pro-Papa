@@ -53,7 +53,7 @@ export function verifyStudyBytes(specBytes,originalBytes){
   const actualDigest=sha256(specBytes);
   if(actualDigest!==REGISTERED_V2_SHA256)fail();
   const spec=JSON.parse(specBytes);
-  const blob=createHash('sha1').update('blob '+originalBytes.length+'\\0').update(originalBytes).digest('hex');
+  const blob=createHash('sha1').update('blob '+originalBytes.length+'\0').update(originalBytes).digest('hex');
   if(blob!==ORIGINAL_BLOB||spec.originalFixtureGitBlobSha!==blob||
      spec.studyId!=='PP-0007-UI-PROSPECTIVE-V2'||spec.status!=='predeclared_not_executed'||
      spec.repetitionsPerCase!==3)fail();
@@ -61,7 +61,7 @@ export function verifyStudyBytes(specBytes,originalBytes){
   if(spec.caseDefinitions.length!==7||original.trials.length!==7)fail();
   for(let i=0;i<7;i++){
     const c=spec.caseDefinitions[i],o=original.trials[i];
-    const prompt=o.canonicalObjective+(o.canonicalInputs===null?'':'\\nCanonical inputs (JSON): '+JSON.stringify(o.canonicalInputs));
+    const prompt=o.canonicalObjective+(o.canonicalInputs===null?'':'\nCanonical inputs (JSON): '+JSON.stringify(o.canonicalInputs));
     if(c.id!==o.id||c.submittedPrompt!==prompt||
        c.canonicalCapability!==o.canonicalCapability)fail();
   }
