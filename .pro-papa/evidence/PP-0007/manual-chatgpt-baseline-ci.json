@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "no-key-chatgpt-operator-collection-code-ci",
+  "sourceHead": "330935c9d1f5dbe8338f21b2c60fb91c95d25e9f",
+  "baseSha": "a6acacd6344be05bc8f9caffbd3f18abaf9a276d",
+  "repository": "Papa3445/Pro-Papa",
+  "sourceFiles": [
+    {
+      "path": "bin/pp0007-manual-chatgpt-baseline.mjs",
+      "sha256": "a693c732a989801ac330092d3593cb8f87a361186193c038a663406a4310df25",
+      "gitBlobSha": "9be65dffdcb81dc6bda5a6a37d9bf42584b18065"
+    },
+    {
+      "path": "tests/pp0007-manual-chatgpt-baseline.test.mjs",
+      "sha256": "fb97c60ad16748b58d8d80a074b87a6d17590af66ea49d7b56475fa24f0f670d",
+      "gitBlobSha": "1211a594b2852970494a3a8b4ed4302aaceb5dac"
+    },
+    {
+      "path": "docs/PP0007-NO-API-CHATGPT-BASELINE.md",
+      "sha256": "19e5efc050c50a1e7f7e51cc5948bb7f95a0fc47be358dee029c10290c8655a3",
+      "gitBlobSha": "eee4645dd5fd195ca4e4dcc11d2eb12474f34a83"
+    },
+    {
+      "path": "docs/PP0007-PAIRED-TRIAL-PROTOCOL.md",
+      "sha256": "f2f03eecaaf94306df54e7bef86621d8a5033974ac06c2c98ee1edabe90aa924",
+      "gitBlobSha": "e752705aac77bbb6eff8a47fea4a23a81a08ce8b"
+    },
+    {
+      "path": "tests/review-github.test.mjs",
+      "sha256": "4cdea00b7ccaf9c6023737db3932951e9cb209856a19e0ca8c34d739b9780602",
+      "gitBlobSha": "571482cc6250b1b80ba7e7276fe5e0629805fbc1"
+    }
+  ],
+  "actualProviderCI": {
+    "runId": 39872666121,
+    "jobId": 120150601144,
+    "event": "pull_request",
+    "headSha": "330935c9d1f5dbe8338f21b2c60fb91c95d25e9f",
+    "conclusion": "success",
+    "passed": 188,
+    "total": 188,
+    "failed": 0,
+    "skipped": 0,
+    "projectValid": true,
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/39872666121"
+  },
+  "observedRemediation": {
+    "failedRun": 39872592876,
+    "issue": "UTF-8 decoder raw TypeError did not match bounded failed-validation contract",
+    "fixedAtHead": "330935c9d1f5dbe8338f21b2c60fb91c95d25e9f"
+  },
+  "userSelectedPath": "No OpenAI API key. Manual direct ChatGPT conversations copied privately and labeled operator supplied, not verified API/provider outcomes.",
+  "providerOrDirectChatTrialsActuallyCollected": 0,
+  "modelApiCallsMade": 0,
+  "limits": "This CI tests code and synthetic fixtures, not real ChatGPT UI baseline; no real user-task quality grade or final milestone closure. Exact final evidence head requires separate CI and independent reviewer approval."
+}
