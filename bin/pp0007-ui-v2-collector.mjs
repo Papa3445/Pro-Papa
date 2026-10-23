@@ -10,13 +10,50 @@ const ROOT=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const SPEC=new URL('../fixtures/pp0007-ui-v2-contract.json',import.meta.url);
 const FROZEN=new URL('../fixtures/pp0007-paired-trial-collection-template.json',import.meta.url);
 const ORIGINAL_BLOB='aa07d8296ab8c4ad492ec02863bd4203bb90ead4';
+// Independent review #21: immutable SHA-256 of preregistered v2 raw bytes
+// from trusted main at fb9b568. A fresh self-hash is not proof of registration.
+const REGISTERED_V2_SHA256='a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298';
 const fail=()=>{throw Error('Invalid PP-0007 UI-v2 collection operation')};
 const sha256=data=>createHash('sha256').update(data).digest('hex');
 
-export async function loadStudy(){
-  const [specBytes,originalBytes]=await Promise.all([readFile(SPEC),readFile(FROZEN)]);
+// Structural safety is checked *in addition to* the pinned preregistration.
+// Distinct identities (case, repetition, arm) forbid duplicate-arm pairs.
+export function validateSchedule(spec){
+  if(!spec||!Array.isArray(spec.caseDefinitions)||spec.caseDefinitions.length!==7||
+     !spec.orderByCase||typeof spec.orderByCase!=='object'||
+     Array.isArray(spec.orderByCase))fail();
+  const ids=spec.caseDefinitions.map(c=>c.id);
+  if(new Set(ids).size!==7||ids.some(id=>typeof id!=='string')||
+     Object.keys(spec.orderByCase).length!==ids.length||
+     Object.keys(spec.orderByCase).some(id=>!ids.includes(id)))fail();
+  const slots=new Set();
+  let regularFirst=0,projectFirst=0;
+  for(const id of ids){
+    const repetitions=spec.orderByCase[id];
+    if(!Array.isArray(repetitions)||repetitions.length!==3)fail();
+    for(let i=0;i<3;i++){
+      const pair=repetitions[i];
+      if(!Array.isArray(pair)||pair.length!==2||
+         !(['regular','project'].every(arm=>pair.includes(arm)))||
+         new Set(pair).size!==2)fail();
+      if(pair[0]==='regular')regularFirst++;else projectFirst++;
+      for(const arm of pair){
+        const slot=JSON.stringify([id,i+1,arm]);
+        if(slots.has(slot))fail();
+        slots.add(slot);
+      }
+    }
+  }
+  if(slots.size!==42||regularFirst!==11||projectFirst!==10)fail();
+}
+
+// In tests, supply exact bytes to challenge the same production read path.
+export function verifyStudyBytes(specBytes,originalBytes){
+  if(!Buffer.isBuffer(specBytes)||!Buffer.isBuffer(originalBytes))fail();
+  const actualDigest=sha256(specBytes);
+  if(actualDigest!==REGISTERED_V2_SHA256)fail();
   const spec=JSON.parse(specBytes);
-  const blob=createHash('sha1').update('blob '+originalBytes.length+'\0').update(originalBytes).digest('hex');
+  const blob=createHash('sha1').update('blob '+originalBytes.length+'\\0').update(originalBytes).digest('hex');
   if(blob!==ORIGINAL_BLOB||spec.originalFixtureGitBlobSha!==blob||
      spec.studyId!=='PP-0007-UI-PROSPECTIVE-V2'||spec.status!=='predeclared_not_executed'||
      spec.repetitionsPerCase!==3)fail();
@@ -24,11 +61,17 @@ export async function loadStudy(){
   if(spec.caseDefinitions.length!==7||original.trials.length!==7)fail();
   for(let i=0;i<7;i++){
     const c=spec.caseDefinitions[i],o=original.trials[i];
-    const prompt=o.canonicalObjective+(o.canonicalInputs===null?'':'\nCanonical inputs (JSON): '+JSON.stringify(o.canonicalInputs));
+    const prompt=o.canonicalObjective+(o.canonicalInputs===null?'':'\\nCanonical inputs (JSON): '+JSON.stringify(o.canonicalInputs));
     if(c.id!==o.id||c.submittedPrompt!==prompt||
        c.canonicalCapability!==o.canonicalCapability)fail();
   }
-  return {spec,contractSha256:sha256(specBytes),originalFixtureBlob:blob};
+  validateSchedule(spec);
+  return {spec,contractSha256:actualDigest,originalFixtureBlob:blob};
+}
+
+export async function loadStudy(){
+  const [specBytes,originalBytes]=await Promise.all([readFile(SPEC),readFile(FROZEN)]);
+  return verifyStudyBytes(specBytes,originalBytes);
 }
 
 function parse(argv){
