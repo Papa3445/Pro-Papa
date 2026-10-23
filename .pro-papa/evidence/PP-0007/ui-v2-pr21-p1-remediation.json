@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "status": "scoped_code_remediation_verified_by_provider_ci_not_final_milestone",
+  "reviewFinding": {
+    "prNumber": 21,
+    "reviewer": "papa4568",
+    "state": "CHANGES_REQUESTED",
+    "reviewedHead": "c49718b6a24e9dcdaaae5cd56112236bbc29d77f",
+    "finding": "Mutable prospective v2 order could allow duplicate regular arm, missing project arm while claiming 42 observations"
+  },
+  "remediationHead": "fab199f2b6ef6d90ad0cea87465b7f3602c80b9c",
+  "trustedBaseSha": "fb9b568fe2fb0df059a4cb6c519a4f92a722eec9",
+  "registeredContractSha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+  "sourceFiles": [
+    {
+      "path": "bin/pp0007-ui-v2-collector.mjs",
+      "sha256": "77611695e3c41d993b896dff37c2f68b1b340e9d4c642078e15cdc7b5f64f87c",
+      "gitBlobSha": "6a7b8126efb20cc26570bf71fe0943559366e54a"
+    },
+    {
+      "path": "tests/pp0007-ui-v2-collector.test.mjs",
+      "sha256": "00f69aedbe7b6a2be594285fcd929169d91c950fd8531616f876696b7c585804",
+      "gitBlobSha": "77f6d21e6915e16191f946601a2d09fce65fd126"
+    },
+    {
+      "path": "docs/PP0007-UI-V2-COLLECTOR.md",
+      "sha256": "1ea7ff077ceae14edad3e6568ba3b0c58aa0c25196dbdd98a6bc9811cd3d9b16",
+      "gitBlobSha": "7e3c42f625eca322d5a4b7b8d32bdef2e8edd7c6"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "sha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "actualProviderCI": {
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40041895462",
+    "jobId": 120714663319,
+    "event": "pull_request",
+    "headSha": "fab199f2b6ef6d90ad0cea87465b7f3602c80b9c",
+    "baseSha": "fb9b568fe2fb0df059a4cb6c519a4f92a722eec9",
+    "tests": 202,
+    "passed": 202,
+    "failed": 0,
+    "skipped": 0,
+    "projectValidatorValid": true
+  },
+  "regressionCases": [
+    "software duplicate regular/project arm omission rejected",
+    "same number of pairs with altered but balanced schedule rejected by pinned digest",
+    "contract whitespace bytes changed rejected",
+    "original frozen fixture tampering rejected",
+    "42 unique observation identifiers required"
+  ],
+  "reviewerApprovalOnRemediationHead": false,
+  "genuineChatGPTTrials": 0,
+  "actualComparativeQualityGrades": 0,
+  "limitations": "No ChatGPT service was invoked. Local checks and hashes do not prove real provider output quality or milestone completion. Independent current-head review and real paired trials remain outstanding."
+}

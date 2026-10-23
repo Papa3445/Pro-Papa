@@ -1194,16 +1194,70 @@
           "sha256": "88a6887094499ac1230362e874ef8f2aa340ebfa5692e6a89a093fe67f32c00d",
           "recordedAt": "2026-10-22T23:50:02.514Z",
           "note": "Verified actual GitHub Actions 39874216368 pull_request job 120155740649 at repair source-head: 189/189 tests, valid project; no actual ChatGPT model trial."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-ui-v2-collector.mjs",
+          "sha256": "bebabe2be2480b669267b4464b4087245129248c4011e607894d235a17b5bab2",
+          "recordedAt": "2026-10-23T23:42:26.921Z",
+          "note": "Real local operator-only tool for preregistered 42-slot UI study. No ChatGPT service interaction."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-UI-V2-COLLECTOR.md",
+          "sha256": "1b21c30bdc2b38279362f73c2469e71bd94822ae21ddc86e3f9c1912f0819835",
+          "recordedAt": "2026-10-23T23:42:26.921Z",
+          "note": "Private exact-prompt workflow and explicit trust/privacy boundary, prospective trial not yet executed."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/ui-v2-collector-ci.json",
+          "sha256": "b6ea0b3c84776dc26228b44767c29c9f652b32a1537fd3c227f569ced11fd992",
+          "recordedAt": "2026-10-23T23:42:26.921Z",
+          "note": "Observed actual GitHub PR run 40041009464 job 120711826601: 200/200 tests and project valid, at source head 73d45ccf; final metadata-head CI and independent review remain."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/pp0007-ui-v2-collector.mjs",
+          "sha256": "77611695e3c41d993b896dff37c2f68b1b340e9d4c642078e15cdc7b5f64f87c",
+          "recordedAt": "2026-10-23T23:52:39.709Z",
+          "note": "P1 remediation: v2 registration raw SHA-256 pinned; reject duplicate arms, mutated schedules and altered original fixture; pending independent re-review."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/ui-v2-pr21-p1-remediation.json",
+          "sha256": "b1bbee0f27e2e53efed8783f0a1f26f45423b5862d6c6132184c7afcd956069e",
+          "recordedAt": "2026-10-23T23:52:39.709Z",
+          "note": "Real GitHub Actions 40041895462 job 120714663319 at repair source head fab199f2: 202/202 passed, validator valid; original independent review CHANGES_REQUESTED, re-approval pending."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-UI-V2-COLLECTOR.md",
+          "sha256": "1ea7ff077ceae14edad3e6568ba3b0c58aa0c25196dbdd98a6bc9811cd3d9b16",
+          "recordedAt": "2026-10-23T23:52:39.709Z",
+          "note": "Documented evidence boundaries and independent reviewer-found preregistration integrity flaw; no real ChatGPT paired trials or quality grades."
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 18,
+        "pullRequest": 21,
         "baseRef": "main",
-        "baseSha": "a6acacd6344be05bc8f9caffbd3f18abaf9a276d"
+        "baseSha": "fb9b568fe2fb0df059a4cb6c519a4f92a722eec9"
       }
     }
   ],
-  "revision": 59
+  "revision": 62
 }

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "scope": "Operator-run private prospective collector, not a ChatGPT study execution",
+  "runId": 40041009464,
+  "jobId": 120711826601,
+  "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40041009464",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/21",
+  "sourceHeadSha": "73d45ccf7193e627d3935f302a40e812c678f631",
+  "baseSha": "fb9b568fe2fb0df059a4cb6c519a4f92a722eec9",
+  "verifiedProviderCI": {
+    "event": "pull_request",
+    "conclusion": "success",
+    "tests": 200,
+    "passed": 200,
+    "failed": 0,
+    "projectValid": true
+  },
+  "files": [
+    {
+      "path": "bin/pp0007-ui-v2-collector.mjs",
+      "sha256": "bebabe2be2480b669267b4464b4087245129248c4011e607894d235a17b5bab2",
+      "gitBlobSha": "e56af67e3cc521d0c710416530d9903b7795a5d7"
+    },
+    {
+      "path": "tests/pp0007-ui-v2-collector.test.mjs",
+      "sha256": "020f596c99396db8af4ab858e06cf4bd9c6175bb415e328928349a59d392d706",
+      "gitBlobSha": "7d98fb4a438b78ea3117615db779f3cabc8032c4"
+    },
+    {
+      "path": "docs/PP0007-UI-V2-COLLECTOR.md",
+      "sha256": "1b21c30bdc2b38279362f73c2469e71bd94822ae21ddc86e3f9c1912f0819835",
+      "gitBlobSha": "2a7462bf8dc377f5ceb6d6e31480d70604595363"
+    },
+    {
+      "path": "tests/review-github.test.mjs",
+      "sha256": "004276652d75bdbfb59b0ca8ad61439686005c2f7c79a98e03445ccda920a876",
+      "gitBlobSha": "2a5df932c86944ebba2f48e56b68ca887aef8233"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "sha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    },
+    {
+      "path": "package.json",
+      "sha256": "6d9beb6deb1ee7f0c319e9eef7ce2ef7ad4b854c33d3f301d4fe1c3ea5be36e5",
+      "gitBlobSha": "5885d3a56deae0bf1d6bdfa8115b9acdca4563bc"
+    }
+  ],
+  "realChatGptStudyObservations": 0,
+  "independentQualityGrades": 0,
+  "independentCodeReview": "requested_not_yet_submitted",
+  "limitations": "GitHub Actions validates the local code and unit tests. It is not provider-attested ChatGPT data, an independent review, or acceptance of PP-0007."
+}
