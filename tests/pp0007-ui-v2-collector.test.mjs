@@ -73,12 +73,12 @@ test('P1 independent review: immutable predeclared bytes reject balanced reorder
   assert.doesNotThrow(()=>validateSchedule(changed),'still has balanced 11:10 ordering');
   assert.throws(()=>verifyStudyBytes(Buffer.from(JSON.stringify(changed)),original),/Invalid PP-0007/,
     'predeclared exact order cannot be rewritten and rehashed');
-  const reformatted=Buffer.from(raw.toString('utf8')+'\\n');
+  const reformatted=Buffer.from(raw.toString('utf8')+'\n');
   assert.throws(()=>verifyStudyBytes(reformatted,original),/Invalid PP-0007/,
     'even a byte-format mutation needs an independently reviewed new contract');
   const reordered=JSON.stringify({status:changed.status,...JSON.parse(raw)});
   assert.throws(()=>verifyStudyBytes(Buffer.from(reordered),original),/Invalid PP-0007/);
-  const corruptedOriginal=Buffer.from(original.toString('utf8')+'\\n');
+  const corruptedOriginal=Buffer.from(original.toString('utf8')+'\n');
   assert.throws(()=>verifyStudyBytes(raw,corruptedOriginal),/Invalid PP-0007/);
 });
 
