@@ -78,12 +78,24 @@ function checkedArgs(params){
  * - only actual reference-host execution with validated trace produces success.
  */
 export function createReadOnlyMcpWebHandler({
-  bearerToken,hostname,allowedOrigins=[],allowRepositories=[],
+  bearerToken,hostname,oauthValidator=null,allowedOrigins=[],allowRepositories=[],
   githubResearch=false,fetchImpl=globalThis.fetch,githubToken=undefined,
   // Only for direct in-process local unit tests. Never set in production Netlify function.
   allowInsecureTestTransport=false
 }={}){
-  if(!validSecret(bearerToken)||!validHost(hostname)||hostname!==hostname.toLowerCase()||
+  const oauth=oauthValidator!==null;
+  const oauthMeta=oauth?oauthValidator?.metadata?.():null;
+  if((oauth?(
+      bearerToken!==undefined||
+      typeof oauthValidator.verifyAuthorization!=='function'||
+      typeof oauthValidator.metadataResponse!=='function'||
+      typeof oauthValidator.challenge!=='function'||
+      typeof oauthValidator.unauthorizedResponse!=='function'||
+      oauthMeta?.resource!=='https://'+hostname||
+      !Array.isArray(oauthMeta?.scopes_supported)||
+      oauthMeta.scopes_supported.length!==1||
+      typeof oauthMeta.scopes_supported[0]!=='string'
+    ):!validSecret(bearerToken))||!validHost(hostname)||hostname!==hostname.toLowerCase()||
     !Array.isArray(allowedOrigins)||allowedOrigins.some(x=>typeof x!=='string'||
       !/^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(x))||
     !Array.isArray(allowRepositories)||allowRepositories.length>16||
@@ -102,7 +114,8 @@ export function createReadOnlyMcpWebHandler({
       const url=new URL(request.url);
       if((url.protocol!=='https:'&&!allowInsecureTestTransport)||
         url.hostname.toLowerCase()!==hostname||
-        url.pathname!=='/mcp'||url.search)
+        !(url.pathname==='/mcp'||oauth&&url.pathname==='/.well-known/oauth-protected-resource')||
+        url.search)
         return rejected(404,-32601,'Not found');
       const sentHost=request.headers.get('host');
       if(sentHost&&sentHost.toLowerCase()!==url.host.toLowerCase())
@@ -110,7 +123,11 @@ export function createReadOnlyMcpWebHandler({
       const origin=request.headers.get('origin');
       if(origin&&!allowedOrigins.includes(origin))
         return rejected(403,-32000,'Origin forbidden');
-      if(!authenticated(request.headers.get('authorization'),bearerToken))
+      if(oauth&&url.pathname==='/.well-known/oauth-protected-resource'){
+        if(request.method!=='GET')return new Response(null,{status:405,headers:{Allow:'GET','Cache-Control':'no-store'}});
+        return oauthValidator.metadataResponse();
+      }
+      if(!oauth&&!authenticated(request.headers.get('authorization'),bearerToken))
         return new Response(null,{status:401,headers:{
           'WWW-Authenticate':'Bearer realm="pro-papa"',
           'Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
@@ -142,8 +159,23 @@ export function createReadOnlyMcpWebHandler({
           instructions:'Invoke the read-only tool explicitly for bounded work; only its tool result, not every ChatGPT reply, is host-gated.'}));
       }
       if(message.method==='ping')return json(200,result(id,{}));
-      if(message.method==='tools/list')return json(200,result(id,{tools:[TOOL]}));
+      if(message.method==='tools/list'){
+        const listed=oauth?{...TOOL,securitySchemes:[
+          {type:'oauth2',scopes:[...oauthMeta.scopes_supported]}
+        ]}:TOOL;
+        return json(200,result(id,{tools:[listed]}));
+      }
       if(message.method!=='tools/call')return json(200,error(id,-32601,'Method not found'));
+      if(oauth){
+        const granted=await oauthValidator.verifyAuthorization(request.headers.get('authorization'));
+        if(!granted){
+          const challenge=oauthValidator.challenge('invalid_token')+
+            ', error_description="Authenticate to use the Pro-Papa read-only tool"';
+          return json(200,result(id,{isError:true,
+            content:[{type:'text',text:'Authentication required'}],
+            _meta:{'mcp/www_authenticate':[challenge]}}));
+        }
+      }
       const args=checkedArgs(message.params);
       if(!args)return json(200,error(id,-32602,'Invalid tool arguments'));
       if(active>=8)return json(200,result(id,{isError:true,
