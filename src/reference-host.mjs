@@ -2,6 +2,8 @@
 import { runGateway, routeObjective } from './gateway.mjs';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { issueUsageReceipt } from './usage-receipts.mjs';
+import { blockedExecutionTrace, releaseExecutionTrace,
+  verifyReleasedExecution } from './execution-trace.mjs';
 import { buildWeeklyPlan } from './planning.mjs';
 import { draftMemo } from './memo.mjs';
 import { generateIsoDateModule } from './iso-date.mjs';
@@ -152,13 +154,14 @@ export function createReferenceHost({
   auditMode = 'off', auditRepository = null,
   sourceRepository = 'Papa3445/Pro-Papa', token = process.env.GITHUB_TOKEN,
   fetchImpl = globalThis.fetch, auditFetchImpl = undefined,
-  auditTransport = 'native',
+  auditTransport = 'native', traceMode = 'off',
   durableProject = null, durableSecret = process.env.PRO_PAPA_GATEWAY_SECRET,
 } = {}) {
   if (!Array.isArray(allowedRepositories) || allowedRepositories.length > 16 ||
       allowedRepositories.some(repo => typeof repo !== 'string' || !REPO.test(repo)) ||
       typeof githubResearch !== 'boolean' || typeof fetchImpl !== 'function' ||
       !['off', 'required'].includes(auditMode) ||
+      !['off','enforced'].includes(traceMode) ||
       !['native', 'simulation'].includes(auditTransport) ||
       (auditTransport === 'native' && auditFetchImpl !== undefined) ||
       (auditTransport === 'simulation' &&
@@ -247,16 +250,27 @@ export function createReferenceHost({
     allowTaskWrites: durableProject !== null };
   return Object.freeze({
     async execute(request) {
+      // Only the trusted host config enables tracing; request fields cannot.
+      const enforcing = traceMode === 'enforced';
+      const events = [];
+      const step = name => { if (enforcing) events.push(name); };
+      const blocked = reply => enforcing ?
+        { ...reply, execution: null, trace: blockedExecutionTrace(events) } : reply;
       const safeRequest = snapshotRequest(request);
       if (!plain(safeRequest) ||
           typeof safeRequest.objective !== 'string' || !safeRequest.objective.trim() ||
-          safeRequest.objective.length > 16384)
-        return { status: 'invalid_request', audit: { status: 'not_requested' } };
+          safeRequest.objective.length > 16384) {
+        step('request.rejected');
+        return blocked({ status: 'invalid_request', audit: { status: 'not_requested' } });
+      }
+      step('request.accepted');
       // Approval is bound to one request ID and action before any handler call.
       if (approvedIssue && routeObjective(safeRequest) === 'operations' &&
-          !approvedPayload(safeRequest, approvedIssue))
-        return { status: 'denied', reason: 'effect_not_approved',
-          audit: { status: 'not_requested' } };
+          !approvedPayload(safeRequest, approvedIssue)) {
+        step('request.denied');
+        return blocked({ status: 'denied', reason: 'effect_not_approved',
+          audit: { status: 'not_requested' } });
+      }
       return exclusive(durableProject, async () => {
         let audit = { status: 'not_requested' };
         if (auditMode === 'required') {
@@ -269,28 +283,61 @@ export function createReferenceHost({
             });
             if (!verifyReceipt(receipt, auditRepository)) fail();
             if (auditTransport === 'simulation') {
-              // Mocked GitHub transport is never provider-backed confirmation
-              // and never authorizes tool execution under required auditing.
-              return { status: 'audit_unverified', audit: { status: 'simulated' },
-                execution: null };
+              // Simulated receipts never permit provider execution or release.
+              step('audit.unverified');
+              return blocked({ status: 'audit_unverified', audit: { status: 'simulated' },
+                execution: null });
             }
             audit = { status: 'confirmed', receiptUrl: receipt.receiptUrl,
               receiptCommit: receipt.receiptCommit, sourceCommit: receipt.sourceCommit };
+            step('audit.confirmed');
           } catch {
-            return { status: 'audit_failed', audit: { status: 'failed' },
-              execution: null };
+            step('audit.failed');
+            return blocked({ status: 'audit_failed', audit: { status: 'failed' },
+              execution: null });
           }
-        }
+        } else step('audit.not_required');
         try {
-          const result = await runGateway({ request: safeRequest, host,
+          const selected=routeObjective(safeRequest);
+          step('route.selected');
+          let called=0,returned=0,dispatched=null;
+          // Wrap only trusted configured handlers; do not grant new capabilities.
+          const checkedHost = enforcing ? { ...host, handlers: Object.fromEntries(
+            Object.entries(handlers).map(([key,fn]) => [key, async args => {
+              called++;
+              dispatched=key;
+              step('handler.started');
+              try {
+                const reply=await fn(args);
+                returned++;
+                step('handler.returned');
+                return reply;
+              } catch(e) { step('handler.failed'); throw e; }
+            }])) } : host;
+          const result = await runGateway({ request: safeRequest, host: checkedHost,
             tracking: durableProject === null ? { mode: 'ephemeral' } : {
               mode: 'durable', projectRoot: durableProject, secret: durableSecret,
             } });
-          return { ...result, audit };
+          if (!enforcing) return { ...result, audit };
+          if (result.status !== 'completed') return blocked({ ...result, audit });
+          if (called!==1 || returned!==1 || dispatched!==selected)
+            return blocked({ status:'execution_gate_failed', audit });
+          step('output.validated');
+          try {
+            const trace=releaseExecutionTrace({steps:events,route:selected,dispatched,
+              result,audit,requiredAudit:auditMode==='required'});
+            const response={...result,audit,trace};
+            if (!verifyReleasedExecution(response)) fail();
+            return response;
+          } catch {
+            step('release.denied');
+            return blocked({ status:'execution_gate_failed', audit });
+          }
         } catch {
           // If a durable provider may already have been called, never auto-retry.
-          return { status: durableProject ? 'needs_reconciliation' : 'invalid_request',
-            execution: null, audit };
+          step('gateway.failed');
+          return blocked({ status: durableProject ? 'needs_reconciliation' : 'invalid_request',
+            execution: null, audit });
         }
       });
     },
