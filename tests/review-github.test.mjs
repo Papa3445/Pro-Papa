@@ -284,18 +284,18 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-test('PP-0007 MCP bridge cannot reuse approved release-trace PR #22',async()=>{
+test('PP-0007 Netlify MCP cannot reuse approved local bridge PR #23',async()=>{
   const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
   assert.equal(task.status,'in_progress');
   assert.equal(task.requiresTrustedReview,true);
-  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:23,
-    baseRef:'main',baseSha:'473b0c477afbc8f21071ce5decc770ba7100208a'});
-  const p={number:23,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',
-    sha:'473b0c477afbc8f21071ce5decc770ba7100208a'},
+  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:25,
+    baseRef:'main',baseSha:'1d6b2ad40d53ff97f1d1aff3117c5fa4a974dbb9'});
+  const p={number:25,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',
+    sha:'1d6b2ad40d53ff97f1d1aff3117c5fa4a974dbb9'},
     head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
   const prior=review('APPROVED',{commit_id:'d'.repeat(40)});
-  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:22},[prior]),/identity/);
+  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:23},[prior]),/identity/);
   assert.equal(evalReviews(task.reviewTarget,p,[prior]).verdict,'FAIL');
   assert.equal(evalReviews(task.reviewTarget,p,[review('APPROVED',{commit_id:p.head.sha})]).verdict,'PASS');
-  assert.ok(task.evidence.some(e=>e.path==='src/execution-trace.mjs'));
+  assert.ok(task.evidence.some(e=>e.path==='src/mcp-bridge.mjs'));
 });
