@@ -284,16 +284,18 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-test('PP-0007 prospective UI-v2 PR cannot reuse approved PR #18',async()=>{
+test('PP-0007 release trace cannot reuse PR #21 independent approval',async()=>{
   const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
   assert.equal(task.status,'in_progress');
   assert.equal(task.requiresTrustedReview,true);
-  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:21,baseRef:'main',baseSha:'fb9b568fe2fb0df059a4cb6c519a4f92a722eec9'});
-  const p={number:21,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',sha:'fb9b568fe2fb0df059a4cb6c519a4f92a722eec9'},
+  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:22,
+    baseRef:'main',baseSha:'801c5a6c7a16acfe113b1b32c6de062fba3554bf'});
+  const p={number:22,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',
+    sha:'801c5a6c7a16acfe113b1b32c6de062fba3554bf'},
     head:{sha:'c'.repeat(40)},user:{id:124238718,login:'Papa3445'}};
   const prior=review('APPROVED',{commit_id:'d'.repeat(40)});
-  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:18},[prior]),/identity/);
+  assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:21},[prior]),/identity/);
   assert.equal(evalReviews(task.reviewTarget,p,[prior]).verdict,'FAIL');
   assert.equal(evalReviews(task.reviewTarget,p,[review('APPROVED',{commit_id:p.head.sha})]).verdict,'PASS');
-  assert.ok(task.evidence.some(e=>e.path==='bin/pp0007-manual-chatgpt-baseline.mjs'));
+  assert.ok(task.evidence.some(e=>e.path==='bin/pp0007-ui-v2-collector.mjs'));
 });

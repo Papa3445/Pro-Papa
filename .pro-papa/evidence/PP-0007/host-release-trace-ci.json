@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "scope": "Host-local checked execution release trace; not ChatGPT Project turn interception",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/22",
+  "reviewedBase": "801c5a6c7a16acfe113b1b32c6de062fba3554bf",
+  "sourceHead": "ad7ccafddc3868c71fef29ae270e6a94792d6585",
+  "providerVerification": {
+    "runId": 40045338123,
+    "jobId": 120725643055,
+    "event": "pull_request",
+    "conclusion": "success",
+    "headSha": "ad7ccafddc3868c71fef29ae270e6a94792d6585",
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40045338123",
+    "tests": 209,
+    "passed": 209,
+    "failed": 0,
+    "skipped": 0,
+    "projectValidatorValid": true
+  },
+  "verifiedScope": [
+    "opt-in trace host config not request-supplied",
+    "local mathematical handler with real CLI output",
+    "allowlisted GitHub research via injected test fetch",
+    "mock audit fail-closed, including public store and simulation",
+    "provider failures and permission denial have no released output",
+    "durable replay cannot manufacture second completed trace",
+    "modified returned execution/event ordering fails local verification"
+  ],
+  "files": [
+    {
+      "path": "src/execution-trace.mjs",
+      "sha256": "61d445d152eec3b077547c8c7212c5d734574206a443bd9d80001c4e394435b7",
+      "gitBlobSha": "92b9d2527b442527c111e99ff92f8fafdcb8bfe2"
+    },
+    {
+      "path": "src/reference-host.mjs",
+      "sha256": "6a3d5a16eabb26e95c3ece7d28f160f4e14fc13bc7f553662c6d7f8fac18e667",
+      "gitBlobSha": "701159778d63edf7d10c68b5933b9447d5d0ebad"
+    },
+    {
+      "path": "bin/reference-host.mjs",
+      "sha256": "7671b75c2a7f6c46d3fd2ece040fcadcd173101ffd6e0ca8265c5e867ead8058",
+      "gitBlobSha": "291507c53496c1ad2a91dbe02df24ca903228de4"
+    },
+    {
+      "path": "tests/reference-host.test.mjs",
+      "sha256": "7ff3871ff8d12ccbafe7fc5ded7de5c5c9c37015a2a08efc356b3a71f1e62eb1",
+      "gitBlobSha": "c8a8f814220f45643121d72e52b1aea6f3ddca63"
+    },
+    {
+      "path": "tests/review-github.test.mjs",
+      "sha256": "abef9b2e4261ad39e24787447cb4696a011e2528881abb0ee63fbf4597cf8666",
+      "gitBlobSha": "425e1b0ac5abd0b0b684291c3dac3035a7d39f1b"
+    },
+    {
+      "path": "docs/PP0007-HOST-RELEASE-TRACE.md",
+      "sha256": "0c3822450ab34d4d5b08fa3da6e4a28605f146ffd53aab4531360c322a6ece1f",
+      "gitBlobSha": "24f57e710abbbcb2b737dded82c1ee6d914f55d2"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e5735b838b5ae9cba605b6ffc0311a5067f230bf33f3542a8a10e175614ffb84",
+      "gitBlobSha": "eb32d869b9e2118a3b30cdf66ca6b9250edfb6bc"
+    }
+  ],
+  "limitations": "CI does not authenticate LLM inner reasoning, prove actual ChatGPT Project interception, provide a native provider-backed audit host trace, sign trace contents, grade answer quality, or complete the 21 paired benchmark cases.",
+  "genuineWebsiteTrialsExecutedByPatch": 0,
+  "independentReview": "pending",
+  "studyChanged": false
+}

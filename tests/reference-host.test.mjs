@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { initializeProject, loadProject } from '../src/core.mjs';
 import { createReferenceHost, issueApprovalDigest } from '../src/reference-host.mjs';
+import {verifyReleasedExecution,releaseExecutionTrace} from '../src/execution-trace.mjs';
 
 const repository = 'Papa3445/Pro-Papa', store = 'Papa3445/Pro-Papa-Audit';
 const sha = 'a'.repeat(40), commit = 'b'.repeat(40);
@@ -308,4 +311,216 @@ test('effect approval requires out-of-band host content digest',async t=>{
       title:'Verified host fixture',body:'No secrets added'}));
   assert.equal(issueApprovalDigest({requestId:id.toUpperCase(),repository:repository.toUpperCase(),
     title:'Verified host fixture',body:'No secrets'}), approvedIssue.payloadSha256);
+});
+
+test('PP-0007 enforced host trace binds real local handler output before release',async()=>{
+  const host=createReferenceHost({traceMode:'enforced'});
+  const res=await host.execute({objective:'Sum exact numbers and exclude this sensitive phrase',
+    capability:'math.sum',inputs:{numbers:[2,3,5]},trace:{state:'released',
+      events:[{step:'response.released'}]}});
+  assert.equal(res.status,'completed');
+  assert.deepEqual(res.execution.output,{total:10,count:3});
+  assert.equal(res.trace.state,'released');
+  assert.equal(res.trace.auditRequired,false);
+  assert.equal(res.trace.provider,'local-node');
+  assert.equal(res.trace.providerAuthenticated,false);
+  assert.deepEqual(res.trace.events.map(x=>x.step),
+    ['request.accepted','audit.not_required','route.selected','handler.started',
+      'handler.returned','output.validated','response.released']);
+  assert.equal(verifyReleasedExecution(res),true);
+  assert.ok(!JSON.stringify(res.trace).includes('sensitive phrase'));
+  assert.equal(res.trace.executionSha256,
+    createHash('sha256').update(JSON.stringify(res.execution)).digest('hex'));
+  const tamper=structuredClone(res);
+  tamper.execution.output.total=999;
+  assert.equal(verifyReleasedExecution(tamper),false);
+  const reordered=structuredClone(res);
+  [reordered.trace.events[3],reordered.trace.events[4]]=
+    [reordered.trace.events[4],reordered.trace.events[3]];
+  assert.equal(verifyReleasedExecution(reordered),false);
+  const falseReceipt=structuredClone(res);
+  falseReceipt.trace.auditRequired=true;
+  assert.equal(verifyReleasedExecution(falseReceipt),false);
+});
+
+test('PP-0007 enforced trace records research handler, not a receipt-only completion',async()=>{
+  const f=service(),host=createReferenceHost(config(f,{traceMode:'enforced'}));
+  const outcome=await host.execute(request);
+  assert.equal(outcome.status,'completed');
+  assert.equal(outcome.trace.state,'released');
+  assert.equal(outcome.trace.route,'research');
+  assert.equal(outcome.trace.dispatchedCapability,'research');
+  assert.equal(outcome.trace.provider,'github');
+  assert.equal(outcome.trace.auditReceiptCommit,null);
+  assert.equal(outcome.execution.output.repository,repository);
+  assert.equal(verifyReleasedExecution(outcome),true);
+  assert.equal(f.calls.filter(x=>x.path==='/repos/'+repository).length,1);
+  // The local test double does not become a provider attestation.
+  assert.equal(outcome.trace.providerAuthenticated,false);
+});
+
+test('PP-0007 enforced tracing fails closed on mock audit, unavailable audit and missing grants',async()=>{
+  const privateMock=service(),host=createReferenceHost(config(privateMock,{
+    traceMode:'enforced',auditMode:'required',auditRepository:store
+  }));
+  const simulated=await host.execute(request);
+  assert.equal(simulated.status,'audit_unverified');
+  assert.equal(simulated.trace.state,'not_released');
+  assert.equal(simulated.execution,null);
+  assert.deepEqual(simulated.trace.events.map(x=>x.step),
+    ['request.accepted','audit.unverified']);
+  assert.equal(privateMock.calls.some(x=>x.path==='/repos/'+repository&&x.method==='GET'),false);
+  const publicMock=service({privateStore:false});
+  const bad=createReferenceHost(config(publicMock,{
+    traceMode:'enforced',auditMode:'required',auditRepository:store
+  }));
+  const deniedAudit=await bad.execute(request);
+  assert.equal(deniedAudit.status,'audit_failed');
+  assert.equal(deniedAudit.trace.state,'not_released');
+  assert.equal(deniedAudit.execution,null);
+  const noGrant=await createReferenceHost({traceMode:'enforced'}).execute(request);
+  assert.equal(noGrant.status,'denied');
+  assert.equal(noGrant.trace.state,'not_released');
+  assert.equal(noGrant.execution,null);
+  assert.equal(verifyReleasedExecution(noGrant),false);
+});
+
+test('PP-0007 trace cannot turn provider failure, duplicate replay or malicious trace input into success',async t=>{
+  const failing=service({failResearch:true});
+  const host=createReferenceHost(config(failing,{traceMode:'enforced'}));
+  const bad=await host.execute({...request,trace:{status:'completed'}});
+  assert.equal(bad.status,'provider_unavailable');
+  assert.equal(bad.execution,null);
+  assert.equal(bad.trace.state,'not_released');
+  assert.ok(bad.trace.events.some(e=>e.step==='handler.failed'));
+  const opts=await durable(t);
+  const live=service();
+  const durableHost=createReferenceHost(config(live,{...opts,traceMode:'enforced'}));
+  const first=await durableHost.execute(request);
+  const replay=await durableHost.execute(request);
+  assert.equal(first.status,'completed');
+  assert.equal(verifyReleasedExecution(first),true);
+  assert.equal(replay.status,'already_executed');
+  assert.equal(replay.execution,null);
+  assert.equal(replay.trace.state,'not_released');
+  assert.equal(verifyReleasedExecution(replay),false);
+  assert.equal(live.calls.filter(x=>x.path==='/repos/'+repository).length,1);
+});
+
+test('PP-0007 release gate rejects missing handler events and forged audit metadata',()=>{
+  const output={status:'completed',capability:'math.sum',suggestedRoute:'math.sum',
+    execution:{output:{total:10,count:3},provenance:{provider:'local-node',operation:'math.sum'}}};
+  const good=['request.accepted','audit.not_required','route.selected',
+    'handler.started','handler.returned','output.validated'];
+  assert.throws(()=>releaseExecutionTrace({steps:good.filter(x=>x!=='handler.started'),
+    route:'math.sum',dispatched:'math.sum',result:output,
+    audit:{status:'not_requested'},requiredAudit:false}),/release trace gate/);
+  assert.throws(()=>releaseExecutionTrace({steps:good,route:'math.sum',
+    dispatched:'research',result:output,audit:{status:'not_requested'},
+    requiredAudit:false}),/release trace gate/);
+  const audited=['request.accepted','audit.confirmed','route.selected',
+    'handler.started','handler.returned','output.validated'];
+  assert.throws(()=>releaseExecutionTrace({steps:audited,route:'math.sum',
+    dispatched:'math.sum',result:output,audit:{status:'confirmed'},
+    requiredAudit:true}),/release trace gate/);
+  const noOutput={...output,execution:null};
+  assert.throws(()=>releaseExecutionTrace({steps:good,route:'math.sum',
+    dispatched:'math.sum',result:noOutput,audit:{status:'not_requested'},
+    requiredAudit:false}),/release trace gate/);
+});
+
+test('PP-0007 trace is opt-in and requester cannot enable it or suppress audit requirements',async()=>{
+  const plainHost=createReferenceHost();
+  const untraced=await plainHost.execute({objective:'sum values',
+    capability:'math.sum',inputs:{numbers:[2,3]},traceMode:'enforced'});
+  assert.equal(untraced.status,'completed');
+  assert.equal(untraced.trace,undefined);
+  assert.throws(()=>createReferenceHost({traceMode:'not-real'}),/Unverified host/);
+  const f=service(),secure=createReferenceHost(config(f,{
+    traceMode:'enforced',auditMode:'required',auditRepository:store
+  }));
+  const x=await secure.execute({...request,auditMode:'off',traceMode:'off'});
+  assert.equal(x.status,'audit_unverified');
+  assert.equal(x.trace.state,'not_released');
+});
+
+test('PP-0007 explicit Node CLI only releases a validated execution; denied request has no output',()=>{
+  const executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  const invoke=request=>spawnSync(process.execPath,[executable,'--enforce-trace'],
+    {encoding:'utf8',input:JSON.stringify(request),timeout:15000,maxBuffer:32768});
+  const ok=invoke({objective:'add three values',capability:'math.sum',inputs:{numbers:[2,3,5]}});
+  assert.equal(ok.status,0,ok.stderr);
+  assert.equal(ok.stderr,'');
+  const passed=JSON.parse(ok.stdout);
+  assert.equal(passed.status,'completed');
+  assert.equal(passed.execution.output.total,10);
+  assert.equal(verifyReleasedExecution(passed),true);
+  const blocked=invoke({objective:'Research disallowed repository',
+    capability:'research',inputs:{repository}});
+  assert.equal(blocked.status,1);
+  assert.equal(blocked.stderr,'');
+  const denied=JSON.parse(blocked.stdout);
+  assert.equal(denied.status,'denied');
+  assert.equal(denied.execution,null);
+  assert.equal(denied.trace.state,'not_released');
+});
+
+test('PP-0007 reviewer P2-1: missing audit store emits a blocked CLI trace without dispatch',()=>{
+  const executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  const {PRO_PAPA_AUDIT_REPO, ...env}=process.env;
+  const out=spawnSync(process.execPath,[executable,'--enforce-trace','--audit-required',
+    '--github-read','--github-repo',repository],
+    {input:JSON.stringify(request),encoding:'utf8',env,timeout:15000,maxBuffer:32768});
+  assert.equal(out.status,1);
+  assert.equal(out.stderr,'');
+  const body=JSON.parse(out.stdout);
+  assert.equal(body.status,'audit_failed');
+  assert.equal(body.execution,null);
+  assert.equal(body.audit.status,'failed');
+  assert.equal(body.trace.state,'not_released');
+  assert.deepEqual(body.trace.events.map(e=>e.step),['audit.failed']);
+  assert.equal(body.trace.providerAuthenticated,false);
+  assert.equal(verifyReleasedExecution(body),false);
+});
+
+test('PP-0007 reviewer P2-2: actual durable CLI replay has nonzero exit and no new execution',async t=>{
+  const dir=await project(t),executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  const argv=[executable,'--enforce-trace','--durable','--project',dir];
+  const env={...process.env,PRO_PAPA_GATEWAY_SECRET:'ci-fixture-host-managed-secret-at-least-16'};
+  const input=JSON.stringify({id,objective:'add these known values',capability:'math.sum',
+    inputs:{numbers:[2,3,5]}});
+  const invoke=()=>spawnSync(process.execPath,argv,
+    {input,env,encoding:'utf8',timeout:15000,maxBuffer:32768});
+  const first=invoke();
+  assert.equal(first.status,0,first.stderr);
+  assert.equal(first.stderr,'');
+  const initial=JSON.parse(first.stdout);
+  assert.equal(initial.status,'completed');
+  assert.equal(initial.execution.output.total,10);
+  assert.equal(verifyReleasedExecution(initial),true);
+  const second=invoke();
+  assert.equal(second.status,1,second.stderr);
+  assert.equal(second.stderr,'');
+  const replay=JSON.parse(second.stdout);
+  assert.equal(replay.status,'already_executed');
+  assert.equal(replay.execution,null);
+  assert.equal(replay.trace.state,'not_released');
+  assert.equal(verifyReleasedExecution(replay),false);
+  const state=(await loadProject(dir)).state;
+  assert.equal(state.tasks.length,1);
+});
+
+test('PP-0007 reviewer P2-1: malformed traced CLI input returns non-release envelope',()=>{
+  const executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  for(const input of ['{not-json','']) {
+    const out=spawnSync(process.execPath,[executable,'--enforce-trace'],
+      {input,encoding:'utf8',timeout:15000,maxBuffer:32768});
+    assert.equal(out.status,1);
+    assert.equal(out.stderr,'');
+    const result=JSON.parse(out.stdout);
+    assert.equal(result.status,'invalid_request');
+    assert.equal(result.execution,null);
+    assert.equal(result.trace.state,'not_released');
+    assert.deepEqual(result.trace.events.map(e=>e.step),['request.rejected']);
+  }
 });
