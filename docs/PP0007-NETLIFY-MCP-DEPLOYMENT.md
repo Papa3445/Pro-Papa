@@ -1,39 +1,38 @@
-# PP-0007 — Netlify HTTPS MCP endpoint (deployment candidate)
+# PP-0007 — Auth0-protected Netlify MCP integration candidate
 
-**Status:** This directory and `src/mcp-web.mjs` supply a Netlify Functions deployment *candidate*. Deployment, live private ChatGPT registration, OAuth and production interoperability are **not** established by repository CI. [Issue #24](https://github.com/Papa3445/Pro-Papa/issues/24) owns the live integration evidence.
+**Status: code candidate, not deployed.** This PR integrates `createOAuthResourceValidator` with the Netlify MCP Web handler for **explicit** tool calls, not automatic ChatGPT answer interception. It does not register any real user, create an Auth0 API/client, set Netlify secrets, provision a site, or verify real OAuth login. See [issue #24](https://github.com/Papa3445/Pro-Papa/issues/24).
 
-## Purpose and invariants
+## Request paths and verified trust boundary
 
-The exposed `POST /mcp` tool is read-only and invokes the existing `createReferenceHost({traceMode:'enforced', auditMode:'off'})` for one explicit tool call. Only `verifyReleasedExecution()` permits a success `structuredContent`; unsuccessful or denied calls cannot be reported as completed. It still does **not** intercept ordinary ChatGPT replies or govern model reasoning. The response's local trace is neither signed nor provider authenticated.
+- `GET /.well-known/oauth-protected-resource` returns RFC 9728 metadata with the canonical resource, Auth0 authorization server and `pro_papa.read` scope **without** user authentication. Netlify maps this and `POST /mcp` to the same Function via documented array path routing.
+- `POST /mcp` permits only read-only anonymous `initialize`, `ping`, `tools/list` discovery calls. `tools/list` declares `securitySchemes:[{type:"oauth2",scopes:["pro_papa.read"]}]`. No model-triggered tool executes without a signed Auth0 bearer token.
+- `tools/call` checks the provided token with `verifyAuthorization` **before** invoking `createReferenceHost({traceMode:"enforced",auditMode:"off"})`. Missing/invalid tokens receive `isError:true`, no `structuredContent`, and `_meta["mcp/www_authenticate"]` bearing an OAuth metadata challenge with `error_description`. The handler's actual successful response still requires `verifyReleasedExecution()` on host-returned execution.
+- The already-reviewed legacy JavaScript constructor path accepts a host-managed 32-character minimum bearer token **only when no OAuth validator is supplied**. Supplying both the static bearer and OAuth validator is rejected. The deployed Netlify Function **does not use or accept a static bearer token**, preventing accidental ChatGPT OAuth bypass.
+- For other denied requests the server rejects malformed JSON, unsupported methods/protocols, oversized request bodies and Host/Origin/HTTP downgrades. Repository research remains allowlisted to the Pro-Papa **public** repository. No issue creation, code execution, GitHub receipt writes or other external write tools are enabled.
 
-Only `math.sum`, `text.metrics`, and read-only GitHub metadata for `Papa3445/Pro-Papa` are available. No write tools, GitHub usage receipt writes, execution of arbitrary code, or persistence of private prompts. Bearer authentication is mandatory for every call. Source tests simulate allowed metadata calls without external GitHub credentials.
+## Functions-only runtime configuration
 
-## Netlify Git deployment plan — **do not publish until reviewed**
+Create a new and separately scoped Netlify site only **after independent code review**. Keep a stable project hostname; do not use a placeholder or switch an Auth0 API audience after API creation.
 
-Create a **separate** Netlify project for this repository after independent PR review and branch merge. Do not reuse or replace existing Netlify sites.
+Configure these names in Netlify Functions-scoped runtime configuration (do not commit them or any credentials). All are required and the Function returns **503** on missing or inconsistent values:
 
-This repo provides `netlify.toml`, which builds with `npm run check` and publishes only `public/`; JavaScript source and tests are **not** exposed as public static assets. The `netlify/functions/mcp.mjs` handler uses Netlify's Web `Request`/`Response` runtime (not the local Node `http.Server` listener) at `/mcp`. Deploy through Git-connected Netlify CI or an explicitly authorized deploy method. Do not create an empty Netlify site and claim it hosts the function.
+- `PRO_PAPA_MCP_PUBLIC_HOSTNAME`: exact final lowercase hostname, no scheme, port or path.
+- `PRO_PAPA_MCP_RESOURCE`: exact `https://` + hostname **without trailing slash**, also used as Auth0 API Identifier (audience). Must be consistent with the actual OAuth `resource` parameter.
+- `PRO_PAPA_AUTH0_ISSUER`: exact personal/civilian Auth0 HTTPS issuer **with trailing slash**, such as `https://example.us.auth0.com/`. Must match the issuer in actual access tokens; signed RS256 tokens are verified against only that issuer's pinned JWKS. No military or organizational identity provider.
 
-Configure the following as **secret Function-scoped environment variables** using Netlify's UI/secret controls, never commit them to GitHub, send them in this chat, or put them in a shareable URL:
+The Function no longer requires `PRO_PAPA_MCP_TOKEN`. Do not add a static bearer fallback or expose any token in URLs. Static source, docs and tests remain outside Netlify's `public/` publish directory. Rate limits, 64 KiB body maximum and per-instance concurrency guards are not global traffic quotas; actual Netlify build/package/TLS behavior remains unverified.
 
-- `PRO_PAPA_MCP_TOKEN`: a *fresh* cryptographically random secret of at least 32 characters, shared only with the trusted MCP client. Rotate on compromise. ChatGPT custom MCP connection must support the matching API-key/bearer mode before this fixed-secret scheme can be used. **If ChatGPT's connection UI supports OAuth only**, do *not* turn off this authentication, paste the token into the URL, or publish a no-auth endpoint: design an OAuth 2.1 protected-resource/authorization-server integration in a separate reviewed PR.
-- `PRO_PAPA_MCP_PUBLIC_HOSTNAME`: exact lowercase public HTTPS hostname for this **new** Netlify site (for example `my-private-mcp.netlify.app`, without `https://`, path, or port).
+## Auth0 / ChatGPT client-registration dependency
 
-The handler refuses to function (503) if either credential or hostname is missing/invalid. HTTPS URL and hostname validation, explicit cross-origin deny-by-default policy, an IP-based declarative Netlify request rate limit, 64 KiB request size, 8 active calls per single instance, and restricted capability grants are enforced in code. Netlify access controls, secret scopes, gateway logging policy and build/deploy settings should be independently assessed before production.
+- The operator created a civilian Auth0 tenant and showed **Resource Parameter Compatibility Profile enabled**, **DCR disabled**, and **CIMD disabled**. This is user screenshot evidence, not authenticated provider API verification.
+- Complete the final Netlify HTTPS hostname **before** creating the Auth0 API identifier `PRO_PAPA_MCP_RESOURCE`. Add the minimally scoped API permission `pro_papa.read` and an allowlisted civilian user. Configure authorization-code + PKCE S256, and select a compatible ChatGPT client-registration approach: predefined client using the exact redirect URI shown in the plugin management UI, or carefully reviewed DCR/CIMD only if enabled and supported. Do not enable unrestricted third-party client registration merely to make a test pass.
+- Confirm provider metadata at `https://AUTH0_DOMAIN/.well-known/openid-configuration` advertises authorization and token endpoints, matching issuer and PKCE S256. Auth0 access tokens must contain exact resource audience and scope. Check whether token header conventions, `iss` and `scope` match the reviewed validator in live tests.
+- ChatGPT connection is a separate, user-authorized action. Custom MCP form exposes OAuth but no live connection has been attempted. Do not mark PP-0007 complete until the remote URL, token exchange, discovery, negative token tests and actual signed host execution trace have been independently observed.
 
-**Production caveats:** Rate limits configured per platform do not replace an account-level quota. In-process concurrency counters are not global across function instances. The GitHub metadata request uses public read-only API access and can be rate-limited. Netlify Function packaging, shared secrets, TLS routing, and actual end-to-end connection require a real provider-backed deployment test.
+## Testing, independent review and limitations
 
-## Connecting ChatGPT (only once an authorized endpoint is live)
+Run `npm run check`. Legacy static-token test fixtures remain supported for the **local-only** library constructor. `tests/mcp-oauth-web.test.mjs` uses genuine generated RSA-2048 signatures and a synthetic JWKS fetch to assert OAuth metadata, anonymous discovery, correct tool security schemes, invalid-token error hints, blocked GitHub handler invocation before authorization, signed-token acceptance and validated execution trace.
 
-In ChatGPT: **Plugins → Add → Add custom MCP server**, enter the HTTPS `/mcp` endpoint and select compatible authentication. If the UI doesn't accept a private bearer/API key, stop: ChatGPT authentication guidelines ordinarily require OAuth 2.1 for authenticated custom MCP servers, and ChatGPT cannot present an arbitrary custom API key. Do **not** weaken the server to make the scan pass. After connection creation (user action), explicitly select the plugin and run an authorized math.sum task. Verify the tool result contains the ordered release trace and a correct sum; also prove an uncredentialed request is blocked. Keep screenshots and tokens out of public GitHub.
+This is **not** proof of a production Netlify deployment, a real Auth0 access token, OAuth client registration, interactive PKCE login, actual ChatGPT plugin, all-turn governance or independent benchmark quality. All production integration and tests remain blocked pending a scoped independent PR approval and provider deployment controls.
 
-Official guidance:
-- [OpenAI: Connect custom MCP servers](https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt)
-- [OpenAI: MCP authentication](https://developers.openai.com/plugins/build/auth)
-- [Netlify Functions](https://docs.netlify.com/build/functions/overview/)
-
-## Tests and limitation ledger
-
-`node --test tests/mcp-web.test.mjs` checks real Web Request/Response initialization, discovery, routing through an actual locally executed reference-host handler, denied tool results, negative bearer cases before an otherwise authorized GitHub metadata call, hostname spoofing, HTTPS enforcement, malformed JSON and oversized body. `npm run check` includes these tests in the existing repository suite. A separate provider deploy verification must confirm Netlify's URL routing and CI code packaging before any endpoint is called live.
-
-Frozen PP-0007 21-pair manual ChatGPT baseline remains unchanged. The main task stays `in_progress`, with exact-head CI and authenticated independent security review required before merging or deploying this adapter.
+Official documentation: [OpenAI MCP OAuth](https://developers.openai.com/plugins/build/auth) · [Netlify multiple Function paths](https://docs.netlify.com/build/functions/configuration/) · [Auth0 MCP resource audience compatibility](https://support.auth0.com/center/s/article/mcp-audience-error-with-auth0).
