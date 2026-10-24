@@ -1361,11 +1361,11 @@
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 23,
+        "pullRequest": 25,
         "baseRef": "main",
-        "baseSha": "473b0c477afbc8f21071ce5decc770ba7100208a"
+        "baseSha": "1d6b2ad40d53ff97f1d1aff3117c5fa4a974dbb9"
       }
     }
   ],
-  "revision": 68
+  "revision": 69
 }
