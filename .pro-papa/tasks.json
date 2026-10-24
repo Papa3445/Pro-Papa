@@ -1302,16 +1302,70 @@
           "sha256": "0e43a073c189c9dab1fc81f1a2e0384dfad1739f7347bf6a1dea4a949982bbd8",
           "recordedAt": "2026-10-24T00:53:40.474Z",
           "note": "Explains exact CLI blocked traces and exit semantics, preserves frozen UI study and honest host-only limitations."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "src/mcp-bridge.mjs",
+          "sha256": "5b89ddc08f56f7d2c0d751528b0e2c50629e1f9f8f541c35cdb60c7bba903e36",
+          "recordedAt": "2026-10-24T01:06:22.893Z",
+          "note": "Host-enforced read-only explicit MCP tool for bounded tasks. Local only, no ChatGPT whole-turn or actual app integration."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/mcp-readonly-bridge-ci.json",
+          "sha256": "e05901155390787907a69681f5145b73b4f21c7851305a0d89ba0a3642571e00",
+          "recordedAt": "2026-10-24T01:06:22.893Z",
+          "note": "Observed real local provider Actions push CI #40048105533: 219/219 tests passed with project validation; evidence-head CI and independent review pending."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-MCP-READONLY-BRIDGE.md",
+          "sha256": "cc88420310c12981f6b1c2ad22c3283ceda68f7747ffb33ea4b348e6f3a9279f",
+          "recordedAt": "2026-10-24T01:06:22.893Z",
+          "note": "OpenAI documented custom MCP deployment boundary, read-only tool scope, local bearer/Host/Origin protections; no web deployment."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "src/mcp-bridge.mjs",
+          "sha256": "fcd5a76abe375a198505b213a8325311632e6ebec2ef98257feada1d23519689",
+          "recordedAt": "2026-10-24T02:27:25.249Z",
+          "note": "Read-only MCP bridge now requires bearer in every exported server instance, denies audit receipt-writing mode."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/mcp-readonly-bridge-p1-remediation.json",
+          "sha256": "8b99dd51d185c54dbcf22c8550c4a3ec7dbf06c0fefe04ee2038132ce693d9f0",
+          "recordedAt": "2026-10-24T02:27:25.249Z",
+          "note": "Independent reviewer P1 findings mapped to source-head provider PR Actions #40054127005 221/221 tests, valid task ledger. Re-review pending."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-MCP-READONLY-BRIDGE.md",
+          "sha256": "3ed06350d328807923712d69fbcbdd85c85d3927f3f8f6b44e25fbd4747ebeca",
+          "recordedAt": "2026-10-24T02:27:25.249Z",
+          "note": "Clarifies strict bearer on JavaScript factory and prohibits audit writes behind read-only MCP hint; no deployed app or host-native intercept."
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 22,
+        "pullRequest": 23,
         "baseRef": "main",
-        "baseSha": "801c5a6c7a16acfe113b1b32c6de062fba3554bf"
+        "baseSha": "473b0c477afbc8f21071ce5decc770ba7100208a"
       }
     }
   ],
-  "revision": 65
+  "revision": 68
 }

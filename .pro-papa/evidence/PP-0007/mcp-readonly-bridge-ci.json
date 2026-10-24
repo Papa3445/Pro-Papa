@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "scope": "Loopback read-only MCP tool bridge backed by explicit host release gate; not native ChatGPT Project interception",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/23",
+  "trustedBaseSha": "473b0c477afbc8f21071ce5decc770ba7100208a",
+  "sourceHead": "fc6fbdcc9251e231c3c2a7eaacfaf1a85832058a",
+  "ci": {
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40048105533",
+    "runId": 40048105533,
+    "jobId": 120734335835,
+    "event": "push",
+    "conclusion": "success",
+    "headSha": "fc6fbdcc9251e231c3c2a7eaacfaf1a85832058a",
+    "tests": 219,
+    "passed": 219,
+    "failed": 0,
+    "skipped": 0,
+    "projectValidatorValid": true
+  },
+  "sourceFiles": [
+    {
+      "path": "src/mcp-bridge.mjs",
+      "sha256": "5b89ddc08f56f7d2c0d751528b0e2c50629e1f9f8f541c35cdb60c7bba903e36",
+      "gitBlobSha": "0e17e1caab41fe2008171239ee7d31dd538a0619"
+    },
+    {
+      "path": "bin/mcp-bridge.mjs",
+      "sha256": "ee2a1e7bc9a749526e9e196a54147e5386185196af31698b3204fc273f5b3663",
+      "gitBlobSha": "a1d935b93cf947f7a59f88e861d930eb98c2b619"
+    },
+    {
+      "path": "tests/mcp-bridge.test.mjs",
+      "sha256": "9deb9a9cd7ac2d1f540cabf727de00a3f31a570935d6af98d8f191ee9f4d6645",
+      "gitBlobSha": "4453dfa9ce4909ef81851724043a0822fb344f96"
+    },
+    {
+      "path": "docs/PP0007-MCP-READONLY-BRIDGE.md",
+      "sha256": "cc88420310c12981f6b1c2ad22c3283ceda68f7747ffb33ea4b348e6f3a9279f",
+      "gitBlobSha": "73f0762691d3fc2584a432a03b8b68750bbfc4c5"
+    },
+    {
+      "path": "tests/review-github.test.mjs",
+      "sha256": "8a44c91e82c5a013ebe6c1fba483d561eca728b91799213990fb1a22c11a955b",
+      "gitBlobSha": "4f96820484a646ba59bd3bcc2e92597b63a5a06e"
+    },
+    {
+      "path": "package.json",
+      "sha256": "a24d1faaf141e3fe48bfbaca6909c5bb2996507865619763f6dc62157e437d30",
+      "gitBlobSha": "f6820183f92afabd445d73707ed37bd9bcf1ab38"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "sha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "checked": [
+    "MCP initialization and discovery via real Node HTTP",
+    "Only allowlisted read-only capabilities",
+    "math and text handlers executed with checked output",
+    "denied repository research has no released output",
+    "host and origin spoof rejection",
+    "bearer authentication",
+    "unsupported protocol and malformed inputs",
+    "request size limit and no server SSE",
+    "no binding to public interfaces",
+    "CLI denies startup without bearer"
+  ],
+  "realChatgptPluginConnection": false,
+  "externalEndpointDeployed": false,
+  "fullProtocolCertification": false,
+  "nativeConversationInterception": false,
+  "providerAuthenticated": false,
+  "limitations": "Local unit/HTTP tests verify only the explicit tool endpoint; no authenticated ChatGPT invocation, remote endpoint, whole-turn release control, independent output grading, or benchmark completion.",
+  "independentReview": "pending",
+  "frozenStudyChanged": false
+}
