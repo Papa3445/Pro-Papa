@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "scope": "CLI non-release evidence semantics for explicit Node reference host; no native ChatGPT interception",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/22",
+  "baseSha": "801c5a6c7a16acfe113b1b32c6de062fba3554bf",
+  "reviewRejectedHead": "ea0e8549215ac17ef0d86c1a35fbd878fd24ffcd",
+  "rejection": {
+    "reviewer": "papa4568",
+    "state": "CHANGES_REQUESTED",
+    "submittedAt": "2026-10-24T00:50:42Z",
+    "findingIds": [
+      "P2-1",
+      "P2-2"
+    ],
+    "summary": "Missing audit store omitted trace; durable replay reported success process exit though no new release"
+  },
+  "remediationHead": "1d6e0cd4c0cee28d51767fe3916bfd3347ebb9ca",
+  "fixes": [
+    "Missing audit-store CLI path yields audit_failed plus blocked trace audit.failed, execution null and nonzero exit",
+    "Enforced trace mode zero exit requires verified completed released trace; durable replay exits nonzero with execution null",
+    "Malformed traced CLI input returns invalid_request and blocked trace instead of bare uninstrumented envelope",
+    "Non-enforced legacy already_executed exit behavior unchanged"
+  ],
+  "providerCI": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40047138598",
+    "id": 40047138598,
+    "event": "pull_request",
+    "headSha": "1d6e0cd4c0cee28d51767fe3916bfd3347ebb9ca",
+    "conclusion": "success",
+    "tests": 212,
+    "passes": 212,
+    "failures": 0,
+    "skipped": 0,
+    "validatorValid": true
+  },
+  "sources": [
+    {
+      "path": "bin/reference-host.mjs",
+      "sha256": "3b8aa376b257b925dcfb062a8c92f7c0298c5f7597405b4a3194f38ca4babb3b",
+      "gitBlobSha": "8b91fe8386d01a5208483b79841bca5eec92e73d"
+    },
+    {
+      "path": "tests/reference-host.test.mjs",
+      "sha256": "5312bf2c4c768a247e9bffd92a78cba8868554ad41dfba95f0675b6875d1ed17",
+      "gitBlobSha": "93ade7a5fb3720022a30b7438eb42fcead74a6c8"
+    },
+    {
+      "path": "docs/PP0007-HOST-RELEASE-TRACE.md",
+      "sha256": "0e43a073c189c9dab1fc81f1a2e0384dfad1739f7347bf6a1dea4a949982bbd8",
+      "gitBlobSha": "6459c4f149571250cd7905b7c699be7e5f55fa12"
+    },
+    {
+      "path": "src/execution-trace.mjs",
+      "sha256": "61d445d152eec3b077547c8c7212c5d734574206a443bd9d80001c4e394435b7",
+      "gitBlobSha": "92b9d2527b442527c111e99ff92f8fafdcb8bfe2"
+    }
+  ],
+  "recheckRequiredAfterEvidenceCommit": true,
+  "approvalOnRemediationHead": "pending",
+  "realChatGPTWebsiteTrialsAdded": 0,
+  "limits": "Host-local Node subprocess and controlled adapter tests only. CI does not prove native ChatGPT Project routing, independent provider-trace attestation, or completion of PP-0007 benchmark."
+}
