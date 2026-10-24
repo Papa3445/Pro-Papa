@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -440,4 +442,25 @@ test('PP-0007 trace is opt-in and requester cannot enable it or suppress audit r
   const x=await secure.execute({...request,auditMode:'off',traceMode:'off'});
   assert.equal(x.status,'audit_unverified');
   assert.equal(x.trace.state,'not_released');
+});
+
+test('PP-0007 explicit Node CLI only releases a validated execution; denied request has no output',()=>{
+  const executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  const invoke=request=>spawnSync(process.execPath,[executable,'--enforce-trace'],
+    {encoding:'utf8',input:JSON.stringify(request),timeout:15000,maxBuffer:32768});
+  const ok=invoke({objective:'add three values',capability:'math.sum',inputs:{numbers:[2,3,5]}});
+  assert.equal(ok.status,0,ok.stderr);
+  assert.equal(ok.stderr,'');
+  const passed=JSON.parse(ok.stdout);
+  assert.equal(passed.status,'completed');
+  assert.equal(passed.execution.output.total,10);
+  assert.equal(verifyReleasedExecution(passed),true);
+  const blocked=invoke({objective:'Research disallowed repository',
+    capability:'research',inputs:{repository}});
+  assert.equal(blocked.status,1);
+  assert.equal(blocked.stderr,'');
+  const denied=JSON.parse(blocked.stdout);
+  assert.equal(denied.status,'denied');
+  assert.equal(denied.execution,null);
+  assert.equal(denied.trace.state,'not_released');
 });
