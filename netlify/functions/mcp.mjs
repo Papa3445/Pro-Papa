@@ -1,6 +1,7 @@
 // HTTPS MCP endpoint, served by Netlify Functions as /mcp.
 // Runtime secrets must be scoped to Functions; no cookies or user text are logged.
 import {createReadOnlyMcpWebHandler} from '../../src/mcp-web.mjs';
+import {createOAuthResourceValidator} from '../../src/oauth-resource.mjs';
 
 function env(key){
   const value=globalThis.Netlify?.env?.get?.(key);
@@ -9,9 +10,13 @@ function env(key){
 export default async function mcp(request){
   // Fail closed: a missing secret/hostname is a deployment blocker, not open access.
   try{
+    const hostname=env('PRO_PAPA_MCP_PUBLIC_HOSTNAME');
+    const oauthValidator=createOAuthResourceValidator({
+      issuer:env('PRO_PAPA_AUTH0_ISSUER'),
+      resource:env('PRO_PAPA_MCP_RESOURCE')
+    });
     const handler=createReadOnlyMcpWebHandler({
-      bearerToken:env('PRO_PAPA_MCP_TOKEN'),
-      hostname:env('PRO_PAPA_MCP_PUBLIC_HOSTNAME'),
+      oauthValidator,hostname,
       allowedOrigins:[],
       allowRepositories:['Papa3445/Pro-Papa'],
       githubResearch:true,
@@ -25,6 +30,6 @@ export default async function mcp(request){
   }
 }
 export const config={
-  path:'/mcp',
+  path:['/mcp','/.well-known/oauth-protected-resource'],
   rateLimit:{action:'rate_limit',aggregateBy:'ip',windowSize:60,windowLimit:30}
 };
