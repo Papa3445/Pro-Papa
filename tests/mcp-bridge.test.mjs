@@ -7,9 +7,10 @@ import {createReadOnlyMcpServer} from '../src/mcp-bridge.mjs';
 import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 
 const ACCEPT='application/json, text/event-stream';
+const TEST_TOKEN='mcp-fixture-bearer-private-token-long-123456789';
 const call=(method,id,params)=>({jsonrpc:'2.0',method,id,params});
 async function setup(t,opts={}){
-  const app=createReadOnlyMcpServer(opts);
+  const app=createReadOnlyMcpServer({bearerToken:TEST_TOKEN,...opts});
   const bound=await app.listen(0);
   t.after(()=>app.close());
   return {port:bound.port,url:'http://127.0.0.1:'+bound.port+'/mcp'};
@@ -18,7 +19,8 @@ function post(url,body,{headers={},method='POST',path='/mcp'}={}){
   const dest=new URL(url);
   return new Promise((resolve,reject)=>{
     const req=httpRequest({hostname:'127.0.0.1',port:dest.port,path,method,headers:{
-      'Accept':ACCEPT,'Content-Type':'application/json',...headers}},res=>{
+      'Accept':ACCEPT,'Content-Type':'application/json',
+      Authorization:'Bearer '+TEST_TOKEN,...headers}},res=>{
       const list=[];res.on('data',chunk=>list.push(chunk));res.on('end',()=>{
         const text=Buffer.concat(list).toString('utf8');
         let json=null;try{json=JSON.parse(text);}catch{}
@@ -113,7 +115,7 @@ test('PP-0007 MCP fail closed for forbidden origin, host spoof, authorization an
   const good=await post(url,call('tools/list',1,{}),{headers:{Authorization:'Bearer '+token}});
   assert.equal(good.status,200);
   for(const bearer of ['', 'Bearer wrong','Basic '+token]){
-    const unauth=await post(url,call('tools/list',1,{}),{headers:bearer?{Authorization:bearer}:{}});
+    const unauth=await post(url,call('tools/list',1,{}),{headers:{Authorization:bearer}});
     assert.equal(unauth.status,401);
     assert.equal(unauth.text,'');
   }
@@ -147,12 +149,16 @@ test('PP-0007 MCP enforces HTTP JSON-RPC request bounds and protocol version',as
 });
 
 test('PP-0007 MCP refuses public listen and insecure host configuration',async()=>{
-  assert.throws(()=>createReadOnlyMcpServer({host:'0.0.0.0'}),/loopback/);
-  assert.throws(()=>createReadOnlyMcpServer({host:'example.com'}),/loopback/);
+  assert.throws(()=>createReadOnlyMcpServer({}),/configuration/);
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:null}),/configuration/);
+  assert.throws(()=>createReadOnlyMcpServer({host:'0.0.0.0',bearerToken:TEST_TOKEN}),/loopback/);
+  assert.throws(()=>createReadOnlyMcpServer({host:'example.com',bearerToken:TEST_TOKEN}),/loopback/);
   assert.throws(()=>createReadOnlyMcpServer({bearerToken:'short'}),/configuration/);
-  assert.throws(()=>createReadOnlyMcpServer({allowedOrigins:['*']}),/configuration/);
-  assert.throws(()=>createReadOnlyMcpServer({allowedHosts:['evil.com/path']}),/configuration/);
-  assert.throws(()=>createReadOnlyMcpServer({auditMode:'required'}),/Unverified host/);
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:TEST_TOKEN,allowedOrigins:['*']}),/configuration/);
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:TEST_TOKEN,allowedHosts:['evil.com/path']}),/configuration/);
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:TEST_TOKEN,auditMode:'required'}),/configuration/);
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:TEST_TOKEN,
+    auditRepository:'Papa3445/Pro-Papa-Audit'}),/configuration/);
 });
 
 test('PP-0007 MCP CLI fails safe without bearer secret before opening port',()=>{
@@ -164,4 +170,54 @@ test('PP-0007 MCP CLI fails safe without bearer secret before opening port',()=>
   assert.equal(result.stdout,'');
   assert.match(result.stderr,/MCP bridge startup rejected/);
   assert.equal(result.stderr.includes('PRO_PAPA_MCP_TOKEN'),false);
+});
+
+test('PP-0007 independent P1: authenticated repository route cannot run on absent or incorrect bearer',async t=>{
+  let providerCalls=0;
+  const fetchImpl=async()=>{providerCalls++;return {ok:true,status:200,json:async()=>({
+    full_name:'Papa3445/Pro-Papa',id:1427703038,private:true,
+    stargazers_count:2,open_issues_count:0,description:'Fixture-private',
+    html_url:'https://github.com/Papa3445/Pro-Papa'
+  })};};
+  assert.throws(()=>createReadOnlyMcpServer({
+    allowRepositories:['Papa3445/Pro-Papa'],githubResearch:true,fetchImpl
+  }),/configuration/);
+  const {url}=await setup(t,{allowRepositories:['Papa3445/Pro-Papa'],
+    githubResearch:true,fetchImpl});
+  const req=execute('Research approved private repo','research',{
+    repository:'Papa3445/Pro-Papa'});
+  for(const bearer of ['', 'Bearer wrong','Basic '+TEST_TOKEN]){
+    const refused=await post(url,req,{headers:{Authorization:bearer}});
+    assert.equal(refused.status,401);
+    assert.equal(refused.text,'');
+    assert.equal(providerCalls,0);
+  }
+  const authorized=await post(url,req);
+  assert.equal(authorized.status,200);
+  assert.equal(authorized.json.result.isError,false);
+  assert.equal(authorized.json.result.structuredContent.execution.output.private,true);
+  assert.equal(verifyReleasedExecution(authorized.json.result.structuredContent),true);
+  assert.equal(providerCalls,1);
+});
+
+test('PP-0007 independent P1/P2: bridge cannot advertise read-only while issuing audit receipt writes',async t=>{
+  const maliciousAudit='Papa3445/Pro-Papa-Audit';
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:TEST_TOKEN,
+    auditMode:'required',auditRepository:maliciousAudit}),/configuration/);
+  assert.throws(()=>createReadOnlyMcpServer({bearerToken:TEST_TOKEN,
+    auditMode:'off',auditRepository:maliciousAudit}),/configuration/);
+  const {url}=await setup(t);
+  const listing=await post(url,call('tools/list',17,{}));
+  const annotations=listing.json.result.tools[0].annotations;
+  assert.equal(annotations.readOnlyHint,true);
+  assert.equal(annotations.idempotentHint,true);
+  assert.equal(annotations.destructiveHint,false);
+  const entry=fileURLToPath(new URL('../bin/mcp-bridge.mjs',import.meta.url));
+  const startup=spawnSync(process.execPath,[entry],{encoding:'utf8',
+    env:{...process.env,PRO_PAPA_MCP_TOKEN:TEST_TOKEN,
+      PRO_PAPA_MCP_AUDIT_REQUIRED:'true',PRO_PAPA_AUDIT_REPO:maliciousAudit},
+    timeout:10000,maxBuffer:16384});
+  assert.equal(startup.status,1);
+  assert.equal(startup.stdout,'');
+  assert.match(startup.stderr,/MCP bridge startup rejected/);
 });
