@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "issue": "https://github.com/Papa3445/Pro-Papa/issues/24",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/26",
+  "scope": "Unconnected Auth0 OAuth resource-token validation component",
+  "baseSha": "1d6b2ad40d53ff97f1d1aff3117c5fa4a974dbb9",
+  "sourceHead": "a57a4baf2165efe8e9de3b8faf51fd5eeb660e3e",
+  "CI": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40058275393",
+    "runId": 40058275393,
+    "jobId": 120765994600,
+    "event": "push",
+    "sourceHead": "a57a4baf2165efe8e9de3b8faf51fd5eeb660e3e",
+    "conclusion": "success",
+    "tests": 228,
+    "passed": 228,
+    "failed": 0,
+    "cancelled": 0,
+    "validatorValid": true
+  },
+  "filePins": [
+    {
+      "path": "src/oauth-resource.mjs",
+      "sha256": "d214527a9ddf984a7890a60096cab69474e190c6a50fe506dcb826c57064f07b",
+      "gitBlobSha": "b5aac0605f57bd1b797e96021e75aaf2ebed2d50"
+    },
+    {
+      "path": "tests/oauth-resource.test.mjs",
+      "sha256": "a180bb959bd60d30f31464de5f5c6159573d135c3a841d6aedcdf1e3a253aeda",
+      "gitBlobSha": "54237da62836cddf2e65c9472f0bd18b94dad156"
+    },
+    {
+      "path": "docs/PP0007-AUTH0-RESOURCE-VALIDATOR.md",
+      "sha256": "d10f2078454cb8f4a1393fc50e9d7c74c6cdee495ee47e8bfb877407d86c9812",
+      "gitBlobSha": "8d85b7846800af7da7a425a0298e524b07866413"
+    },
+    {
+      "path": "package.json",
+      "sha256": "eb495a2989bec2b4c4ebba37f70b250092abfebe3b6b8099931b8a5ceddab9db",
+      "gitBlobSha": "b6fa084ceab9089ffc9f5add2a8ab481eca46c02"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "sha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "checks": [
+    "RS256 signature using pinned HTTPS issuer-host JWKS",
+    "exact issuer,audience,sub,token times,space-delimited required scope",
+    "reject forged signature/JWK/JKU/x5u, unsupported alg and bad audience",
+    "reject oversized JWKS without blocking cloned-body cancellation",
+    "deterministic cache expiry",
+    "metadata and challenge builder tests"
+  ],
+  "realAuth0TenantDiscoveryVerified": false,
+  "realAccessTokenVerified": false,
+  "netlifyDeployed": false,
+  "realChatGPTConnection": false,
+  "limitations": "Local mock JWKS and synthetic RSA keys only; not connected to PR #25 Netlify MCP handler; no OAuth client registration, resource API provisioning, PKCE login, protected-resource HTTP route, independent grade or whole-turn interception. PP-0007 stays in progress.",
+  "independentReview": "pending",
+  "frozenStudyChanged": false,
+  "baseTaskRevision": 68,
+  "baseTaskReviewTarget": {
+    "repository": "Papa3445/Pro-Papa",
+    "pullRequest": 23,
+    "baseRef": "main",
+    "baseSha": "473b0c477afbc8f21071ce5decc770ba7100208a"
+  }
+}
