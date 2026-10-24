@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {request as httpRequest} from 'node:http';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {createReadOnlyMcpServer} from '../src/mcp-bridge.mjs';
 import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 
@@ -151,4 +153,15 @@ test('PP-0007 MCP refuses public listen and insecure host configuration',async()
   assert.throws(()=>createReadOnlyMcpServer({allowedOrigins:['*']}),/configuration/);
   assert.throws(()=>createReadOnlyMcpServer({allowedHosts:['evil.com/path']}),/configuration/);
   assert.throws(()=>createReadOnlyMcpServer({auditMode:'required'}),/Unverified host/);
+});
+
+test('PP-0007 MCP CLI fails safe without bearer secret before opening port',()=>{
+  const entry=fileURLToPath(new URL('../bin/mcp-bridge.mjs',import.meta.url));
+  const {PRO_PAPA_MCP_TOKEN, ...env}=process.env;
+  const result=spawnSync(process.execPath,[entry],{
+    env:{...env,PRO_PAPA_MCP_PORT:'0'},encoding:'utf8',timeout:10000,maxBuffer:16384});
+  assert.equal(result.status,1);
+  assert.equal(result.stdout,'');
+  assert.match(result.stderr,/MCP bridge startup rejected/);
+  assert.equal(result.stderr.includes('PRO_PAPA_MCP_TOKEN'),false);
 });
