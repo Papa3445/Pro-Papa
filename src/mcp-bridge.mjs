@@ -35,7 +35,6 @@ const rpc=(id,payload,isError=false)=>({jsonrpc:'2.0',id,...(isError?{error:payl
 const fault=(id,code,message)=>rpc(id,{code,message},true);
 const closed=(value)=>{if(!plain(value))return false;const allowed=['objective','capability','inputs'];return Object.keys(value).every(k=>allowed.includes(k));};
 const authOK=(presented,expected)=>{
-  if(expected===null)return true;
   if(typeof presented!=='string'||!presented.startsWith('Bearer '))return false;
   const v=Buffer.from(presented.slice(7)),e=Buffer.from(expected);
   return v.length===e.length&&timingSafeEqual(v,e);
@@ -44,7 +43,7 @@ const validName=(x)=>typeof x==='string'&&/^[a-z0-9][a-z0-9.:-]*$/i.test(x)&&x.l
 
 export function createReadOnlyMcpServer({
   host='127.0.0.1',allowedHosts=['127.0.0.1','localhost'],allowedOrigins=[],
-  bearerToken=null,allowRepositories=[],auditMode='off',auditRepository=null,
+  bearerToken,allowRepositories=[],auditMode='off',auditRepository=null,
   githubResearch=false,fetchImpl=globalThis.fetch,
   // Local explicit server-side options, NEVER read from tool arguments.
   sourceRepository='Papa3445/Pro-Papa',githubToken=process.env.GITHUB_TOKEN,
@@ -53,11 +52,11 @@ export function createReadOnlyMcpServer({
   if(!Array.isArray(allowedHosts)||!allowedHosts.length||allowedHosts.some(x=>!validName(x))||
      !Array.isArray(allowedOrigins)||allowedOrigins.some(x=>typeof x!=='string'||
        !/^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(x))||
-     !(bearerToken===null||(typeof bearerToken==='string'&&bearerToken.length>=32))||
-     !Array.isArray(allowRepositories)||!['off','required'].includes(auditMode)||
+     typeof bearerToken!=='string'||bearerToken.length<32||
+     !Array.isArray(allowRepositories)||auditMode!=='off'||auditRepository!==null||
      typeof githubResearch!=='boolean')throw Error('Invalid trusted MCP configuration');
   const reference=createReferenceHost({
-    allowedRepositories:allowRepositories,githubResearch,auditMode,auditRepository,
+    allowedRepositories:allowRepositories,githubResearch,auditMode:'off',
     sourceRepository,token:githubToken,fetchImpl,traceMode:'enforced'
   });
   let active=0;
