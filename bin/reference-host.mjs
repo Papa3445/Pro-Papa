@@ -5,10 +5,10 @@ import { resolve } from 'node:path';
 import { createReferenceHost } from '../src/reference-host.mjs';
 
 function parse(args) {
-  const allowed = new Set(['--github-read', '--github-repo', '--audit-required',
+  const allowed = new Set(['--github-read', '--github-repo', '--audit-required', '--enforce-trace',
     '--durable', '--project', '--approve-create-issue-id', '--issue-repository',
     '--issue-payload-sha256']);
-  const boolean = new Set(['--github-read', '--audit-required', '--durable']);
+  const boolean = new Set(['--github-read', '--audit-required', '--durable', '--enforce-trace']);
   const result = {};
   for (let i = 0; i < args.length; i++) {
     const key = args[i];
@@ -62,6 +62,7 @@ export async function main(argv = process.argv.slice(2),
       payloadSha256: flags['--issue-payload-sha256'],
     } : null,
     auditMode: flags['--audit-required'] ? 'required' : 'off',
+    traceMode: flags['--enforce-trace'] ? 'enforced' : 'off',
     auditRepository: process.env.PRO_PAPA_AUDIT_REPO,
     durableProject: flags['--durable'] ? flags['--project'] : null,
   });
