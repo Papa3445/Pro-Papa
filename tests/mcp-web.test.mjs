@@ -160,10 +160,22 @@ test('PP-0007 Netlify entrypoint refuses to serve when runtime config absent',as
     const without=await netlifyMcp(request(call('tools/list',1,{})));
     assert.equal(without.status,503);
     assert.equal((await without.text()),'Service unavailable');
-    const values={PRO_PAPA_MCP_TOKEN:KEY,PRO_PAPA_MCP_PUBLIC_HOSTNAME:HOST};
+    const legacy={PRO_PAPA_MCP_TOKEN:KEY,PRO_PAPA_MCP_PUBLIC_HOSTNAME:HOST};
+    globalThis.Netlify={env:{get:key=>legacy[key]}};
+    const staticBearerOnly=await netlifyMcp(request(call('tools/list',1,{})));
+    assert.equal(staticBearerOnly.status,503);
+    const values={PRO_PAPA_MCP_PUBLIC_HOSTNAME:HOST,
+      PRO_PAPA_AUTH0_ISSUER:'https://personal-fixture.us.auth0.com/',
+      PRO_PAPA_MCP_RESOURCE:'https://'+HOST};
     globalThis.Netlify={env:{get:key=>values[key]}};
-    const withCredentials=await parsed(await netlifyMcp(request(call('tools/list',1,{}))));
-    assert.equal(withCredentials.status,200);
-    assert.equal(withCredentials.body.result.tools[0].name,'pro_papa_execute_readonly');
+    const withOAuth=await parsed(await netlifyMcp(request(call('tools/list',1,{}))));
+    assert.equal(withOAuth.status,200);
+    assert.equal(withOAuth.body.result.tools[0].name,'pro_papa_execute_readonly');
+    assert.deepEqual(withOAuth.body.result.tools[0].securitySchemes,
+      [{type:'oauth2',scopes:['pro_papa.read']}]);
+    const published=await netlifyMcp(new Request('https://'+HOST+
+      '/.well-known/oauth-protected-resource',{method:'GET'}));
+    assert.equal(published.status,200);
+    assert.equal((await published.json()).resource,'https://'+HOST);
   }finally{globalThis.Netlify=old;}
 });

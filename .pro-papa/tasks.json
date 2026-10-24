@@ -1401,16 +1401,43 @@
           "sha256": "db1b60c46df3028b7f7a8e9cc02f1c411d40862254f2f494d44d09c45c204366",
           "recordedAt": "2026-10-24T03:39:38.866Z",
           "note": "Signed RSA local regression and prior exact-head CI 228/228 passed; combined PR26 base exact-head CI and independent reapproval pending."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "src/mcp-web.mjs",
+          "sha256": "f5cd54074c3ca904bd674b52b2f412fdd625f1f0f5b254d21f8d96dd53f92f75",
+          "recordedAt": "2026-10-24T03:53:59.890Z",
+          "note": "Auth0 signed JWT check gates explicit MCP tools. Only local Web Request mock tests; not deployed."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/auth0-mcp-http-integration-ci.json",
+          "sha256": "9bb46cda7e15d8bcc30e23e9e131fb3f8521cc726e1b1b918570c2deb497bee0",
+          "recordedAt": "2026-10-24T03:53:59.890Z",
+          "note": "Observed initial source CI 40060016635 242 tests passed; task-pinned final-head CI and independent review still required."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-NETLIFY-MCP-DEPLOYMENT.md",
+          "sha256": "712d58efb9c478864994daeb2deafefe86400c02af07661e780d7ae0c0e43100",
+          "recordedAt": "2026-10-24T03:53:59.890Z",
+          "note": "Provider configuration gates, metadata route, tool scopes and no static bearer fallback documented. No production Auth0/ChatGPT proof."
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 26,
+        "pullRequest": 27,
         "baseRef": "main",
-        "baseSha": "3144a1dc4474ca48fb7173710074b4609477b725"
+        "baseSha": "8b058d1a4cf56dee46af0df6895c066f496bf636"
       }
     }
   ],
-  "revision": 71
+  "revision": 72
 }

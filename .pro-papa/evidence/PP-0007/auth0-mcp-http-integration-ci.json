@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "issue": "https://github.com/Papa3445/Pro-Papa/issues/24",
+  "PR": "https://github.com/Papa3445/Pro-Papa/pull/27",
+  "scope": "Auth0 OAuth resource validator wired into Netlify read-only explicit MCP tool host, local test only",
+  "baseSha": "8b058d1a4cf56dee46af0df6895c066f496bf636",
+  "observedSourceHead": "18d98533fca0bfa57a6b63b566237076743f350f",
+  "ci": {
+    "runId": 40060016635,
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40060016635",
+    "event": "push",
+    "sourceHead": "73daf839a84dc351479ccebc1efcc789c14fea02",
+    "conclusion": "success",
+    "tests": 242,
+    "passed": 242,
+    "failed": 0,
+    "skipped": 0,
+    "validatorValid": true
+  },
+  "sources": [
+    {
+      "path": "src/mcp-web.mjs",
+      "sha256": "f5cd54074c3ca904bd674b52b2f412fdd625f1f0f5b254d21f8d96dd53f92f75",
+      "blob": "15ef943720f94b7acbc44c5e2b46e132724bdb70"
+    },
+    {
+      "path": "netlify/functions/mcp.mjs",
+      "sha256": "4c6059614db862a37045c24324bef220c6e6868294189d9040b55caba83833a4",
+      "blob": "d462bd6e82fb4f4857c8d0cc61feb43ab46980fc"
+    },
+    {
+      "path": "tests/mcp-oauth-web.test.mjs",
+      "sha256": "9be5ef8c02b3622d07f77768f8165dd207626d6312f65ee38f1c88052348e2be",
+      "blob": "cb5248ea51b4916df6d0614c0a7a3f283001df86"
+    },
+    {
+      "path": "tests/mcp-web.test.mjs",
+      "sha256": "fbd1659d0b8cc23f6d4b831cbf1feccdc3ee0750403f40ec293c2b31a0cb3c0c",
+      "blob": "152929f3cbe4d3a56fb2eecc07081110625e58f4"
+    },
+    {
+      "path": "docs/PP0007-NETLIFY-MCP-DEPLOYMENT.md",
+      "sha256": "712d58efb9c478864994daeb2deafefe86400c02af07661e780d7ae0c0e43100",
+      "blob": "6b7188fa1ae443b4a18628a9de011dd8349e7323"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "sha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+      "blob": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "securityProperties": [
+    "Netlify requires issuer/resource/host, no static bearer fallback",
+    "public RFC9728 metadata and OAuth tool securitySchemes",
+    "signed RS256 token before any host tool execution",
+    "invalid token has mcp/www_authenticate and no structuredContent",
+    "scope/audience/issuer/expiry enforced by reviewed validator",
+    "host still separately verifies output release"
+  ],
+  "realAuth0AccessToken": false,
+  "liveNetlifyDeployed": false,
+  "chatGPTConnection": false,
+  "oauthClientRegistered": false,
+  "finalAudienceConfigured": false,
+  "independentReview": "pending",
+  "frozenBenchmarkUnchanged": true,
+  "limitations": "Uses generated local RSA-2048 fixtures and mock JWKS/GitHub; not real Auth0 token, tenant administration, Netlify packaging or live ChatGPT. Provider-backed exact final-head CI pending. PP-0007 remains in_progress."
+}
