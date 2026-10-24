@@ -6,7 +6,7 @@ const REGULAR=['request.accepted','audit.not_required','route.selected',
 const AUDITED=['request.accepted','audit.confirmed','route.selected',
   'handler.started','handler.returned','output.validated','response.released'];
 const valid=steps=>Array.isArray(steps)&&steps.length<=7&&
-  steps.every(s=>typeof s==='string'&&/^[a-z.]+$/.test(s));
+  steps.every(s=>typeof s==='string'&&/^[a-z._]+$/.test(s));
 const sha=output=>createHash('sha256').update(JSON.stringify(output)).digest('hex');
 
 // Denied/incomplete executions cannot acquire a released status or output from this module.
