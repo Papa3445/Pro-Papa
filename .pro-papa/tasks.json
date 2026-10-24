@@ -1248,6 +1248,33 @@
           "sha256": "1ea7ff077ceae14edad3e6568ba3b0c58aa0c25196dbdd98a6bc9811cd3d9b16",
           "recordedAt": "2026-10-23T23:52:39.709Z",
           "note": "Documented evidence boundaries and independent reviewer-found preregistration integrity flaw; no real ChatGPT paired trials or quality grades."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "src/execution-trace.mjs",
+          "sha256": "61d445d152eec3b077547c8c7212c5d734574206a443bd9d80001c4e394435b7",
+          "recordedAt": "2026-10-24T00:31:32.708Z",
+          "note": "Host-local, opt-in response release check; output SHA-256 and event ordering not provider attestation; scoped to explicit Node caller."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/host-release-trace-ci.json",
+          "sha256": "5c8b576cca268143e6ca4f13d8bf4e1df96e0878887055209bc970efded838db",
+          "recordedAt": "2026-10-24T00:31:32.708Z",
+          "note": "Observed real provider PR Actions #40045338123 at source head ad7ccafd: 209/209 passing, 0 failures, project validator valid. Final evidence-head CI and separate reviewer approval still required."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-HOST-RELEASE-TRACE.md",
+          "sha256": "0c3822450ab34d4d5b08fa3da6e4a28605f146ffd53aab4531360c322a6ece1f",
+          "recordedAt": "2026-10-24T00:31:32.708Z",
+          "note": "Explicit host integration only, no automatic ChatGPT Project interception or finished PP-0007 paired grades."
         }
       ],
       "requiresTrustedReview": true,
@@ -1259,5 +1286,5 @@
       }
     }
   ],
-  "revision": 63
+  "revision": 64
 }
