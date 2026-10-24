@@ -51,7 +51,7 @@ async function readSmallJson(res){
       const {done,value}=await reader.read();
       if(done)break;
       size+=value.byteLength;
-      if(size>MAX_JWKS_BYTES){await reader.cancel().catch(()=>{});throw Error('JWKS too large');}
+      if(size>MAX_JWKS_BYTES){void reader.cancel().catch(()=>{});throw Error('JWKS too large');}
       parts.push(value);
     }
   }finally{reader.releaseLock();}
