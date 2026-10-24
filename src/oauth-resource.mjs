@@ -23,8 +23,9 @@ const httpsUrl=(x,allowPath)=>{
   if(typeof x!=='string'||x.length>512)throw Error('Invalid HTTPS configuration');
   const u=new URL(x);
   if(u.protocol!=='https:'||u.username||u.password||u.port||u.hash||u.search||
-    !u.hostname||(!allowPath&&u.pathname!=='/'))throw Error('Invalid HTTPS configuration');
-  if(u.href!==x)throw Error('Noncanonical HTTPS configuration');
+    !u.hostname||u.pathname!=='/')throw Error('Invalid HTTPS configuration');
+  // Auth0 issuer has a terminal '/', while OAuth resource ID is the bare origin.
+  if(x!==(allowPath?u.origin:u.origin+'/'))throw Error('Noncanonical HTTPS configuration');
   return u;
 };
 const isKey=k=>safeObject(k)&&k.kty==='RSA'&&
