@@ -3,6 +3,7 @@
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { createReferenceHost } from '../src/reference-host.mjs';
+import { blockedExecutionTrace, verifyReleasedExecution } from '../src/execution-trace.mjs';
 
 function parse(args) {
   const allowed = new Set(['--github-read', '--github-repo', '--audit-required', '--enforce-trace',
@@ -44,7 +45,10 @@ export async function main(argv = process.argv.slice(2),
   stdin = process.stdin, output = console.log) {
   const flags = parse(argv);
   if (flags['--audit-required'] && !process.env.PRO_PAPA_AUDIT_REPO) {
-    const rejected = { status: 'audit_failed', audit: { status: 'failed' }, execution: null };
+    // No request is dispatched; the host is not yet constructed.
+    const rejected = { status: 'audit_failed', audit: { status: 'failed' },
+      execution: null, ...(flags['--enforce-trace'] ?
+        { trace: blockedExecutionTrace(['audit.failed']) } : {}) };
     output(JSON.stringify(rejected));
     process.exitCode = 1;
     return rejected;
@@ -67,15 +71,25 @@ export async function main(argv = process.argv.slice(2),
     durableProject: flags['--durable'] ? flags['--project'] : null,
   });
   const response = await reference.execute(await readInput(stdin));
-  output(JSON.stringify(response));
-  if (!['completed', 'already_executed'].includes(response.status))
+  // A successful traced CLI return must be a newly completed, validated release.
+  // Replay and other non-release states must not exit with the success signal.
+  const enforced = flags['--enforce-trace'] === true;
+  const verified = enforced && verifyReleasedExecution(response);
+  const released = !enforced || verified ? response : response.status === 'completed' ?
+    {status:'execution_gate_failed',audit:response.audit ?? {status:'not_requested'},
+      execution:null,trace:blockedExecutionTrace(['release.denied'])} : response;
+  output(JSON.stringify(released));
+  if (enforced ? !verified : !['completed', 'already_executed'].includes(released.status))
     process.exitCode = 1;
-  return response;
+  return released;
 }
 if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
   main().catch(() => {
     // No errors, prompt contents, URLs, secrets or stack traces on stdout/stderr.
-    console.log(JSON.stringify({ status: 'invalid_request' }));
+    const traced = process.argv.slice(2).includes('--enforce-trace');
+    console.log(JSON.stringify({status:'invalid_request',
+      ...(traced ? {audit:{status:'not_requested'}, execution:null,
+        trace:blockedExecutionTrace(['request.rejected'])} : {})}));
     process.exitCode = 1;
   });
 }
