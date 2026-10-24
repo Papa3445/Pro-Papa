@@ -1275,6 +1275,33 @@
           "sha256": "0c3822450ab34d4d5b08fa3da6e4a28605f146ffd53aab4531360c322a6ece1f",
           "recordedAt": "2026-10-24T00:31:32.708Z",
           "note": "Explicit host integration only, no automatic ChatGPT Project interception or finished PP-0007 paired grades."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "bin/reference-host.mjs",
+          "sha256": "3b8aa376b257b925dcfb062a8c92f7c0298c5f7597405b4a3194f38ca4babb3b",
+          "recordedAt": "2026-10-24T00:53:40.474Z",
+          "note": "Reviewer P2-1/P2-2 CLI boundary correction: traced early failures, nonzero durable replay, success only on verified newly released result. Awaiting independent re-review."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/host-release-trace-review-p2-remediation.json",
+          "sha256": "81dc924892bdc3c3c930b97850e1fbf350b94ab414dea91402af1c0bfd7e7cc8",
+          "recordedAt": "2026-10-24T00:53:40.474Z",
+          "note": "Authentic GitHub Actions PR-head run 40047138598 at remediation source head 1d6e0cd4: 212/212 passed, project valid. Requires fresh metadata-head CI and independent approval."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-HOST-RELEASE-TRACE.md",
+          "sha256": "0e43a073c189c9dab1fc81f1a2e0384dfad1739f7347bf6a1dea4a949982bbd8",
+          "recordedAt": "2026-10-24T00:53:40.474Z",
+          "note": "Explains exact CLI blocked traces and exit semantics, preserves frozen UI study and honest host-only limitations."
         }
       ],
       "requiresTrustedReview": true,
@@ -1286,5 +1313,5 @@
       }
     }
   ],
-  "revision": 64
+  "revision": 65
 }
