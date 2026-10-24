@@ -1329,6 +1329,33 @@
           "sha256": "cc88420310c12981f6b1c2ad22c3283ceda68f7747ffb33ea4b348e6f3a9279f",
           "recordedAt": "2026-10-24T01:06:22.893Z",
           "note": "OpenAI documented custom MCP deployment boundary, read-only tool scope, local bearer/Host/Origin protections; no web deployment."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "src/mcp-bridge.mjs",
+          "sha256": "fcd5a76abe375a198505b213a8325311632e6ebec2ef98257feada1d23519689",
+          "recordedAt": "2026-10-24T02:27:25.249Z",
+          "note": "Read-only MCP bridge now requires bearer in every exported server instance, denies audit receipt-writing mode."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/mcp-readonly-bridge-p1-remediation.json",
+          "sha256": "8b99dd51d185c54dbcf22c8550c4a3ec7dbf06c0fefe04ee2038132ce693d9f0",
+          "recordedAt": "2026-10-24T02:27:25.249Z",
+          "note": "Independent reviewer P1 findings mapped to source-head provider PR Actions #40054127005 221/221 tests, valid task ledger. Re-review pending."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-MCP-READONLY-BRIDGE.md",
+          "sha256": "3ed06350d328807923712d69fbcbdd85c85d3927f3f8f6b44e25fbd4747ebeca",
+          "recordedAt": "2026-10-24T02:27:25.249Z",
+          "note": "Clarifies strict bearer on JavaScript factory and prohibits audit writes behind read-only MCP hint; no deployed app or host-native intercept."
         }
       ],
       "requiresTrustedReview": true,
@@ -1340,5 +1367,5 @@
       }
     }
   ],
-  "revision": 67
+  "revision": 68
 }
