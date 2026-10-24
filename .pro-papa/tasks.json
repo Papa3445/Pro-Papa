@@ -1356,6 +1356,33 @@
           "sha256": "3ed06350d328807923712d69fbcbdd85c85d3927f3f8f6b44e25fbd4747ebeca",
           "recordedAt": "2026-10-24T02:27:25.249Z",
           "note": "Clarifies strict bearer on JavaScript factory and prohibits audit writes behind read-only MCP hint; no deployed app or host-native intercept."
+        },
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "src/mcp-web.mjs",
+          "sha256": "1d9c254eb82e2535705ebc7c3d0ff7ec4b4aab2b51b3383e159b03566291cfc7",
+          "recordedAt": "2026-10-24T02:49:46.038Z",
+          "note": "Netlify HTTPS Web-request read-only MCP candidate with required bearer/hostname and actual host-release validation. Not yet deployed."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/netlify-mcp-pr25-ci.json",
+          "sha256": "0fd67895a79f874f17b15bfc8dd49cd0bb3b5a0cebf36499d61486d69743203f",
+          "recordedAt": "2026-10-24T02:49:46.038Z",
+          "note": "GitHub Actions PR-head #40055647614 passed 229/229 tests. Final evidence-head CI and independent reviewer still pending."
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": "docs/PP0007-NETLIFY-MCP-DEPLOYMENT.md",
+          "sha256": "6d16d831c4b17f10d8ba568f2012e1ef76f4c32975da1b46abff4b15661db8f6",
+          "recordedAt": "2026-10-24T02:49:46.038Z",
+          "note": "Explicit release boundary, fail-closed missing secrets, authentication compatibility and Netlify Git deployment constraints documented."
         }
       ],
       "requiresTrustedReview": true,
@@ -1367,5 +1394,5 @@
       }
     }
   ],
-  "revision": 69
+  "revision": 70
 }
