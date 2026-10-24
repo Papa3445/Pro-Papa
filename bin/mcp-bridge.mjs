@@ -13,8 +13,8 @@ export async function main(env=process.env,log=console.error){
   if(port<1||port>65535)throw Error('Invalid MCP port');
   const names=csv(env.PRO_PAPA_MCP_HOSTNAMES);
   const token=env.PRO_PAPA_MCP_TOKEN??null;
-  if(names.length && (typeof token!=='string'||token.length<32))
-    throw Error('Externally forwarded MCP host requires bearer token');
+  if(typeof token!=='string'||token.length<32)
+    throw Error('MCP bridge startup requires a host-managed bearer token');
   const required=env.PRO_PAPA_MCP_AUDIT_REQUIRED==='true';
   if(env.PRO_PAPA_MCP_AUDIT_REQUIRED&&!['true','false'].includes(env.PRO_PAPA_MCP_AUDIT_REQUIRED))
     throw Error('Invalid audit setting');
