@@ -18,14 +18,13 @@ export async function main(env=process.env,log=console.error){
   const required=env.PRO_PAPA_MCP_AUDIT_REQUIRED==='true';
   if(env.PRO_PAPA_MCP_AUDIT_REQUIRED&&!['true','false'].includes(env.PRO_PAPA_MCP_AUDIT_REQUIRED))
     throw Error('Invalid audit setting');
-  if(required&&!env.PRO_PAPA_AUDIT_REPO)throw Error('Missing required audit repository');
+  if(required)throw Error('Read-only MCP cannot perform audit receipt writes');
   const repos=csv(env.PRO_PAPA_MCP_REPOSITORIES);
   const app=createReadOnlyMcpServer({
     allowedHosts:['127.0.0.1','localhost',...names],
     allowedOrigins:csv(env.PRO_PAPA_MCP_ORIGINS),bearerToken:token,
     allowRepositories:repos,githubResearch:repos.length>0,
-    auditMode:required?'required':'off',auditRepository:env.PRO_PAPA_AUDIT_REPO,
-    githubToken:env.GITHUB_TOKEN,
+    auditMode:'off',githubToken:env.GITHUB_TOKEN,
   });
   const address=await app.listen(port);
   log('Pro-Papa MCP read-only bridge listening on loopback port '+address.port+
