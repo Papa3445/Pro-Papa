@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "issue": "https://github.com/Papa3445/Pro-Papa/issues/24",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/25",
+  "scope": "Netlify HTTPS Web Request/Response adapter candidate; no live ChatGPT plugin",
+  "baseSha": "1d6b2ad40d53ff97f1d1aff3117c5fa4a974dbb9",
+  "sourceHead": "972d18652ddcd1567bdd15253e8739776b09cd9a",
+  "ci": {
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40055647614",
+    "runId": 40055647614,
+    "event": "pull_request",
+    "headSha": "972d18652ddcd1567bdd15253e8739776b09cd9a",
+    "conclusion": "success",
+    "tests": 229,
+    "passed": 229,
+    "failed": 0,
+    "skipped": 0,
+    "projectValidatorValid": true
+  },
+  "files": [
+    {
+      "path": "src/mcp-web.mjs",
+      "sha256": "1d9c254eb82e2535705ebc7c3d0ff7ec4b4aab2b51b3383e159b03566291cfc7",
+      "gitBlobSha": "57a612c1b532231813a0f8080f6a3171ae77b2c6"
+    },
+    {
+      "path": "netlify/functions/mcp.mjs",
+      "sha256": "b7bd92fe8edcbf311a8ae1ba48d8890735c8a104b12ea232dbda1d183760e708",
+      "gitBlobSha": "be91266fe678d34a86917e5af0450dcb7fe41ed0"
+    },
+    {
+      "path": "tests/mcp-web.test.mjs",
+      "sha256": "193baec4202d7146b5a9f3e49f7d45188add41bf5fb7c3fea101a4c1397c8c6c",
+      "gitBlobSha": "e6f670cb8092142e234f8c0c5b43402d52920720"
+    },
+    {
+      "path": "docs/PP0007-NETLIFY-MCP-DEPLOYMENT.md",
+      "sha256": "6d16d831c4b17f10d8ba568f2012e1ef76f4c32975da1b46abff4b15661db8f6",
+      "gitBlobSha": "730798349a638b24a8cb5efc97eac71fa4dd73cd"
+    },
+    {
+      "path": "netlify.toml",
+      "sha256": "a5db5770d5149b5c3ceb04aa97c8029a750f3def71072ad6c9a0a63416d739f7",
+      "gitBlobSha": "8d9385fe3dddf4b36f9ee46a62f5b604ae5a675b"
+    },
+    {
+      "path": "public/index.html",
+      "sha256": "3bcd12de6d08e128f4c1f5ddc0f2d8940e584d22068b9c392dddd1016bc96174",
+      "gitBlobSha": "8bd7340b16e8df588c654dcf4e67b9688536b31d"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "sha256": "a7d6c57a838e24358c34cc4dba2035d6cefd50d1361dbf08b9bcfe9f13b7e298",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "verifiedTests": [
+    "Web Request/Response JSON-RPC discovery and tool invocation",
+    "auth-gated repository read",
+    "host release trace verifies math.sum result",
+    "Host/Origin/HTTPS refusal",
+    "invalid or oversize requests",
+    "non-release has no structured success",
+    "Netlify function startup missing secret returns 503"
+  ],
+  "deployed": false,
+  "netlifySiteProvisioned": false,
+  "chatGPTConnectionVerified": false,
+  "authCompatibilityVerified": false,
+  "limitations": "Tests are host-local, not Netlify Functions deployed scan. Netlify connector cannot link Git or deploy source here. OAuth 2.1 may be required; fixed bearer may be unsupported in ChatGPT connection UI. No whole-turn governance or completed PP-0007 benchmark.",
+  "independentReview": "pending",
+  "frozenStudyChanged": false
+}
