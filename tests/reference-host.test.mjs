@@ -464,3 +464,63 @@ test('PP-0007 explicit Node CLI only releases a validated execution; denied requ
   assert.equal(denied.execution,null);
   assert.equal(denied.trace.state,'not_released');
 });
+
+test('PP-0007 reviewer P2-1: missing audit store emits a blocked CLI trace without dispatch',()=>{
+  const executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  const {PRO_PAPA_AUDIT_REPO, ...env}=process.env;
+  const out=spawnSync(process.execPath,[executable,'--enforce-trace','--audit-required',
+    '--github-read','--github-repo',repository],
+    {input:JSON.stringify(request),encoding:'utf8',env,timeout:15000,maxBuffer:32768});
+  assert.equal(out.status,1);
+  assert.equal(out.stderr,'');
+  const body=JSON.parse(out.stdout);
+  assert.equal(body.status,'audit_failed');
+  assert.equal(body.execution,null);
+  assert.equal(body.audit.status,'failed');
+  assert.equal(body.trace.state,'not_released');
+  assert.deepEqual(body.trace.events.map(e=>e.step),['audit.failed']);
+  assert.equal(body.trace.providerAuthenticated,false);
+  assert.equal(verifyReleasedExecution(body),false);
+});
+
+test('PP-0007 reviewer P2-2: actual durable CLI replay has nonzero exit and no new execution',async t=>{
+  const dir=await project(t),executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  const argv=[executable,'--enforce-trace','--durable','--project',dir];
+  const env={...process.env,PRO_PAPA_GATEWAY_SECRET:'ci-fixture-host-managed-secret-at-least-16'};
+  const input=JSON.stringify({id,objective:'add these known values',capability:'math.sum',
+    inputs:{numbers:[2,3,5]}});
+  const invoke=()=>spawnSync(process.execPath,argv,
+    {input,env,encoding:'utf8',timeout:15000,maxBuffer:32768});
+  const first=invoke();
+  assert.equal(first.status,0,first.stderr);
+  assert.equal(first.stderr,'');
+  const initial=JSON.parse(first.stdout);
+  assert.equal(initial.status,'completed');
+  assert.equal(initial.execution.output.total,10);
+  assert.equal(verifyReleasedExecution(initial),true);
+  const second=invoke();
+  assert.equal(second.status,1,second.stderr);
+  assert.equal(second.stderr,'');
+  const replay=JSON.parse(second.stdout);
+  assert.equal(replay.status,'already_executed');
+  assert.equal(replay.execution,null);
+  assert.equal(replay.trace.state,'not_released');
+  assert.equal(verifyReleasedExecution(replay),false);
+  const state=(await loadProject(dir)).state;
+  assert.equal(state.tasks.length,1);
+});
+
+test('PP-0007 reviewer P2-1: malformed traced CLI input returns non-release envelope',()=>{
+  const executable=fileURLToPath(new URL('../bin/reference-host.mjs',import.meta.url));
+  for(const input of ['{not-json','']) {
+    const out=spawnSync(process.execPath,[executable,'--enforce-trace'],
+      {input,encoding:'utf8',timeout:15000,maxBuffer:32768});
+    assert.equal(out.status,1);
+    assert.equal(out.stderr,'');
+    const result=JSON.parse(out.stdout);
+    assert.equal(result.status,'invalid_request');
+    assert.equal(result.execution,null);
+    assert.equal(result.trace.state,'not_released');
+    assert.deepEqual(result.trace.events.map(e=>e.step),['request.rejected']);
+  }
+});
