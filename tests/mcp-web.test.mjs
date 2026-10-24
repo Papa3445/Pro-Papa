@@ -70,7 +70,9 @@ test('PP-0007 Netlify refuses wrong bearer before authorized research can call G
   let providerCalls=0;
   const fetchImpl=async()=>{providerCalls++;return {ok:true,status:200,json:async()=>({
     full_name:'Papa3445/Pro-Papa',id:1427703038,private:false,
-    default_branch:'main',html_url:'https://github.com/Papa3445/Pro-Papa'
+    default_branch:'main',stargazers_count:2,open_issues_count:0,
+    description:'Fixture-public',
+    html_url:'https://github.com/Papa3445/Pro-Papa'
   })};};
   const app=handler({githubResearch:true,allowRepositories:['Papa3445/Pro-Papa'],fetchImpl});
   const msg=execute('research',{repository:'Papa3445/Pro-Papa'});
