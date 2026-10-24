@@ -6,12 +6,12 @@ This scoped bridge exposes one **standard MCP tool** that explicitly invokes the
 
 - Endpoint: **stateless Streamable HTTP** `POST /mcp`. Supports MCP `initialize`, `ping`, `tools/list`, `tools/call` and accepted notifications. Minimal JSON responses; `GET /mcp` returns 405 because server-side SSE is unsupported. The bridge is intentionally small, implements the documented 2025-06-18 and 2025-11-25 MCP flows, and does not yet claim interoperability certification from MCP Inspector or a real ChatGPT installation.
 - Discovered tool: `pro_papa_execute_readonly` with exactly three allowlisted capabilities: `math.sum` (strict finite number list), `text.metrics` (local text counts), and `research` (metadata for **preapproved** GitHub repositories). No publishing, issue creation, shell, arbitrary code execution, automatic user-account access or Project-wide interception.
-- Every valid invocation calls `createReferenceHost({traceMode:'enforced'})` with **server-controlled grants**, audit policy, and repository allowlist. Only `verifyReleasedExecution()` can yield `isError:false` and `structuredContent`; blocked calls yield `isError:true`, `execution:null` and no structured completed output.
-- Observations identify only the explicit host invocation and checked output hash. `providerAuthenticated:false` remains explicit. GitHub receipts require a separately host-configured **private** audit store; the default no-audit math demonstration must not be passed off as an audited run.
+- Every valid invocation calls `createReferenceHost({traceMode:'enforced',auditMode:'off'})` with **server-controlled grants** and repository allowlist. Only `verifyReleasedExecution()` can yield `isError:false` and `structuredContent`; blocked calls yield `isError:true`, `execution:null` and no structured completed output.
+- Observations identify only the explicit host invocation and checked output hash. `providerAuthenticated:false` remains explicit. **This MCP bridge never issues GitHub usage receipts.** It refuses `auditMode:'required'` and any supplied audit repository to preserve the tool's truthful `readOnlyHint:true` and `idempotentHint:true` permissions. Receipt issuance is a separate, explicitly authorized operation outside the read-only tool; a local math or research call must not be described as audited.
 
 ## Run locally
 
-Node.js 20+ in a trusted checkout. **No package dependency added.** The CLI requires a host-managed token of at least 32 characters even on loopback to avoid accidental unauthenticated tunneling.
+Node.js 20+ in a trusted checkout. **No package dependency added.** **Every server instance, including instances created through the exported JavaScript factory, requires a host-managed bearer token of at least 32 characters**. Missing or weak tokens are rejected before the listener starts. Loopback-only binding is not authentication.
 
 ```sh
 # Put this in a protected runtime secret manager; do not commit or paste it in chat.
@@ -40,10 +40,10 @@ For a local protocol smoke check, send MCP JSON-RPC to `http://127.0.0.1:8787/mc
 }
 ```
 
-Read-only repository metadata is disabled unless `PRO_PAPA_MCP_REPOSITORIES` is set to a comma-separated explicit list such as `Papa3445/Pro-Papa` on the host. No requester-controlled repository names expand that allowlist. If `PRO_PAPA_MCP_AUDIT_REQUIRED=true`, the host must also have `PRO_PAPA_AUDIT_REPO` configured as a verified private repository and appropriate GitHub credentials. Missing or simulated audits never yield successful execution. Do not enable public external effects through this bridge.
+Read-only repository metadata is disabled unless `PRO_PAPA_MCP_REPOSITORIES` is set to a comma-separated explicit list such as `Papa3445/Pro-Papa` on the host. No requester-controlled repository names expand that allowlist. For all calls the reference host's **audit mode is off**: setting `PRO_PAPA_MCP_AUDIT_REQUIRED=true` rejects startup, and the exported server factory rejects `auditMode:'required'` or an audit repository. This avoids creating private GitHub receipt files/commits behind a read-only tool permission hint. Use a separately approved and accurately described operation if audit writes are necessary. Do not enable public external effects through this bridge.
 
 Optional trusted operator configuration:
-`PRO_PAPA_MCP_HOSTNAMES` for HTTPS proxy Host values, and `PRO_PAPA_MCP_ORIGINS` for explicitly trusted browser origins. The default denies all cross-origin browser requests. The bridge rejects spoofed Host/Origin headers, oversized payloads, requests without accepted MCP headers, unrecognized tools and malformed JSON-RPC. Do not set a wildcard Origin or expose it without a hardened reverse proxy/tunnel, rate limiting, authentication, and independent security review.
+`PRO_PAPA_MCP_HOSTNAMES` for HTTPS proxy Host values, and `PRO_PAPA_MCP_ORIGINS` for explicitly trusted browser origins. The default denies all cross-origin browser requests. The bridge rejects spoofed Host/Origin headers, oversized payloads, requests without accepted MCP headers, unrecognized tools and malformed JSON-RPC. It rejects absent/incorrect bearer tokens even if a trusted GitHub repository lookup and credential are configured. Do not set a wildcard Origin or expose it without a hardened reverse proxy/tunnel, rate limiting, authentication, and independent security review.
 
 ## ChatGPT connection boundary
 
@@ -59,5 +59,7 @@ Read current product guidance before configuring remote access:
 ## Acceptance boundary and testing
 
 `npm run check` performs actual local HTTP integration tests using `127.0.0.1` sockets: initialization, read-only tool discovery, verified math/text handler dispatch, denied research, malformed arguments, unsupported protocol, invalid JSON, body size, no SSE GET, forged Origin/Host and bearer authentication. Tests cannot authenticate real ChatGPT calls or prove tool selection for an entire conversation.
+
+Independent reviewer `papa4568` rejected initial PR #23 head `750cc8be6971482156876e37e7dc34b985041f15`: the exported factory allowed missing bearer auth and an audit-required mode performed GitHub receipt PUTs while advertising read-only/idempotent permissions. Both are authorization bugs, not cosmetic documentation. The corrected implementation requires bearer authentication in the factory itself, prohibits all MCP audit-write mode, and adds provider-call-denial regressions. Fresh exact-head CI and independent reapproval are required.
 
 The frozen 21-pair ChatGPT website study remains unchanged. PP-0007 stays **in_progress**, with fresh exact-head CI and independent PR review required before a scoped merge. A merged MCP bridge is a possible opt-in integration **component**, not PP-0007 closeout, actual deployment, or evidence of superior cross-domain user outcomes.
