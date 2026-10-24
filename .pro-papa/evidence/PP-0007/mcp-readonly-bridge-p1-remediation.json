@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "scope": "Read-only MCP bridge P1 authorization remediation",
+  "pullRequest": "https://github.com/Papa3445/Pro-Papa/pull/23",
+  "baseSha": "473b0c477afbc8f21071ce5decc770ba7100208a",
+  "rejectedReview": {
+    "reviewer": "papa4568",
+    "reviewId": 5636408221,
+    "state": "CHANGES_REQUESTED",
+    "commit": "750cc8be6971482156876e37e7dc34b985041f15",
+    "findings": [
+      "P1 unauthenticated direct exported MCP server factory",
+      "P1/P2 false read-only and idempotent hints with audit receipt writes"
+    ]
+  },
+  "sourceHead": "11bcf4ea0f15c4907a84c1e2f95c65008becfd05",
+  "remediation": [
+    "All exported server instances require a bearer secret of length at least 32",
+    "Actual authorized private-repo lookup tests reject absent/wrong credentials before provider calls",
+    "Read-only MCP server and CLI reject audit-required or audit store configuration to prevent writes",
+    "Malformed/auth-denied tool calls cannot return validated successful output"
+  ],
+  "providerCI": {
+    "runId": 40054127005,
+    "jobId": 120753189606,
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40054127005",
+    "event": "pull_request",
+    "headSha": "11bcf4ea0f15c4907a84c1e2f95c65008becfd05",
+    "conclusion": "success",
+    "tests": 221,
+    "passed": 221,
+    "failed": 0,
+    "skipped": 0,
+    "projectValidatorValid": true
+  },
+  "sources": [
+    {
+      "path": "src/mcp-bridge.mjs",
+      "gitBlobSha": "a338541454376e73648a143d444ca981cfec97bf"
+    },
+    {
+      "path": "bin/mcp-bridge.mjs",
+      "gitBlobSha": "a5f8265182e646c149aacd8fb93b5c22e7dfc56a"
+    },
+    {
+      "path": "tests/mcp-bridge.test.mjs",
+      "gitBlobSha": "2e3f4e16a653396a3fc35a59cdcb4ccc15792dcb"
+    },
+    {
+      "path": "docs/PP0007-MCP-READONLY-BRIDGE.md",
+      "gitBlobSha": "82cdd0c44f6758ef49d78914eaf3988a616b4a24"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "untouchedFrozenStudy": true,
+  "independentNewHeadReview": "pending",
+  "realChatGPTConnection": false,
+  "deployment": false,
+  "limitations": "Local Node/HTTP tests only; provider reads in regression are mock fixtures. No remote TLS, ChatGPT connection, audited receipt, independent benchmark quality grading or native interception."
+}
