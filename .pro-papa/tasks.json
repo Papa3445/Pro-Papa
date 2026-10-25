@@ -1437,7 +1437,83 @@
         "baseRef": "main",
         "baseSha": "8b058d1a4cf56dee46af0df6895c066f496bf636"
       }
+    },
+    {
+      "id": "PP-0008",
+      "title": "Add read-only MCP artifact validation",
+      "objective": "Extend the authenticated bounded MCP bridge with real, permission-limited PDF/document/artifact validation and honest evidence traces; do not replace native creation tools.",
+      "profile": "software",
+      "acceptance": [
+        "A documented read-only artifact-validation capability checks actual provided PDF or other supported artifact bytes for page count, text integrity and selected checkable content, and returns a release-validated result",
+        "Enforce explicit input authorization, format/size/concurrency bounds and privacy protections; adversarial tests deny malformed, oversized, unauthorized or manipulated artifacts without leaking raw user content",
+        "Demonstrate real native artifact creation followed by separate MCP validation, distinguish mechanical checks from subjective quality, and publish reproducible redacted evidence",
+        "Pass exact-head CI and genuine authenticated independent review before task verification"
+      ],
+      "dependsOn": [
+        "PP-0007"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
+    },
+    {
+      "id": "PP-0009",
+      "title": "Add privacy-safe per-call MCP provenance",
+      "objective": "Make actual MCP method and release-trace attribution verifiable for selected calls without logging sensitive prompts or claiming whole-turn interception.",
+      "profile": "software",
+      "acceptance": [
+        "Expose or store minimal non-sensitive correlation identifiers binding MCP method, request, verified capability, response status and released trace for each explicitly invoked tool",
+        "Test missing or falsified identifiers, ambiguous time-window correlations, and connectivity-only probes separately from substantive execution",
+        "Document retention, privacy and operator-verifiable evidence with a real production smoke check; avoid claiming automatic ChatGPT-wide enforcement",
+        "Pass exact-head CI and authenticated independent review before task verification"
+      ],
+      "dependsOn": [
+        "PP-0007"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
+    },
+    {
+      "id": "PP-0010",
+      "title": "Prototype optional host-enforced artifact release gate",
+      "objective": "Build a separately controlled opt-in host workflow that gates release of supported finished artifacts on real domain validations without implying control of all ChatGPT Project turns.",
+      "profile": "software",
+      "acceptance": [
+        "In a documented supported host surface, run authorized native/external work, validate actual submitted artifact bytes, and refuse release on failed or missing required checks",
+        "Provide negative tests for unsafe bypass, unavailable validator, unauthorized tools, stale/mismatched outputs and false receipts without leaking secrets",
+        "Prove a live positive and negative host release scenario and clearly state which ChatGPT Project interactions cannot be intercepted",
+        "Pass exact-head CI and authenticated independent review before task verification"
+      ],
+      "dependsOn": [
+        "PP-0007"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
+    },
+    {
+      "id": "PP-0011",
+      "title": "Expand domain capabilities and validate rollout",
+      "objective": "Extend approved evidence-backed capability coverage beyond fixed math/metadata, then evaluate representative work under explicit permissions and user-accepted practical success standards.",
+      "profile": "general",
+      "acceptance": [
+        "Run documented positive and negative real-world checks across document, data, planning, software and sourced-research capabilities without conflating native ChatGPT tools with MCP handlers",
+        "Record substantive artifact quality, failure recovery and operator acceptance with source identities and honest unknowns; distinguish subjective approval from statistical superiority",
+        "Define safe rollback and permissions boundaries for production rollout and keep optional frozen comparative studies distinct from operational smoke checks",
+        "Pass exact-head CI and independent authenticated review of the produced evidence before marking verified"
+      ],
+      "dependsOn": [
+        "PP-0007"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
     }
   ],
-  "revision": 72
+  "revision": 73
 }
