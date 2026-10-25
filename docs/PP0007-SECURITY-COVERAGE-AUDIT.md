@@ -14,7 +14,7 @@ I independently read the provider metadata and job log for [GitHub Actions run 4
 | `invalid-bearer-tools-call-denied` | `Bearer not-a-jwt` `tools/call` gets the same exact denial | Response-level denial for one malformed bearer, **not** wrong-audience or wrong-scope signed JWT |
 | `cross-origin-403` | POST from `https://untrusted.example` gets HTTP 403 | Rejection of that untrusted Origin |
 
-The [probe source](../bin/pp0007-live-anon-probe.mjs) sends no valid token, cookies, private documents or user transcript. It tests a fixed `math.sum` attempt with harmless example numbers solely to verify denial. **Only two of the five checks are tool calls with missing/invalid Authorization; no five-vector signed-JWT production matrix was run.** The log explicitly reports `liveAuthenticatedJwtVerified:false` and `hostInvocationCountObserved:null`. HTTP error content is **not proof** that internal handlers were never dispatched. Code-level ordering is examined separately in tests.
+The [probe source](../bin/pp0007-live-anon-probe.mjs) sends no valid token, cookies, private documents or user transcript. It tests a fixed `math.sum` attempt with harmless example numbers solely to verify denial. **Two checks test the exact authentication-denial envelope for missing or invalid bearer credentials; the third tool-call POST is rejected for an untrusted Origin. No five-vector signed-JWT production matrix was run.** The log explicitly reports `liveAuthenticatedJwtVerified:false` and `hostInvocationCountObserved:null`. HTTP error content is **not proof** that internal handlers were never dispatched. Code-level ordering is examined separately in tests.
 
 ## Review history, source and provider integrity
 

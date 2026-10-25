@@ -26,7 +26,8 @@ test('007-C maintains only five live production HTTP checks and no authenticated
   assert.equal(prod.jobId,121080934380);
   assert.equal(prod.credentialFree,true);
   assert.equal(prod.realNetworkResponsesObserved,true);
-  assert.equal(prod.noAuthenticationTokenUsed,true);
+  assert.equal(prod.noValidAuthenticationCredentialSupplied,true);
+  assert.equal(prod.readOnlyToolInvocationAttemptedWithHarmlessNumbers,true);
   assert.equal(prod.checks.filter(x=>/bearer-tools-call-denied/.test(x.id)).length,2);
   assert.equal(prod.checks.every(x=>x.actuallyProvesZeroInternalHostCalls===false),true);
   assert.equal(prod.checks.every(x=>x.liveValidJwtInvolved===false),true);

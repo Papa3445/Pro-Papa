@@ -109,9 +109,9 @@
     ],
     "credentialFree": true,
     "realNetworkResponsesObserved": true,
-    "readOnlyToolsCalledWithTestNumbers": true,
-    "noAuthenticationTokenUsed": true,
-    "knownProbeLimit": "Response-level denials on specified requests, not proof of zero internal dispatch, production exhaustive JWT validation, or every session."
+    "knownProbeLimit": "Response-level denials on specified requests, not proof of zero internal dispatch, production exhaustive JWT validation, or every session.",
+    "noValidAuthenticationCredentialSupplied": true,
+    "readOnlyToolInvocationAttemptedWithHarmlessNumbers": true
   },
   "providerTestProof": {
     "reviewedPr": "https://github.com/Papa3445/Pro-Papa/pull/29",
