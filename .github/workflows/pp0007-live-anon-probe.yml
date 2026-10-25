@@ -1,0 +1,21 @@
+name: PP-0007 public MCP anonymous denial
+on:
+  pull_request:
+    paths:
+      - 'bin/pp0007-live-anon-probe.mjs'
+      - 'tests/pp0007-live-anon-probe.test.mjs'
+      - '.github/workflows/pp0007-live-anon-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-negative-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/pp0007-live-anon-probe.test.mjs
+      - run: node bin/pp0007-live-anon-probe.mjs
