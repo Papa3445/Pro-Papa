@@ -3,8 +3,14 @@ import assert from 'node:assert/strict';
 import {probeAnonymousMcp} from '../bin/pp0007-live-anon-probe.mjs';
 
 const json=x=>new Response(JSON.stringify(x),{status:200,headers:{'Content-Type':'application/json'}});
-const denial=id=>({jsonrpc:'2.0',id,result:{isError:true,content:[{type:'text',text:'Authentication required'}]}});
-function fixture({bypass=false,metadataBroken=false,originAccepted=false}={}){
+const denial=id=>({jsonrpc:'2.0',id,result:{
+  isError:true,
+  content:[{type:'text',text:'Authentication required'}],
+  _meta:{'mcp/www_authenticate':[
+    'Bearer resource_metadata="https://pro-papa-mcp.netlify.app/.well-known/oauth-protected-resource", scope="pro_papa.read", error="invalid_token", error_description="Authenticate to use the Pro-Papa read-only tool"'
+  ]}
+}});
+function fixture({bypass=false,metadataBroken=false,originAccepted=false,mutateDenial=null}={}){
   const calls=[];
   const mock=async(url,request)=>{
     calls.push({url,request});
@@ -21,7 +27,8 @@ function fixture({bypass=false,metadataBroken=false,originAccepted=false}={}){
     if(request.headers.Origin)return new Response(null,{status:originAccepted?200:403});
     if(bypass&&message.id===901)return json({jsonrpc:'2.0',id:901,result:{
       isError:false,structuredContent:{status:'completed'},content:[{type:'text',text:'42'}]}});
-    return json(denial(message.id));
+    const response=denial(message.id);
+    return json(mutateDenial?mutateDenial(response,message):response);
   };
   return {mock,calls};
 }
@@ -37,7 +44,7 @@ test('PP-0007 anonymous live smoke plan is bounded and passes only on denial',as
 });
 test('PP-0007 anonymous live probe rejects accidental tool release',async()=>{
   await assert.rejects(probeAnonymousMcp({fetchImpl:fixture({bypass:true}).mock}),
-    /denial required/);
+    /exact correlated denial envelope required/);
 });
 test('PP-0007 anonymous live probe rejects misleading metadata',async()=>{
   await assert.rejects(probeAnonymousMcp({fetchImpl:fixture({metadataBroken:true}).mock}));
@@ -46,3 +53,31 @@ test('PP-0007 anonymous live probe enforces origin restriction',async()=>{
   await assert.rejects(probeAnonymousMcp({fetchImpl:fixture({originAccepted:true}).mock}),
     /Cross-origin request must be denied/);
 });
+
+for(const requestId of [901,902]){
+  test('PP-0007 reviewer P1: deny with leaked content fails for request '+requestId,async()=>{
+    const f=fixture({mutateDenial:(response,message)=>{
+      if(message.id===requestId)response.result.content.push(
+        {type:'text',text:'42'}, {type:'resource',data:{exfiltration:'sample'}});
+      return response;
+    }});
+    await assert.rejects(probeAnonymousMcp({fetchImpl:f.mock}),
+      /exact correlated denial envelope required/);
+  });
+  test('PP-0007 reviewer P1: mismatched response ID fails for request '+requestId,async()=>{
+    const f=fixture({mutateDenial:(response,message)=>{
+      if(message.id===requestId)response.id=999;
+      return response;
+    }});
+    await assert.rejects(probeAnonymousMcp({fetchImpl:f.mock}),
+      /exact correlated denial envelope required/);
+  });
+  test('PP-0007 reviewer P1: extra output-bearing result field fails for request '+requestId,async()=>{
+    const f=fixture({mutateDenial:(response,message)=>{
+      if(message.id===requestId)response.result.extraOutput={value:42};
+      return response;
+    }});
+    await assert.rejects(probeAnonymousMcp({fetchImpl:f.mock}),
+      /exact correlated denial envelope required/);
+  });
+}
