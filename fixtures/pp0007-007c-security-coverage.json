@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "gate": "007-C",
+  "kind": "bounded-security-coverage-audit-not_new_live_probe",
+  "sourceMainCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "sourceCodePins": [
+    {
+      "path": "bin/pp0007-live-anon-probe.mjs",
+      "gitBlobSha": "5bab1e75e8580fd0e765d18c41ff4597648e8be5",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "tests/pp0007-live-anon-probe.test.mjs",
+      "gitBlobSha": "d5f4e61fff22abd213e5fa40cff080027a9f5a24",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": ".github/workflows/pp0007-live-anon-probe.yml",
+      "gitBlobSha": "3bfb84a3693ebc0c6b1d137c818e7652aae2e329",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "src/oauth-resource.mjs",
+      "gitBlobSha": "b5aac0605f57bd1b797e96021e75aaf2ebed2d50",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "tests/oauth-resource.test.mjs",
+      "gitBlobSha": "54237da62836cddf2e65c9472f0bd18b94dad156",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "src/mcp-web.mjs",
+      "gitBlobSha": "15ef943720f94b7acbc44c5e2b46e132724bdb70",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "tests/mcp-oauth-web.test.mjs",
+      "gitBlobSha": "cb5248ea51b4916df6d0614c0a7a3f283001df86",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "netlify/functions/mcp.mjs",
+      "gitBlobSha": "d462bd6e82fb4f4857c8d0cc61feb43ab46980fc",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "src/reference-host.mjs",
+      "gitBlobSha": "701159778d63edf7d10c68b5933b9447d5d0ebad",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    },
+    {
+      "path": "tests/mcp-web.test.mjs",
+      "gitBlobSha": "d1414bf7922f5ee22a4e102508561909663a3009",
+      "sourceRef": "39076ac85a6864dd007b9ed6c947389548878508"
+    }
+  ],
+  "reviewedProductionLiveProbe": {
+    "origin": "https://pro-papa-mcp.netlify.app",
+    "workflow": "PP-0007 public MCP anonymous denial",
+    "runId": 40163904908,
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40163904908",
+    "jobId": 121080934380,
+    "sourcePrHead": "ac5339b8c12424e27e5f7c66741599c5b58e7017",
+    "workflowConclusion": "success",
+    "resultReported": "passed",
+    "checks": [
+      {
+        "id": "metadata-200",
+        "request": "GET public RFC9728 metadata",
+        "expected": "metadata 200, exact resource and scope",
+        "evidenceClass": "observed_production_response",
+        "actuallyProvesZeroInternalHostCalls": false,
+        "liveValidJwtInvolved": false
+      },
+      {
+        "id": "get-mcp-405",
+        "request": "GET /mcp method rejected",
+        "expected": "HTTP 405",
+        "evidenceClass": "observed_production_response",
+        "actuallyProvesZeroInternalHostCalls": false,
+        "liveValidJwtInvolved": false
+      },
+      {
+        "id": "no-bearer-tools-call-denied",
+        "request": "POST tools/call without bearer",
+        "expected": "HTTP 200 JSON-RPC isError with exact single OAuth challenge; no output",
+        "evidenceClass": "observed_production_response",
+        "actuallyProvesZeroInternalHostCalls": false,
+        "liveValidJwtInvolved": false
+      },
+      {
+        "id": "invalid-bearer-tools-call-denied",
+        "request": "POST tools/call with syntactically invalid bearer string",
+        "expected": "HTTP 200 JSON-RPC isError with exact challenge; no output",
+        "evidenceClass": "observed_production_response",
+        "actuallyProvesZeroInternalHostCalls": false,
+        "liveValidJwtInvolved": false
+      },
+      {
+        "id": "cross-origin-403",
+        "request": "POST tools/call with untrusted Origin",
+        "expected": "HTTP 403",
+        "evidenceClass": "observed_production_response",
+        "actuallyProvesZeroInternalHostCalls": false,
+        "liveValidJwtInvolved": false
+      }
+    ],
+    "credentialFree": true,
+    "realNetworkResponsesObserved": true,
+    "readOnlyToolsCalledWithTestNumbers": true,
+    "noAuthenticationTokenUsed": true,
+    "knownProbeLimit": "Response-level denials on specified requests, not proof of zero internal dispatch, production exhaustive JWT validation, or every session."
+  },
+  "providerTestProof": {
+    "reviewedPr": "https://github.com/Papa3445/Pro-Papa/pull/29",
+    "independentReviewer": "papa4568",
+    "approvedAtExactHead": "ac5339b8c12424e27e5f7c66741599c5b58e7017",
+    "pullRequestCheckRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/40163904037",
+    "pullRequestCheckTestsPassed": 252,
+    "mergeCommitCheckRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/40164384595",
+    "mergeCommit": "216d68e4395617ac9a9db7a6df9bb7062c7c9031",
+    "mergeCheckTestsPassed": 252,
+    "priorRejectedHead": "acd0df6c3d1fe749c920062e5f55965ebfc7488b",
+    "defectCorrected": "Original probe let extra output and wrong JSON-RPC id pass; corrected exact whole-envelope match and six targeted negative regressions.",
+    "fiveLiveChecksNotEquivalentToFiveJwtNegativeVectors": true
+  },
+  "separateLocalOauthSecurityTests": {
+    "sourceMode": "generated_Rsa_2048_fixture_tokens_and_mock_pinned_jwks",
+    "claimScope": "node_unit_and_in_memory_http_integration",
+    "cases": [
+      {
+        "id": "issuer",
+        "source": "tests/oauth-resource.test.mjs",
+        "description": "Wrong issuer claims and issuer configuration rejected",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "audience",
+        "source": "tests/oauth-resource.test.mjs",
+        "description": "Wrong/missing resource audience rejected",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "scope",
+        "source": "tests/oauth-resource.test.mjs",
+        "description": "Missing/incorrect required scope rejected",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "expiry-and-time-claims",
+        "source": "tests/oauth-resource.test.mjs",
+        "description": "Expired and not-before/issued-at invalid claim patterns rejected",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "signature-and-headers",
+        "source": "tests/oauth-resource.test.mjs",
+        "description": "Tampered and forged signatures, header key injection, alg downgrade rejected",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "jwks-bounds",
+        "source": "tests/oauth-resource.test.mjs",
+        "description": "Pinned JWKS HTTPS, size/key limits, redirects/weak RSA invalid",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "http-oauth-integration",
+        "source": "tests/mcp-oauth-web.test.mjs",
+        "description": "Valid synthetic RS256 bearer is required for host execution, invalid research bearer denied",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "legacy-static-fallback",
+        "source": "tests/mcp-oauth-web.test.mjs",
+        "description": "OAuth handler rejects static bearer fallback",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "host-origin",
+        "source": "tests/mcp-web.test.mjs",
+        "description": "HTTP local handler rejects disallowed Host/Origin/transport forms and oversized body",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      },
+      {
+        "id": "host-release-validation",
+        "source": "tests/mcp-oauth-web.test.mjs",
+        "description": "Synthetic valid-token host return passes trace release verification only for explicit tool call",
+        "evidenceClass": "synthetic_local_test_executed_in_provider_ci",
+        "productionLiveAdversarialVerified": false
+      }
+    ],
+    "realAuth0AdversarialTokenTested": false,
+    "toolListNotGeneralModelCapability": true
+  },
+  "productionPositiveEvidence": {
+    "source": "https://github.com/Papa3445/Pro-Papa/issues/24",
+    "classification": "reported_individual_OAuth_connected_ChatGPT_MCP_math_text_research_smoke_with_bounded_operator_and_provider_corroboration",
+    "actualAuthenticatedJwtClaimsCapturedForReview": false,
+    "perChatGPTTurnMethodPayloadBoundToProviderLog": false,
+    "hostLocalMathTraceReportedReleased": true,
+    "privateGitHubReceiptIndependentOfMcpProof": true,
+    "notProofAllTurnIntercept": true
+  },
+  "originalReferenceHostNegativeCases": {
+    "source": "docs/PP0007-BENCHMARK.md",
+    "reportedChecks": [
+      "unallowlisted_repository_no_outbound_call",
+      "unavailable_software_handler_unsupported",
+      "unauthorized_issue_create_no_post",
+      "injected_fake_private_audit_confirmation_rejected"
+    ],
+    "scope": "host_local_or_provider_ci_limited_not_production_OAuth_probe"
+  },
+  "unverifiedProductionSecurityClaims": [
+    {
+      "id": "production_expired_validly_signed_jwt_denied",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_valid_signature_wrong_audience_jwt_denied",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_valid_signature_wrong_issuer_jwt_denied",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_valid_signature_missing_scope_jwt_denied",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_unsigned_or_alg_confusion_jwt_matrix",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_jwks_rotation_cache_failure_adversarial_matrix",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_revocation_replay_and_client_registration",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_global_rate_limit_and_distributed_concurrency",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_host_noninvocation_verified_for_anonymous_denials",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "cryptographically_bound_chatgpt_request_payload_to_exact_tool_trace",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "globally_intercepting_all_chatgpt_responses",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    },
+    {
+      "id": "production_all_domain_task_safety_or_output_quality",
+      "status": "not_proven_by_this_evidence",
+      "mustNotReportAsPassing": true
+    }
+  ],
+  "riskBoundary": {
+    "systemClaim": "Explicit read-only OAuth MCP tool calls are bounded; current production observations cover limited positive and negative scenarios.",
+    "excludes": "General ChatGPT output safety, autonomous permission grants, production entire JWT adversarial matrix, full host request provenance.",
+    "liveNewRequestsPerformedInThisGate": 0,
+    "credentialsHandledInThisGate": 0,
+    "responseEvidenceDoesNotProveAbsenceOfInternalExecution": true,
+    "privacy": "Source pins, run IDs, static descriptive categories only; no JWT, Auth0 tenant, raw private prompts, screenshots, transcripts or secrets.",
+    "releaseDecision": "PP-0007 in_progress; further live signed-JWT adversarial cases require separate authorized operator context and independently reviewed scope."
+  }
+}
