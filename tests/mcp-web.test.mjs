@@ -155,7 +155,12 @@ test('PP-0007 Netlify denied tool is never exposed as structured success',async(
 
 test('PP-0007 Netlify entrypoint refuses to serve when runtime config absent',async()=>{
   const old=globalThis.Netlify;
+  const keys=['PRO_PAPA_MCP_PUBLIC_HOSTNAME','PRO_PAPA_AUTH0_ISSUER','PRO_PAPA_MCP_RESOURCE'];
+  const saved=keys.map(key=>[key,process.env[key]]);
   try {
+    // The entrypoint falls back to process.env when Netlify.env returns undefined.
+    // Builds may supply real runtime configuration; this fixture must isolate both sources.
+    for(const key of keys) delete process.env[key];
     globalThis.Netlify={env:{get:()=>undefined}};
     const without=await netlifyMcp(request(call('tools/list',1,{})));
     assert.equal(without.status,503);
@@ -177,5 +182,11 @@ test('PP-0007 Netlify entrypoint refuses to serve when runtime config absent',as
       '/.well-known/oauth-protected-resource',{method:'GET'}));
     assert.equal(published.status,200);
     assert.equal((await published.json()).resource,'https://'+HOST);
-  }finally{globalThis.Netlify=old;}
+  }finally{
+    globalThis.Netlify=old;
+    for(const [key,value] of saved){
+      if(value===undefined) delete process.env[key];
+      else process.env[key]=value;
+    }
+  }
 });
