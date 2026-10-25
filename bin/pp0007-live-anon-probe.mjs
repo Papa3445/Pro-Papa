@@ -11,13 +11,17 @@ const toolCall=id=>({jsonrpc:'2.0',id,method:'tools/call',params:{
   name:'pro_papa_execute_readonly',arguments:{objective:'Credential-free negative authorization probe',
     capability:'math.sum',inputs:{numbers:[19,23]}}}});
 
-function assertNoRelease(reply,label){
-  assert.equal(reply?.jsonrpc,'2.0',label+': JSON-RPC required');
-  assert.equal(reply?.result?.isError,true,label+': denial required');
-  assert.equal(Object.hasOwn(reply.result,'structuredContent'),false,label+': no structured result');
-  assert.ok(Array.isArray(reply.result.content),label+': visible denial required');
-  assert.ok(reply.result.content.some(x=>x?.type==='text'&&x.text==='Authentication required'),
-    label+': expected authentication denial');
+function assertNoRelease(reply,label,expectedId){
+  // Review-gated: a denial alongside ANY extra output or mismatched JSON-RPC ID
+  // must fail. The OAuth challenge is the one permitted response metadata field.
+  const challenge='Bearer resource_metadata="'+RESOURCE+
+    '/.well-known/oauth-protected-resource", scope="'+SCOPE+
+    '", error="invalid_token", error_description="Authenticate to use the Pro-Papa read-only tool"';
+  assert.deepEqual(reply,{jsonrpc:'2.0',id:expectedId,result:{
+    isError:true,
+    content:[{type:'text',text:'Authentication required'}],
+    _meta:{'mcp/www_authenticate':[challenge]}
+  }},label+': exact correlated denial envelope required, with no extra output');
 }
 async function boundedJson(res,label){
   assert.equal(res.status,200,label+': expected HTTP 200');
@@ -46,11 +50,11 @@ export async function probeAnonymousMcp({fetchImpl=globalThis.fetch}={}){
   assert.equal(getMcp.status,405,'GET /mcp must not process tool execution');
 
   const anon=await boundedJson(await post(toolCall(901)),'anonymous tools/call');
-  assertNoRelease(anon,'anonymous tools/call');
+  assertNoRelease(anon,'anonymous tools/call',901);
 
   const invalid=await boundedJson(await post(toolCall(902),{
     Authorization:'Bearer not-a-jwt'}),'invalid bearer tools/call');
-  assertNoRelease(invalid,'invalid bearer tools/call');
+  assertNoRelease(invalid,'invalid bearer tools/call',902);
 
   const wrongOrigin=await post(toolCall(903),{Origin:'https://untrusted.example'});
   assert.equal(wrongOrigin.status,403,'Cross-origin request must be denied');
