@@ -20,6 +20,14 @@ This repository is a **domain-independent orchestration contract**, not an auton
 - Use the domain profile: software needs tests; research needs inspectable sources; data needs calculation verification; documents need content review. Technical checks alone never prove subjective quality.
 - Fix discovered defects and rerun affected checks. Avoid speculative framework layers and redundant workflow jobs.
 
+## Capability routing — native tools and external plugins
+
+- Choose the tool for the **requested output**, not for the tools exposed by Pro-Papa MCP. A successful framework read or MCP connection is not evidence that the user's original request was fulfilled.
+- Inspect the tools actually available in the **current ChatGPT session** before declaring a capability unavailable. Native ChatGPT image generation/editing, document/file creation, web and other tools are **separate from** the current read-only Pro-Papa MCP (math, text metrics, allowlisted research). Absence from `tools/list` on that MCP does not imply absence from ChatGPT.
+- For an image request with an attached reference, invoke native image generation/editing when it is actually exposed and permitted, then verify the **rendered image** was produced. Do not silently substitute an image prompt for a requested image.
+- If the specific session lacks the necessary tool, say so narrowly and offer the supported ChatGPT Images surface or another practical immediate workflow. Do not claim that the capability does not exist globally or that instructions can enable unavailable tools.
+- Apply the same principle to other artifact types. Tool invocation receipts and audit status are **separate** from checking the user-facing artifact; do not perform costly irrelevant tool calls simply to produce a GitHub footer.
+
 ## Evidence and closure
 
 - Each proof is a versioned declaration backed by a real on-disk evidence file and its SHA-256. The CLI checks file integrity, **not truthfulness** of the claimed outcome.
