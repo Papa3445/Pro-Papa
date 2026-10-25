@@ -23,6 +23,11 @@ test('gate 007-A stays pinned to the immutable original seven-case fixture and i
     assert.equal(c.independentQualityAssessment,null,c.id);
     assert.equal(c.observedComparison,null,c.id);
     assert.ok(typeof c.canonicalObjective==='string' && c.canonicalObjective.length>0);
+    const matched=matrix.caseResults.find(x=>x.id===c.id);
+    assert.ok(matched,c.id);
+    assert.equal(matched.canonicalObjective,c.canonicalObjective,c.id);
+    assert.equal(matched.canonicalCapability,c.canonicalCapability,c.id);
+    assert.deepEqual(matched.canonicalInputs,c.canonicalInputs,c.id);
   }
 });
 test('gate 007-A never upgrades safe refusals or historical screenshot reports to canonical success',()=>{
@@ -33,6 +38,10 @@ test('gate 007-A never upgrades safe refusals or historical screenshot reports t
   assert.equal(matrix.caseResults.filter(c=>c.nativeNoGrant.status==='unsupported').length,4);
   for(const c of matrix.caseResults){
     assert.equal(c.nativeNoGrant.actualGitHubReadAttempts,0,c.id);
+    assert.equal(c.nativeNoGrant.requestedCapability,original.trials.find(x=>x.id===c.id).canonicalCapability,c.id);
+    assert.equal(c.nativeNoGrant.executionPath,'real_local_reference_host_without_injected_provider_client',c.id);
+    assert.equal(c.nativeNoGrant.outputInspection,c.id==='data'?'mechanically_asserted_math_total_10_count_3':'no_user_task_artifact_to_review',c.id);
+    assert.deepEqual(c.nativeNoGrant.mechanicalOutputSummary,c.id==='data'?{total:10,count:3}:null,c.id);
     assert.equal(c.nativeNoGrant.requestedUserOutcomeCompleted,c.id==='data',c.id);
     assert.equal(c.nativeNoGrant.independentlyGradedTaskSuccess,null,c.id);
     assert.equal(c.nativeNoGrant.qualityGrade,null,c.id);

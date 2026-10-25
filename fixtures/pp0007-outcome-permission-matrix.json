@@ -19,7 +19,11 @@
         "requestedUserOutcomeCompleted": false,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "general",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "no_user_task_artifact_to_review",
+        "mechanicalOutputSummary": null
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -41,7 +45,10 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
-      }
+      },
+      "canonicalObjective": "What is the capital city of France?",
+      "canonicalCapability": "general",
+      "canonicalInputs": null
     },
     {
       "id": "research",
@@ -52,7 +59,11 @@
         "requestedUserOutcomeCompleted": false,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "research",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "no_user_task_artifact_to_review",
+        "mechanicalOutputSummary": null
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -74,6 +85,11 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
+      },
+      "canonicalObjective": "Research repository metadata with a provider URL",
+      "canonicalCapability": "research",
+      "canonicalInputs": {
+        "repository": "Papa3445/Pro-Papa"
       }
     },
     {
@@ -85,7 +101,11 @@
         "requestedUserOutcomeCompleted": false,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "software",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "no_user_task_artifact_to_review",
+        "mechanicalOutputSummary": null
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -107,7 +127,10 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
-      }
+      },
+      "canonicalObjective": "Implement and test a function that parses dates",
+      "canonicalCapability": "software",
+      "canonicalInputs": null
     },
     {
       "id": "document",
@@ -118,7 +141,11 @@
         "requestedUserOutcomeCompleted": false,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "document",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "no_user_task_artifact_to_review",
+        "mechanicalOutputSummary": null
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -140,7 +167,10 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
-      }
+      },
+      "canonicalObjective": "Draft a formal business memo with clear recommendations",
+      "canonicalCapability": "document",
+      "canonicalInputs": null
     },
     {
       "id": "data",
@@ -151,7 +181,14 @@
         "requestedUserOutcomeCompleted": true,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "math.sum",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "mechanically_asserted_math_total_10_count_3",
+        "mechanicalOutputSummary": {
+          "total": 10,
+          "count": 3
+        }
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -173,6 +210,15 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
+      },
+      "canonicalObjective": "Calculate the total for [2, 3, 5]",
+      "canonicalCapability": "math.sum",
+      "canonicalInputs": {
+        "numbers": [
+          2,
+          3,
+          5
+        ]
       }
     },
     {
@@ -184,7 +230,11 @@
         "requestedUserOutcomeCompleted": false,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "operations",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "no_user_task_artifact_to_review",
+        "mechanicalOutputSummary": null
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -206,7 +256,10 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
-      }
+      },
+      "canonicalObjective": "Create a safe weekly project schedule",
+      "canonicalCapability": "operations",
+      "canonicalInputs": null
     },
     {
       "id": "novel",
@@ -217,7 +270,11 @@
         "requestedUserOutcomeCompleted": false,
         "independentlyGradedTaskSuccess": null,
         "qualityGrade": null,
-        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+        "source": "tests/pp0007-native-seven-host-study.test.mjs",
+        "requestedCapability": "general",
+        "executionPath": "real_local_reference_host_without_injected_provider_client",
+        "outputInspection": "no_user_task_artifact_to_review",
+        "mechanicalOutputSummary": null
       },
       "retrospectiveDirectChatGPT": {
         "operatorReportedScreenshotSet": true,
@@ -239,7 +296,10 @@
         "correctionInteractions": null,
         "elapsedMilliseconds": null,
         "providerReportedTokens": null
-      }
+      },
+      "canonicalObjective": "Explain the tradeoffs in an unusual multidisciplinary question",
+      "canonicalCapability": "general",
+      "canonicalInputs": null
     }
   ],
   "referenceHostNoGrant": {
