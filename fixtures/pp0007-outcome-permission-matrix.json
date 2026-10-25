@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "gate": "007-A",
+  "status": "historical_evidence_reconciliation_not_new_trial",
+  "sourceMainCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "canonicalFixture": {
+    "path": "fixtures/pp0007-paired-trial-collection-template.json",
+    "gitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4",
+    "sourceStatus": "not_collected"
+  },
+  "caseResults": [
+    {
+      "id": "qa",
+      "nativeNoGrant": {
+        "status": "unsupported",
+        "handlerExecution": "none",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": false,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    },
+    {
+      "id": "research",
+      "nativeNoGrant": {
+        "status": "denied",
+        "handlerExecution": "none",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": false,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    },
+    {
+      "id": "software",
+      "nativeNoGrant": {
+        "status": "unsupported",
+        "handlerExecution": "none",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": false,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    },
+    {
+      "id": "document",
+      "nativeNoGrant": {
+        "status": "unsupported",
+        "handlerExecution": "none",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": false,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    },
+    {
+      "id": "data",
+      "nativeNoGrant": {
+        "status": "completed",
+        "handlerExecution": "local_node_math_sum",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": true,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    },
+    {
+      "id": "planning",
+      "nativeNoGrant": {
+        "status": "denied",
+        "handlerExecution": "none",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": false,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    },
+    {
+      "id": "novel",
+      "nativeNoGrant": {
+        "status": "unsupported",
+        "handlerExecution": "none",
+        "actualGitHubReadAttempts": 0,
+        "requestedUserOutcomeCompleted": false,
+        "independentlyGradedTaskSuccess": null,
+        "qualityGrade": null,
+        "source": "tests/pp0007-native-seven-host-study.test.mjs"
+      },
+      "retrospectiveDirectChatGPT": {
+        "operatorReportedScreenshotSet": true,
+        "originalTranscriptIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "providerIdentityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      },
+      "canonicalChatGPTProject": {
+        "exactCaseOutputIndependentlyRead": false,
+        "submittedPromptParityVerified": false,
+        "permissionParityVerified": false,
+        "requestedUserOutcomeCompleted": null,
+        "qualityGrade": null,
+        "correctionInteractions": null,
+        "elapsedMilliseconds": null,
+        "providerReportedTokens": null
+      }
+    }
+  ],
+  "referenceHostNoGrant": {
+    "scope": "seven_original_unchanged_inputs",
+    "actualCompletedHandlerCases": 1,
+    "denied": 2,
+    "unsupported": 4,
+    "notIndependentQualityGrading": true,
+    "providerGitHubWrites": 0,
+    "perPilotAuditReceipt": false,
+    "persistence": false,
+    "observedProviderReportedTokenCount": null
+  },
+  "referenceHostWithResearchGrant": {
+    "scope": "historical_original_fixture_benchmark_with_explicit_allowlisted_read_grant",
+    "completedRequestedOutcomes": 2,
+    "totalCases": 7,
+    "realGitHubGETsInstrumented": 1,
+    "readGrant": true,
+    "caseOverridden": "research",
+    "researchStatus": "completed",
+    "otherFiveSafeNoncompletions": true,
+    "notComparableToUngrantOrDirectUI": true,
+    "networkPacketLevelConfirmation": null,
+    "source": "docs/PP0007-BENCHMARK.md"
+  },
+  "separatelyGrantedNativeResearch": {
+    "scope": "independent_native_host_attempt_with_trusted_githubRead_grant",
+    "caseId": "research",
+    "tool": "allowlisted_public_GitHub_GET",
+    "statusReported": "completed",
+    "transportAttempts": 1,
+    "packetLevelNetworkConfirmation": null,
+    "permissionParityWithTextOnlyApi": false,
+    "source": "docs/PP0007-NATIVE-HOST-TRIAL-2026-10-23.md"
+  },
+  "supplementaryStructuredHost": {
+    "scope": "different_fixed_input_handlers_not_original_seven",
+    "mechanicallyValidated": 4,
+    "total": 4,
+    "safeRefusals": 5,
+    "externalProviderRequests": 0,
+    "perPilotAuditReceipts": false,
+    "source": "docs/PP0007-STRUCTURED-PILOTS.md"
+  },
+  "separateProductionMcp": {
+    "scope": "explicit_OAuth_authenticated_read_only_MCP_calls_not_original_seven_category_comparison",
+    "reportedPositiveCapabilities": [
+      "math.sum",
+      "text.metrics",
+      "allowlisted_public_repo_research"
+    ],
+    "negativeAuthCasesObserved": 5,
+    "wholeChatGPTReturnInterceptionProven": false,
+    "source": "https://github.com/Papa3445/Pro-Papa/issues/24"
+  },
+  "historicalRetrospectiveWebsiteReport": {
+    "scope": "different_nonblinded_operator_screenshot_assessment_not_regraded_here",
+    "regularReported": "18/21",
+    "projectReported": "21/21",
+    "missingRegularSoftwareZip": true,
+    "reportedSevenScreenshotSets": 7,
+    "recoveredForThisGate": 0,
+    "canProveProspectiveSuperiority": false,
+    "source": "docs/PP0007-EXISTING-BASELINE-REUSE-AUDIT.md"
+  },
+  "prospectiveUiV2": {
+    "scope": "predeclared_new_only",
+    "pairsPlanned": 21,
+    "observationsPlanned": 42,
+    "observationsCompleted": 0,
+    "source": "fixtures/pp0007-ui-v2-contract.json"
+  },
+  "evidenceLinks": {
+    "canonicalNativeTest": "https://github.com/Papa3445/Pro-Papa/actions/runs/39889956053",
+    "originalProviderBenchmark": "https://github.com/Papa3445/Pro-Papa/actions/runs/39711547417",
+    "structuredProviderCi": "https://github.com/Papa3445/Pro-Papa/actions/runs/39722383548",
+    "productionMcpIssue": "https://github.com/Papa3445/Pro-Papa/issues/24",
+    "historicalAudit": "https://github.com/Papa3445/Pro-Papa/pull/30"
+  },
+  "comparisonFields": {
+    "directAssistantMatchedOutcomeQuality": null,
+    "matchedCorrectionCount": null,
+    "comparableLatencyMilliseconds": null,
+    "comparableToolCalls": null,
+    "comparableProviderTokens": null,
+    "permissionParity": false,
+    "independentPerCaseGradesAvailable": false,
+    "taskCloseoutReady": false
+  },
+  "constraints": [
+    "Do not pool 1/7, 2/7, 4/4, retrospective 18/21 vs 21/21 or prospective 0/42 as one sample",
+    "Host statuses are executions/safe denials, not grades",
+    "Source documentation and reported prior evidence are not independent authentication of private outputs",
+    "Never publish original private screenshot/transcript or user data"
+  ]
+}
