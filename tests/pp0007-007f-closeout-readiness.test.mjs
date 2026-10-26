@@ -8,6 +8,9 @@ const m=read('fixtures/pp0007-007f-closeout-readiness.json');
 const taskLedger=read('.pro-papa/tasks.json');
 const original=read('fixtures/pp0007-paired-trial-collection-template.json');
 const v2=read('fixtures/pp0007-ui-v2-contract.json');
+const proposal=read('fixtures/pp0007-route-b-acceptance-proposal.json');
+const application=read('fixtures/pp0007-route-b-application-authorization.json');
+const exactApplicationLedger='a28a48789714c1051482b7c3201aac4e9a8c0a69';
 const exactCriteria=[
 'Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request',
 'For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts',
@@ -25,14 +28,16 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  })();
  const compat=m.exactLedgerCompatibility;
  assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
- assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob].includes(ledgerSha),
+ assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger].includes(ledgerSha),
    'only exact original or separately approved roadmap-preview ledger bytes may be used');
- const isPreview=ledgerSha===compat.separateApprovedProposedBlob;
- assert.equal(taskLedger.revision,isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
- assert.equal(taskLedger.tasks.length,isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
+ const isApplied=ledgerSha===exactApplicationLedger;
+ const isPreview=isApplied||ledgerSha===compat.separateApprovedProposedBlob;
+ assert.equal(application.candidateLedgerGitBlobSha,exactApplicationLedger);
+ assert.equal(taskLedger.revision,isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
+ assert.equal(taskLedger.tasks.length,isApplied?12:isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
  if(isPreview){
-   assert.deepEqual(taskLedger.tasks.slice(7).map(x=>x.id),compat.addedFutureTaskIds);
-   for(const x of taskLedger.tasks.slice(7)){
+   assert.deepEqual(taskLedger.tasks.slice(7,11).map(x=>x.id),compat.addedFutureTaskIds);
+   for(const x of taskLedger.tasks.slice(7,11)){
      assert.equal(x.status,'pending');
      assert.deepEqual(x.dependsOn,['PP-0007']);
    }
@@ -43,12 +48,19 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const sha=createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
   if(pin.path==='.pro-papa/tasks.json'){
    assert.equal(pin.gitBlobSha,m.exactLedgerCompatibility.historicalMainBlob);
-   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob].includes(sha));
+   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger].includes(sha));
   }else assert.equal(sha,pin.gitBlobSha,pin.path);
  }
  const task=taskLedger.tasks.find(x=>x.id==='PP-0007');
  assert.equal(task.status,'in_progress');
- assert.deepEqual(task.acceptance,exactCriteria);
+ assert.deepEqual(proposal.taskBefore.acceptance,exactCriteria);
+ assert.deepEqual(task.acceptance,isApplied?proposal.proposedTaskAfter.acceptance:exactCriteria);
+ if(isApplied){
+  const successor=taskLedger.tasks.find(x=>x.id==='PP-0012');
+  assert.equal(successor.status,'pending');
+  assert.deepEqual(successor.acceptance.slice(0,4),exactCriteria);
+  assert.deepEqual(successor.acceptance.slice(4),proposal.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
+ }
  assert.equal(m.acceptanceCount,task.acceptance.length);
  assert.deepEqual(m.acceptance.map(x=>x.criterion),[1,2,3,4]);
  assert.equal(original.status,'not_collected');

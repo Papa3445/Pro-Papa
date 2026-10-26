@@ -675,14 +675,14 @@
     },
     {
       "id": "PP-0007",
-      "title": "Validate cross-domain outcomes and benchmark workflow overhead",
-      "objective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+      "title": "Validate bounded OAuth MCP and native-artifact integration with truthful evidence",
+      "objective": "Independently validate the genuinely authorized read-only MCP capabilities and separate native ChatGPT artifacts with source-pinned provenance, safe denials, honest overhead limits, and enforceable release governance; do not claim universal task superiority or whole-message MCP interception.",
       "profile": "general",
       "acceptance": [
-        "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
-        "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
-        "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
-        "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness"
+        "Demonstrate explicit read-only OAuth MCP executions for only the actually configured capabilities (math, text metrics, allowlisted public repository metadata), separately from native ChatGPT-created artifacts. Inspect genuine output/trace for each claimed completed bounded operation; distinguish user-facing Project capabilities from the standalone Node reference host, list the original seven-category gaps, and make no claim of general or automatic interception.",
+        "For claimed operations, distinguish actual tool grant/provider execution, released trace, durable task/evidence and private source-read receipt where relevant, from unavailable or merely reported observations. Verify negative unauthenticated/invalid-auth/unsafe/unavailable paths and register missing signed-JWT production adversarial coverage and exact ChatGPT-to-MCP payload provenance without implying they were tested.",
+        "Record the owner's explicit practical-usefulness acceptance, actual per-source bounded timing/tool counts, prior reported UI labels, missing human corrections, cost and tokens as null, and precise direct-assistant comparison limitations. Do not claim statistically controlled speed/outcome superiority or increase original-case success counts from distinct structured/native sessions.",
+        "Publish pinned reproducible implementation/security/evidence fixtures with exact-head CI, verified combined-head compatibility and a **new independent review** of the specific revised milestone acceptance. Keep `PP-0007` open until separate authorized GitHub branch protections and any required reviewed deployment and safe post-deploy checks are complete; require a correctly pinned new `reviewTarget` and evidence-safe ledger transition before starting dependent roadmap items."
       ],
       "dependsOn": [
         "PP-0006"
@@ -1513,7 +1513,31 @@
       "owner": null,
       "blockedReason": null,
       "evidence": []
+    },
+    {
+      "id": "PP-0012",
+      "title": "Revalidate original cross-domain benchmark and baseline outcomes",
+      "objective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+      "profile": "general",
+      "acceptance": [
+        "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
+        "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
+        "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
+        "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness",
+        "Reproduce the seven frozen canonical case objectives (quick Q&A, sourced research, software, document, calculation/data, planning/operations, novel/fallback) in authorized user-facing sessions, checking actual submitted prompts, tool access, artifacts and representative outcomes.",
+        "For every original task inspect corresponding genuine final outputs and task/tool permission/persistence/receipt provenance, report fail-closed negative controls, and protect original private artifacts and credentials.",
+        "Report comparable direct-assistant and Project outcome quality and completion, observed human correction turns, recorded latency/tool calls and provider tokens if truly available. Record noncomparable or unavailable values as null; never pool the distinct historical Node and website populations.",
+        "Publish reproducible original fixture/provider pointers, exact-head CI and genuinely independent grading/review; do not claim a controlled or statistically validated superiority result without a separately run and qualified study."
+      ],
+      "dependsOn": [
+        "PP-0007",
+        "PP-0011"
+      ],
+      "status": "pending",
+      "owner": null,
+      "blockedReason": null,
+      "evidence": []
     }
   ],
-  "revision": 73
+  "revision": 74
 }

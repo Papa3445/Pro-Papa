@@ -1,0 +1,48 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+const at=new URL('../',import.meta.url);
+const read=x=>JSON.parse(readFileSync(new URL(x,at),'utf8'));
+const blob=x=>{const b=readFileSync(new URL(x,at));return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');};
+const ledger=read('.pro-papa/tasks.json'),proposal=read('fixtures/pp0007-route-b-acceptance-proposal.json'),app=read('fixtures/pp0007-route-b-application-authorization.json');
+const active=ledger.tasks.find(x=>x.id==='PP-0007'),successor=ledger.tasks.find(x=>x.id==='PP-0012');
+test('Route B candidate ledger applies exact approved wording and preserves all historical evidence bytes',()=>{
+ assert.equal(blob('.pro-papa/tasks.json'),app.candidateLedgerGitBlobSha);
+ assert.equal(ledger.revision,74);assert.equal(ledger.tasks.length,12);
+ assert.equal(app.reviewedProposalHead,'c2d06b2ccd5e127d42236e93dbf3c6a8817dd0a8');
+ assert.equal(blob('fixtures/pp0007-route-b-acceptance-proposal.json'),app.reviewedProposalGitBlobSha);
+ assert.equal(active.status,'in_progress'); assert.equal(active.owner,'chatgpt-implementation');
+ assert.deepEqual(active.dependsOn,['PP-0006']);
+ assert.equal(active.evidence.length,82);
+ const evidenceText=JSON.stringify(active.evidence),evidenceBytes=Buffer.from(evidenceText);
+ const evidenceDigest=createHash('sha1').update('blob '+evidenceBytes.length+'\x00').update(evidenceBytes).digest('hex');
+ assert.equal(evidenceDigest,app.originalEvidenceArrayGitBlobSha);
+ assert.deepEqual(active.reviewTarget,proposal.source.originalReviewTarget);
+ assert.equal(active.title,proposal.proposedTaskAfter.title);
+ assert.equal(active.objective,proposal.proposedTaskAfter.objective);
+ assert.deepEqual(active.acceptance,proposal.proposedTaskAfter.acceptance);
+});
+test('Route B successor preserves original full benchmark and cannot start',()=>{
+ assert.equal(successor.status,'pending');assert.equal(successor.profile,'general');
+ assert.equal(successor.owner,null); assert.equal(successor.blockedReason,null);
+ assert.deepEqual(successor.evidence,[]);
+ assert.deepEqual(successor.dependsOn,['PP-0007','PP-0011']);
+ assert.equal(successor.objective,proposal.taskBefore.objective);
+ assert.deepEqual(successor.acceptance.slice(0,4),proposal.taskBefore.acceptance);
+ assert.deepEqual(successor.acceptance.slice(4),proposal.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
+ assert.equal(ledger.tasks.filter(x=>x.status==='in_progress').length,1);
+ assert.deepEqual(ledger.tasks.slice(7,11).map(x=>x.id),['PP-0008','PP-0009','PP-0010','PP-0011']);
+ assert.ok(ledger.tasks.slice(7,11).every(x=>x.status==='pending'&&JSON.stringify(x.dependsOn)==='["PP-0007"]'));
+});
+test('Route B candidate original trial, historical blocked verdict and approval boundaries unchanged',()=>{
+ const frozen=read('fixtures/pp0007-paired-trial-collection-template.json'),ui=read('fixtures/pp0007-ui-v2-contract.json');
+ assert.equal(blob('fixtures/pp0007-paired-trial-collection-template.json'),'aa07d8296ab8c4ad492ec02863bd4203bb90ead4');
+ assert.equal(blob('fixtures/pp0007-ui-v2-contract.json'),'610ad35c145944b0f41ceb8f4f07a363046d3272');
+ assert.equal(frozen.status,'not_collected');assert.equal(frozen.trials.length,7);
+ assert.ok(frozen.trials.every(x=>x.baselineTrial===null&&x.hostTrial===null));
+ assert.equal(ui.status,'predeclared_not_executed');
+ assert.equal(read('fixtures/pp0007-007f-closeout-readiness.json').decision,'blocked_keep_in_progress');
+ for(const k of ['mergeAuthorized','deployAuthorized','closePP0007Authorized','startDependentsAuthorized','newIndependentApplicationReviewReceived','actualMainChangedByThisBranch'])assert.equal(app.limits[k],false,k);
+ assert.equal(app.onlyReviewProposedCandidate,true);
+});

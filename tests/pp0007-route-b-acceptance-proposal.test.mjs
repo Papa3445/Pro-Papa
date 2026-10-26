@@ -10,15 +10,18 @@ const p=read('fixtures/pp0007-route-b-acceptance-proposal.json');
 const ledger=read('.pro-papa/tasks.json'),task=ledger.tasks.find(x=>x.id==='PP-0007');
 const oldLedger='c5470334097519f36c0a788bffc9a666db61abdf';
 const futureLedger='17ed8276b56c35c965d6444ac95d84116ebe239b';
+const applicationLedger='a28a48789714c1051482b7c3201aac4e9a8c0a69';
+const scopeApplication=read('fixtures/pp0007-route-b-application-authorization.json');
+const isApplication=blobSha('.pro-papa/tasks.json')===applicationLedger;
 test('Route B proposal preserves original literal clauses/82-item evidence and rejects unknown canonical ledger mutations',()=>{
  assert.equal(p.kind,'proposed_task_acceptance_change_not_applied');
  assert.equal(p.source.commit,'39076ac85a6864dd007b9ed6c947389548878508');
  assert.equal(p.source.taskLedgerGitBlobSha,oldLedger);
  const sha=blobSha('.pro-papa/tasks.json');
- assert.ok([oldLedger,futureLedger].includes(sha),'unexpected ledger must fail closed');
- assert.equal(ledger.revision,sha===oldLedger?72:73);
- assert.equal(ledger.tasks.length,sha===oldLedger?7:11);
- if(sha===futureLedger)for(const future of ledger.tasks.slice(7)){
+ assert.ok([oldLedger,futureLedger,applicationLedger].includes(sha),'unexpected ledger must fail closed');
+ assert.equal(ledger.revision,isApplication?74:sha===oldLedger?72:73);
+ assert.equal(ledger.tasks.length,isApplication?12:sha===oldLedger?7:11);
+ if(sha!==oldLedger)for(const future of ledger.tasks.slice(7,11)){
   assert.deepEqual(future.dependsOn,['PP-0007']);
   assert.equal(future.status,'pending');
  }
@@ -26,11 +29,16 @@ test('Route B proposal preserves original literal clauses/82-item evidence and r
  assert.equal(task.evidence.length,p.source.originalTaskEvidenceCount);
  assert.equal(task.evidence.length,82);
  assert.deepEqual(task.reviewTarget,p.source.originalReviewTarget);
- assert.deepEqual(task.acceptance,p.taskBefore.acceptance);
- assert.equal(task.title,p.taskBefore.title);
- assert.equal(task.objective,p.taskBefore.objective);
+ assert.deepEqual(task.acceptance,isApplication?p.proposedTaskAfter.acceptance:p.taskBefore.acceptance);
+ assert.equal(task.title,isApplication?p.proposedTaskAfter.title:p.taskBefore.title);
+ assert.equal(task.objective,isApplication?p.proposedTaskAfter.objective:p.taskBefore.objective);
+ if(isApplication){
+  assert.equal(scopeApplication.candidateLedgerGitBlobSha,applicationLedger);
+  assert.deepEqual(ledger.tasks.at(-1).acceptance.slice(0,4),p.taskBefore.acceptance);
+  assert.deepEqual(ledger.tasks.at(-1).acceptance.slice(4),p.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
+ }
  assert.equal(p.deferredOriginalObligations.everyOriginalAcceptancePreserved.length,4);
- assert.deepEqual(p.deferredOriginalObligations.everyOriginalAcceptancePreserved,task.acceptance);
+ assert.deepEqual(p.deferredOriginalObligations.everyOriginalAcceptancePreserved,p.taskBefore.acceptance);
 });
 test('Route B proposes exactly four scoped new criteria with no acceptance/application/closeout by implication',()=>{
  assert.equal(p.proposedTaskAfter.acceptance.length,4);
@@ -55,7 +63,7 @@ test('Route B separately preserves original broad benchmark as explicit proposed
  assert.equal(future.idReservedInCanonicalLedger,false);
  assert.equal(future.state,'proposal_only_not_created');
  assert.deepEqual(future.proposedDependsOn,['PP-0007','PP-0011']);
- assert.equal(ledger.tasks.some(x=>x.id==='PP-0012'),false);
+ assert.equal(ledger.tasks.some(x=>x.id==='PP-0012'),isApplication);
  assert.equal(future.candidateAcceptance.length,4);
  assert.match(future.candidateAcceptance[0],/seven frozen canonical case/);
  assert.match(future.candidateAcceptance[2],/comparable direct-assistant and Project outcome quality/);
