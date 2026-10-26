@@ -19,13 +19,32 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  assert.equal(m.scopeAtSourceCommit,undefined);
  assert.equal(m.sourceMainCommit,'39076ac85a6864dd007b9ed6c947389548878508');
  assert.equal(m.sourceTaskLedgerRevision,72);
- assert.equal(taskLedger.revision,m.sourceTaskLedgerRevision);
- assert.equal(taskLedger.tasks.length,7);
+ const ledgerSha=(()=>{
+  const bytes=readFileSync(new URL('.pro-papa/tasks.json',root));
+  return createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
+ })();
+ const compat=m.exactLedgerCompatibility;
+ assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
+ assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob].includes(ledgerSha),
+   'only exact original or separately approved roadmap-preview ledger bytes may be used');
+ const isPreview=ledgerSha===compat.separateApprovedProposedBlob;
+ assert.equal(taskLedger.revision,isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
+ assert.equal(taskLedger.tasks.length,isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
+ if(isPreview){
+   assert.deepEqual(taskLedger.tasks.slice(7).map(x=>x.id),compat.addedFutureTaskIds);
+   for(const x of taskLedger.tasks.slice(7)){
+     assert.equal(x.status,'pending');
+     assert.deepEqual(x.dependsOn,['PP-0007']);
+   }
+ }
  assert.equal(m.pinSources.length,5);
  for(const pin of m.pinSources){
   const bytes=readFileSync(new URL(pin.path,root));
   const sha=createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
-  assert.equal(sha,pin.gitBlobSha,pin.path);
+  if(pin.path==='.pro-papa/tasks.json'){
+   assert.equal(pin.gitBlobSha,m.exactLedgerCompatibility.historicalMainBlob);
+   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob].includes(sha));
+  }else assert.equal(sha,pin.gitBlobSha,pin.path);
  }
  const task=taskLedger.tasks.find(x=>x.id==='PP-0007');
  assert.equal(task.status,'in_progress');
