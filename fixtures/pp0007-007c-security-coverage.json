@@ -360,5 +360,15 @@
       "checks": "consecutive and concurrent entrypoint invocations cause independent JWKS fetches despite advertised in-instance caching; no cross-request shared throttling is asserted by the test"
     },
     "remediationIsSeparateReviewedCodeChange": true
+  },
+  "reviewedCandidateSourceCompatibility": {
+    "historicalNetlifySourceGitBlobSha": "d462bd6e82fb4f4857c8d0cc61feb43ab46980fc",
+    "candidateRemediationNetlifySourceGitBlobSha": "3c225ee178f3c949aff60c0e75b9ef40bf69a7d4",
+    "candidateHead": "8263293ce1ac58ceed176b7ce541f137bb5e2a2c",
+    "candidatePullRequest": "https://github.com/Papa3445/Pro-Papa/pull/38",
+    "productionDeployedAndVerified": false,
+    "independentReviewOfCandidateCompleted": false,
+    "onlyAllowTheseTwoExactSourceGitBlobs": true,
+    "note": "Historical source pin denotes the original audited source. A prospective independently reviewable runtime fix is accepted by exact blob identity for cumulative CI, without claiming it is deployed or approved."
   }
 }

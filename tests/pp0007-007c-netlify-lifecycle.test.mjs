@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {generateKeyPairSync,sign} from 'node:crypto';
+import {generateKeyPairSync,sign,createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import netlifyMcp from '../netlify/functions/mcp.mjs';
 
 // Security regression for reviewed existing behavior, not a production load test.
-// Netlify wrapper constructs a new handler AND OAuth validator for every invocation.
+// Historical audited wrapper created a handler per call. A later exact-blobbbed
+// remediation candidate reuses a warm instance, and must not be misgraded
+// as the historical vulnerability.
 const HOST='pp0007-lifecycle-fixture.netlify.app';
 const RESOURCE='https://'+HOST;
 const ISSUER='https://pp0007-lifecycle.us.auth0.com/';
@@ -32,7 +35,12 @@ function req(token,requestId){
    }
  }})});
 }
-test('007-C: Netlify entrypoint loses JWKS cache after each separate valid-token request',async()=>{
+test('007-C: pinned historical Netlify cache loss versus exact remediation candidate',async()=>{
+ const original=readFileSync(new URL('../netlify/functions/mcp.mjs',import.meta.url));
+ const sha=createHash('sha1').update('blob '+original.length+'\\x00').update(original).digest('hex');
+ const isHistorical=sha==='d462bd6e82fb4f4857c8d0cc61feb43ab46980fc';
+ assert.ok(isHistorical||sha==='3c225ee178f3c949aff60c0e75b9ef40bf69a7d4',
+   'this audit admits only the exact source-proven old wrapper or pinned reviewable remediation');
  const originalNetlify=globalThis.Netlify,originalFetch=globalThis.fetch;
  const values={PRO_PAPA_MCP_PUBLIC_HOSTNAME:HOST,PRO_PAPA_AUTH0_ISSUER:ISSUER,
    PRO_PAPA_MCP_RESOURCE:RESOURCE};
@@ -59,11 +67,12 @@ test('007-C: Netlify entrypoint loses JWKS cache after each separate valid-token
    await exercise(1);
    assert.equal(jwksLookups,1);
    await exercise(2);
-   assert.equal(jwksLookups,2,
-     'a new validator is created per entrypoint call, despite the 300-second instance-local cache');
-   await Promise.all(Array.from({length:9},(_,i)=>exercise(100+i)));
-   assert.equal(jwksLookups,11,
-     'each fresh handler/validator fetches independent keys; no cross-request cache or shared instance state');
+   assert.equal(jwksLookups,isHistorical?2:1,
+     'the historical wrapper recreates a cache per request; remediated warm instance reuses it');
+   // Below local eight-active limit; the separate #38 test challenges the ninth request.
+   await Promise.all(Array.from({length:7},(_,i)=>exercise(100+i)));
+   assert.equal(jwksLookups,isHistorical?9:1,
+     'historical request isolation vs pinned warm-instance cache reuse');
  }finally{
    globalThis.fetch=originalFetch;
    if(originalNetlify===undefined)delete globalThis.Netlify;
