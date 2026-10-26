@@ -262,7 +262,9 @@
     {
       "id": "production_global_rate_limit_and_distributed_concurrency",
       "status": "not_proven_by_this_evidence",
-      "mustNotReportAsPassing": true
+      "mustNotReportAsPassing": true,
+      "knownDefectReference": "handler_local_concurrency_scope",
+      "note": "Distributed rate/concurrency enforcement is not verified; independent request handler creation and per-handler active=0 counter are source-proven ineffective across requests. Keep different observed/proven flags separate."
     },
     {
       "id": "production_host_noninvocation_verified_for_anonymous_denials",
@@ -293,5 +295,70 @@
     "responseEvidenceDoesNotProveAbsenceOfInternalExecution": true,
     "privacy": "Source pins, run IDs, static descriptive categories only; no JWT, Auth0 tenant, raw private prompts, screenshots, transcripts or secrets.",
     "releaseDecision": "PP-0007 in_progress; further live signed-JWT adversarial cases require separate authorized operator context and independently reviewed scope."
+  },
+  "sourceEstablishedLifecycleDefects": {
+    "knownFromSourceAtCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+    "independentReviewFinding": "https://github.com/Papa3445/Pro-Papa/issues/36#issuecomment-6405253276",
+    "remediationIssue": "https://github.com/Papa3445/Pro-Papa/issues/37",
+    "observedProductionLoadOrLatencyImpact": null,
+    "defects": [
+      {
+        "id": "handler_local_concurrency_scope",
+        "classification": "source_proven_ineffective_across_independent_netlify_requests",
+        "severity": "high",
+        "entrypoint": "netlify/functions/mcp.mjs",
+        "entrypointLineRange": [
+          10,
+          25
+        ],
+        "underlyingSource": "src/mcp-web.mjs",
+        "sourceLineRanges": [
+          [
+            106,
+            111
+          ],
+          [
+            181,
+            186
+          ]
+        ],
+        "rootCause": "Netlify function creates a new handler per request; each handler creates its own active=0 counter, so its eight-active guard has no cross-request sharing.",
+        "claimedMaximumAcrossRequests": null,
+        "independentProviderCapacityTestPerformed": false,
+        "productionExploitationObserved": false,
+        "edgeIpRateLimitSeparate": true,
+        "fixImplementedInThisPr": false
+      },
+      {
+        "id": "jwks_cache_lost_each_request",
+        "classification": "source_proven_no_cross_request_cache_reuse",
+        "severity": "medium",
+        "entrypoint": "netlify/functions/mcp.mjs",
+        "entrypointLineRange": [
+          10,
+          18
+        ],
+        "underlyingSource": "src/oauth-resource.mjs",
+        "sourceLineRanges": [
+          [
+            91,
+            108
+          ]
+        ],
+        "rootCause": "Netlify function constructs fresh OAuth validator for each call; JWKS cache and refreshing state are private to that validator instance and not reused for later calls.",
+        "documentedCacheSecondsWithinValidator": 300,
+        "cacheSecondsActuallySharedAcrossNetlifyRequests": null,
+        "productionLatencyMeasuredMs": null,
+        "liveJwtJwksRequestCountIndependentlyConfirmed": null,
+        "fixImplementedInThisPr": false
+      }
+    ],
+    "testsPlannedOrExecuted": {
+      "testFile": "tests/pp0007-007c-netlify-lifecycle.test.mjs",
+      "mode": "synthetic_signed_jwt_local_wrapper_invocations",
+      "realProductionJwtOrLoadTest": false,
+      "checks": "consecutive and concurrent entrypoint invocations cause independent JWKS fetches despite advertised in-instance caching; no cross-request shared throttling is asserted by the test"
+    },
+    "remediationIsSeparateReviewedCodeChange": true
   }
 }
