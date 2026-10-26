@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "gate": "007-E",
+  "kind": "privacy_safe_artifact_and_evidence_inventory_not_new_artifact_grading",
+  "scopeAtSourceCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "privacy": {
+    "publicRawPdfBytes": 0,
+    "publicScreenshots": 0,
+    "publicSoftwareZipBytes": 0,
+    "publicRawUserTranscripts": 0,
+    "publicTokensOrCredentials": 0,
+    "publicReceiptPrivateFileContents": 0,
+    "noPrivateArtifactMaterializedInThisGate": true
+  },
+  "checkedInGitBlobSources": [
+    {
+      "path": "fixtures/pp0007-paired-trial-collection-template.json",
+      "blob": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4"
+    },
+    {
+      "path": "tests/pp0007-native-seven-host-study.test.mjs",
+      "blob": "f96382c06acd35ff78364089851d51ed2200fd4b"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
+      "blob": "69549cec083d84f8f4535b9500c54764382fa47d"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/structured-local-observation.json",
+      "blob": "348df937b056b66366d5f787ca7295627be99f43"
+    },
+    {
+      "path": "docs/PP0007-EXISTING-BASELINE-REUSE-AUDIT.md",
+      "blob": "4b200b7915284818b9d2b8d8ccd90877d541177a"
+    }
+  ],
+  "separateUnmergedReconciliations": [
+    {
+      "pr": 33,
+      "head": "f750b900791ba8fc91bafb8bb302e7b8bdae3b7a",
+      "path": "fixtures/pp0007-outcome-permission-matrix.json",
+      "blob": "3fef75924dd030b0a386356cb6f97b9e0842aa71",
+      "doesNotAuthorizeTaskQualityGrades": true
+    },
+    {
+      "pr": 34,
+      "head": "97d788989d873a83ee97519a501c5a01e2ef7e09",
+      "path": "fixtures/pp0007-007b-historical-reconciliation.json",
+      "blob": "107d53cc6724c8ba8f0845977279b940580c109b",
+      "doesNotAuthorizeProspectiveTrialGrades": true
+    }
+  ],
+  "recordCount": 12,
+  "records": [
+    {
+      "id": "pro_papa2_weekly_operations_pdf",
+      "kind": "native_chatgpt_pdf_document",
+      "origin": "ChatGPT_Project_Pro_Papa2",
+      "reportedArtifactName": "Weekly_Operations_Readiness_Report.pdf",
+      "evidenceClass": "prior_independent_original_byte_inspection_reported_in_public_issue",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/issues/24#issuecomment-6398293897",
+      "reportedOriginalByteSha256": "3ba4886e343a4dd572861013384863cb256d7f0a2ab2172f6a90c21a3e9c6f91",
+      "reportedSizeBytes": 84308,
+      "reportedInspection": {
+        "tool": "PyMuPDF_plus_PDF_rendering_in_other_chat",
+        "pageCount": 2,
+        "pageSizesPt": [
+          [
+            612,
+            792
+          ],
+          [
+            612,
+            792
+          ]
+        ],
+        "extractableTextCharsPerPage": [
+          920,
+          1316
+        ],
+        "boundsChecked": true,
+        "visualInspectionReported": true,
+        "calculation": {
+          "inputs": [
+            2,
+            3,
+            5
+          ],
+          "total": 10,
+          "partsPercent": [
+            20,
+            30,
+            50
+          ]
+        },
+        "content": "executive_summary_daily_workload_priorities_risks_actions_and_conclusion"
+      },
+      "originalBytesAccessedInThisGate": false,
+      "sha256RecomputedInThisGate": false,
+      "newVisualInspectionInThisGate": false,
+      "originalBytesStoredInPublicRepository": false,
+      "downloadableFileConfirmedInThisGate": false,
+      "actualMcpMethodProvenFromThisArtifact": false,
+      "independentlyValidatedInPriorChatAsReported": true,
+      "validTaskCompletionEvidence": "prior_independent_pdf_specific_inspection_as_reported_not_current_artifact_reinspection",
+      "correlationLimit": "PDF contains no MCP method, release trace, or receipt URL; Netlify POST and separate receipt do not bind the PDF bytes to a particular MCP method."
+    },
+    {
+      "id": "pro_papa_explicit_mcp_pdf_smoke",
+      "kind": "native_chatgpt_pdf_document",
+      "origin": "ChatGPT_Pro_Papa_session_not_pro_papa2_project",
+      "reportedArtifactName": "pro_papa_pdf_mcp_smoke_test.pdf",
+      "evidenceClass": "prior_same_conversation_original_byte_inspection_reported_in_public_issue",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/issues/24#issuecomment-6398112848",
+      "reportedOriginalByteSha256": "071a0385601b73bafb335abd5e4a6c448e48230daf2a66b2b4c09d8cfa48f064",
+      "reportedSizeBytes": 48246,
+      "reportedInspection": {
+        "tool": "ReportLab_generation_PyMuPDF_programmatic_checks_and_visual_render_review_in_other_chat",
+        "pageCount": 2,
+        "pageSize": "US Letter",
+        "extractableTextCharsPerPage": [
+          1168,
+          1833
+        ],
+        "annotationCount": 1,
+        "requiredTraceStringsPresent": true,
+        "contentWithinPages": true,
+        "visualInspectionReported": true
+      },
+      "originalBytesAccessedInThisGate": false,
+      "sha256RecomputedInThisGate": false,
+      "newVisualInspectionInThisGate": false,
+      "originalBytesStoredInPublicRepository": false,
+      "downloadableFileConfirmedInThisGate": false,
+      "actualMcpMethodProvenFromThisArtifact": false,
+      "independentlyValidatedInPriorChatAsReported": true,
+      "validTaskCompletionEvidence": "prior_pdf_artifact_checks_reported_not_evidence_that_pro_papa2_project_generated_this_document",
+      "correlationLimit": "In-conversation explicit MCP call and PDF generation are separately observed steps; PDF alone does not cryptographically bind invocation and bytes."
+    },
+    {
+      "id": "pro_papa2_pdf_automatic_mcp_cooccurrence",
+      "kind": "contextual_chatgpt_project_connectivity_observation",
+      "origin": "ChatGPT_Project_Pro_Papa2",
+      "evidenceClass": "operator_screenshot_claim_plus_correlated_netlify_edge_log",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/issues/24#issuecomment-6398240916",
+      "reportedArtifactName": null,
+      "relatedArtifactId": "pro_papa2_weekly_operations_pdf",
+      "reportedEdgeRequest": {
+        "method": "POST",
+        "route": "/mcp",
+        "status": 200,
+        "userAgent": "openai-mcp/1.0.0",
+        "time": "2026-10-25T13:18:49.658864754Z",
+        "reportedEdgeSecondsApprox": 1.16
+      },
+      "reportedScreenshotMcpTraceClaim": true,
+      "originalScreenshotAccessedInThisGate": false,
+      "independentExactMcpJsonRpcBodyAvailable": false,
+      "exactConversationToEdgeRequestCryptographicBinding": false,
+      "newVisualInspectionInThisGate": false,
+      "artifactCompletenessNotProvenByEdgeLog": true,
+      "doNotCountAsSecondPdf": true
+    },
+    {
+      "id": "explicit_readonly_mcp_math",
+      "kind": "read_only_mcp_execution_result",
+      "origin": "explicit_ChatGPT_MCP_tool_call",
+      "evidenceClass": "prior_operator_report_of_checked_explicit_tool_result",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/issues/24#issuecomment-6398112848",
+      "reportedExecutionSha256": "c55b8d0a4aa705d7e216bc1ef5a18387cc7f68cfe375155c91820cd23a63f730",
+      "reportedMethod": "pro_papa_execute_readonly",
+      "reportedCapability": "math.sum",
+      "reportedResult": {
+        "status": "completed",
+        "traceState": "released",
+        "output": {
+          "total": 10,
+          "count": 3
+        },
+        "provider": "local-node"
+      },
+      "newMcpCallExecutedInThisGate": false,
+      "sourceRequestAndResponseBytesReinspectedInThisGate": false,
+      "perOriginalSevenMatchedToolTraceProven": false,
+      "wholeChatGptResponseInterceptionProven": false,
+      "correlationLimit": "This is an explicit bounded tool call, not proof of which tool ran in the separate PDF-generating chat."
+    },
+    {
+      "id": "standalone_reference_host_math",
+      "kind": "local_reference_host_mechanical_result",
+      "origin": "Node_original_seven_no_grant",
+      "evidenceClass": "reproducible_source_checked_provider_ci_result",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39889956053",
+      "sourceFile": "tests/pp0007-native-seven-host-study.test.mjs",
+      "reportedResult": {
+        "status": "completed",
+        "output": {
+          "total": 10,
+          "count": 3
+        },
+        "provider": "local-node"
+      },
+      "newExecutionInThisGate": false,
+      "sourceTestInspectedThisGate": true,
+      "sourceOutputAvailableFromPublicCode": true,
+      "independentlyGradedOpenEndedQuality": false,
+      "correlationLimit": "One arithmetic result; six other ungranted original tasks are unsupported/denied; a safe refusal is not a finished artifact."
+    },
+    {
+      "id": "allowlisted_github_research_record",
+      "kind": "read_only_public_provider_metadata",
+      "origin": "Node_granted_seven_case_reference_host",
+      "evidenceClass": "provider_ci_report_with_source_instrumented_public_get",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39711547417",
+      "sourceFile": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
+      "reportedOutput": {
+        "repository": "Papa3445/Pro-Papa",
+        "url": "https://github.com/Papa3445/Pro-Papa"
+      },
+      "realGitHubGetCountObserved": 1,
+      "requestCountSource": "host_instrumentation_not_network_packet_capture",
+      "repeatedGetExecutedInThisGate": false,
+      "independentMultiSourceResearchQuality": false,
+      "correlationLimit": "A single public repository metadata GET is not generalized sourced research synthesis."
+    },
+    {
+      "id": "structured_iso_parser_generated_module",
+      "kind": "fixed_generated_javascript_module",
+      "origin": "separate_structured_Node_local_benchmark",
+      "evidenceClass": "provider_ci_generated_source_import_and_mechanical_tests",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39722383548",
+      "sourceFile": "bin/benchmark-structured-pp0007.mjs",
+      "reportedGeneratedModuleName": "parse-iso-date.mjs",
+      "reportedValidation": {
+        "dynamicallyImportedFromFixedGenerator": true,
+        "leapDayValid": true,
+        "nonLeapDayInvalid": true,
+        "invalidCalendarDateRejected": true
+      },
+      "independentRerunOfOriginalChatGptSoftwareZip": false,
+      "originalSoftwareZipRecovered": false,
+      "sourceArchiveHashOfGeneratedZip": null,
+      "reexecutedInThisGate": false,
+      "correlationLimit": "One fixed local generated parser passes mechanical checks; not the original unstructured software request and not independent evaluation of archived ChatGPT ZIP."
+    },
+    {
+      "id": "structured_memo_and_schedule",
+      "kind": "structured_local_text_artifacts",
+      "origin": "separate_structured_Node_local_benchmark",
+      "evidenceClass": "provider_ci_fixed_input_mechanical_checks",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/39722383548",
+      "sourceFile": "bin/benchmark-structured-pp0007.mjs",
+      "reportedValidation": {
+        "memoStatus": "draft_unverified",
+        "memoTemplateContentChecks": true,
+        "scheduleEntries": 2,
+        "orderingAndDependenciesChecked": true
+      },
+      "independentSubjectiveMemoQualityGrade": null,
+      "originalUnstructuredMemoCompleted": false,
+      "originalUnstructuredPlanningCompleted": false,
+      "freshHumanContentReviewInThisGate": false,
+      "correlationLimit": "Template formatting and scheduling mechanics are not general document/editorial quality or unrestricted planning capability."
+    },
+    {
+      "id": "historical_chatgpt_project_and_regular_screenshots",
+      "kind": "historical_comparison_ui_screenshots",
+      "origin": "owner_reported_regular_and_project_ChatGPT",
+      "evidenceClass": "private_secondary_narrative_only",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/pull/34",
+      "reportedScreenshotCount": 35,
+      "reportedRegularCount": 15,
+      "reportedProjectCount": 20,
+      "sourceScreenshotBytesRecoveredInThisGate": 0,
+      "originalResponsesGradedInThisGate": 0,
+      "sourceScreenshotHashesAvailableInThisGate": null,
+      "reportedSummaryScoresOneFamily": {
+        "regular": 18,
+        "project": 21,
+        "maxPerArm": 21
+      },
+      "reportedSummaryScoresAnotherFamily": {
+        "regular": 21,
+        "project": 23,
+        "maxPerArm": 28
+      },
+      "independentReplicateStudy": false,
+      "correlationLimit": "Secondary nonblinded narrative score families may overlap same original observations, differ in rubric and do not prove controlled improvement."
+    },
+    {
+      "id": "historical_regular_and_project_parser_archives",
+      "kind": "historical_chatgpt_software_zips",
+      "origin": "owner_reported_regular_and_project_ChatGPT",
+      "evidenceClass": "unrecovered_original_artifacts",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/pull/34",
+      "regularZipRecoveredInThisGate": false,
+      "projectZipRecoveredInThisGate": false,
+      "originalZipHashesVerifiedInThisGate": null,
+      "reportedParserTestsReexecutedInThisGate": false,
+      "independentOriginalSoftwareCorrectness": null,
+      "correlationLimit": "Prior operator/reviewer reports of parser test counts are not reproduction; no per-archive source/content can be validated from secondary report."
+    },
+    {
+      "id": "native_chatgpt_generated_images",
+      "kind": "native_chatgpt_rendered_images",
+      "origin": "owner_reported_ChatGPT_Project_native_tools",
+      "evidenceClass": "historical_owner_report_only",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/pull/32",
+      "actualRenderedImageBytesAccessedInThisGate": false,
+      "actualImageHashesAvailableInThisGate": null,
+      "freshVisualVerificationInThisGate": false,
+      "imageOriginAuthenticatedByMcp": false,
+      "correlationLimit": "Image generation is a separate ChatGPT native capability; read-only MCP does not implement or attest image rendering."
+    },
+    {
+      "id": "private_github_usage_receipt",
+      "kind": "audit_transaction",
+      "origin": "authenticated_GitHub_private_receipt_write_and_readback",
+      "evidenceClass": "provider_verified_receipt_report_in_public_issue",
+      "sourceUrl": "https://github.com/Papa3445/Pro-Papa/issues/24#issuecomment-6398240916",
+      "sourceCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+      "publicRawReceiptBytesCopied": false,
+      "knownPrivateAuditStore": "Papa3445/Pro-Papa-Audit",
+      "privateReceiptContentReinspectedInThisGate": false,
+      "taskArtifactOutcomeQualityProven": false,
+      "toolInvocationMethodProven": false,
+      "correlationLimit": "Receipt establishes provider source reads/private audit writes, not output quality, specific original MCP method, user-task completion or internal assistant decisions."
+    }
+  ],
+  "primaryPdfInspectionClaimsSource": "https://github.com/Papa3445/Pro-Papa/issues/24",
+  "originalArtifactSearchPerformedThisGate": true,
+  "originalPdfAndZipBytesLocatedInProjectOrLibrarySearchThisGate": false,
+  "reportedPriorPdfValidationReexecutedInThisGate": false,
+  "originalSevenCase": {
+    "ids": [
+      "qa",
+      "research",
+      "software",
+      "document",
+      "data",
+      "planning",
+      "novel"
+    ],
+    "noGrantActualHandlerCompletions": 1,
+    "grantedLimitedResearchAndArithmeticCompletions": 2,
+    "distinctStructuredMechanicalCasesCompleted": 4,
+    "equalScopeComparisonPermitted": false
+  },
+  "registeredFutureProtocol": {
+    "observationsPlanned": 42,
+    "observationsActuallyCollected": 0,
+    "retrospectiveScreenshotScoresAcceptedAsProspective": false
+  },
+  "correlationLimits": {
+    "netlifyEdgeInvocationDoesNotBindJsonRpcToPdf": true,
+    "mcpMathSmokeNotProofThatPdfUsedMathSum": true,
+    "privateReceiptNotProofOfPdfOrImageQuality": true,
+    "sha256FromSecondaryReportNotRecomputedFromBytesHere": true,
+    "hardware_or_visual_conformance_of_unavailable_artifacts": null,
+    "independentWholeSystemOutcomeGrade": null
+  },
+  "nextDecision": "007-F only after real applicable acceptance, independent exact-head review and separately approved scope decision where necessary; protected main and verified deployment needed for release."
+}
