@@ -6,8 +6,10 @@ import netlifyMcp from '../netlify/functions/mcp.mjs';
 // Synthetic RS256 tokens/JWKS; zero live Auth0 or Netlify requests.
 const ONE='pp0007-warm-fixture.netlify.app';
 const TWO='pp0007-rotated-fixture.netlify.app';
+const THREE='pp0007-concurrency-fixture.netlify.app';
 const ISSUER_A='https://pp0007-warm-fixture.us.auth0.com/';
 const ISSUER_B='https://pp0007-rotated-fixture.us.auth0.com/';
+const ISSUER_C='https://pp0007-concurrency-fixture.us.auth0.com/';
 const {publicKey:keyA,privateKey:secretA}=generateKeyPairSync('rsa',{modulusLength:2048});
 const {publicKey:keyB,privateKey:secretB}=generateKeyPairSync('rsa',{modulusLength:2048});
 const jwk=(key,kid)=>({...key.export({format:'jwk'}),kid,alg:'RS256',use:'sig'});
@@ -123,7 +125,7 @@ test('PP-0007 Netlify warm validator reuses JWKS and fails closed for rotation, 
  });
 });
 test('PP-0007 Netlify warm-instance capacity counts concurrent authenticated research to eight',async()=>{
- await withEnv(fixture(TWO,ISSUER_B),async({setFetch,setNow})=>{
+ await withEnv(fixture(THREE,ISSUER_C),async({setFetch,setNow})=>{
   const now=2000000400;
   setNow(()=>now*1000);
   let jwksCalls=0,providerStarted=0,providerPeak=0,active=0;
@@ -131,7 +133,7 @@ test('PP-0007 Netlify warm-instance capacity counts concurrent authenticated res
   let ready;
   const eightStarted=new Promise(resolve=>{ready=resolve});
   setFetch(async(url,options)=>{
-   if(url===ISSUER_B+'.well-known/jwks.json'){
+   if(url===ISSUER_C+'.well-known/jwks.json'){
     jwksCalls++;
     return jwksReply([B]);
    }
@@ -145,8 +147,8 @@ test('PP-0007 Netlify warm-instance capacity counts concurrent authenticated res
     active--;resolve(githubReply());
    }));
   });
-  const jwt=token({hostname:TWO,issuer:ISSUER_B,privateKey:secretB,kid:B.kid,now});
-  const requests=Array.from({length:9},(_,i)=>netlifyMcp(call(TWO,100+i,jwt,'research')));
+  const jwt=token({hostname:THREE,issuer:ISSUER_C,privateKey:secretB,kid:B.kid,now});
+  const requests=Array.from({length:9},(_,i)=>netlifyMcp(call(THREE,100+i,jwt,'research')));
   let timer;
   try{
    await Promise.race([eightStarted,new Promise((_,reject)=>{
@@ -170,7 +172,7 @@ test('PP-0007 Netlify warm-instance capacity counts concurrent authenticated res
    assert.equal(result.structuredContent.trace.state,'released');
    assert.equal(result.structuredContent.execution.output.repository,'Papa3445/Pro-Papa');
   }
-  const next=await output(await netlifyMcp(call(TWO,200,jwt)));
+  const next=await output(await netlifyMcp(call(THREE,200,jwt)));
   assert.equal(next.isError,false,'released warm slot permits a later local sum');
  });
 });
