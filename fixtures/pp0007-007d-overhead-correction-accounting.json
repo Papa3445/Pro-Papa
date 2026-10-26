@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "gate": "007-D",
+  "kind": "overhead-correction-accounting-source-pinned-not-new_measurement",
+  "status": "documented_source_bounded_observations_and_unknowns",
+  "sourceMainCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "sourceIdentities": [
+    {
+      "path": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
+      "gitBlobSha": "69549cec083d84f8f4535b9500c54764382fa47d",
+      "study": "bounded_seven_case_granted_reference_host"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/structured-local-observation.json",
+      "gitBlobSha": "348df937b056b66366d5f787ca7295627be99f43",
+      "study": "distinct_four_structured_local_pilots"
+    },
+    {
+      "path": "docs/PP0007-NATIVE-HOST-TRIAL-2026-10-23.md",
+      "gitBlobSha": "058ae881f9400549df42fc8aeac5e4b3c0bdae36",
+      "study": "original_seven_ungranted_native_host"
+    },
+    {
+      "path": "fixtures/pp0007-paired-trial-collection-template.json",
+      "gitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4",
+      "study": "canonical_immutable_request_fixture"
+    }
+  ],
+  "notCheckedOutDependency": {
+    "source": "https://github.com/Papa3445/Pro-Papa/pull/34",
+    "exactHead": "97d788989d873a83ee97519a501c5a01e2ef7e09",
+    "path": "fixtures/pp0007-007b-historical-reconciliation.json",
+    "gitBlobSha": "107d53cc6724c8ba8f0845977279b940580c109b",
+    "kind": "privately_recovered_secondary_narrative_scores_not_original_ui_artifacts"
+  },
+  "hostGrantedSeven": {
+    "sourceArtifact": ".pro-papa/evidence/PP-0007/live-read-only-github.json",
+    "providerRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/39711547417",
+    "sourceMode": "live_read_only_github_bounded_node_reference_host",
+    "timingBoundary": "individual_node_host_execute_elapsed_ms_excludes_process_start_and_full_chatgpt_generation",
+    "pilotCount": 7,
+    "completedUserRequestsInNarrowConfiguredHost": 2,
+    "safelyUncompleted": 5,
+    "perCase": [
+      {
+        "id": "qa",
+        "status": "unsupported",
+        "hostElapsedMs": 0.669,
+        "providerGithubCalls": 0,
+        "transportCalls": 0
+      },
+      {
+        "id": "research",
+        "status": "completed",
+        "hostElapsedMs": 291.26,
+        "providerGithubCalls": 1,
+        "transportCalls": 1
+      },
+      {
+        "id": "software",
+        "status": "unsupported",
+        "hostElapsedMs": 0.046,
+        "providerGithubCalls": 0,
+        "transportCalls": 0
+      },
+      {
+        "id": "document",
+        "status": "unsupported",
+        "hostElapsedMs": 0.061,
+        "providerGithubCalls": 0,
+        "transportCalls": 0
+      },
+      {
+        "id": "data",
+        "status": "completed",
+        "hostElapsedMs": 0.32,
+        "providerGithubCalls": 0,
+        "transportCalls": 0
+      },
+      {
+        "id": "planning",
+        "status": "denied",
+        "hostElapsedMs": 0.029,
+        "providerGithubCalls": 0,
+        "transportCalls": 0
+      },
+      {
+        "id": "novel",
+        "status": "unsupported",
+        "hostElapsedMs": 0.019,
+        "providerGithubCalls": 0,
+        "transportCalls": 0
+      }
+    ],
+    "meanHostElapsedMsReported": 41.772,
+    "medianHostElapsedMsReported": 0.061,
+    "realGithubCallsObserved": 1,
+    "githubTransportCallsObserved": 1,
+    "perPilotPrivateReceiptsIssued": 0,
+    "auditMode": "off",
+    "temporaryDurableProjectProbe": {
+      "elapsedMs": 10.926,
+      "storedTasks": 1,
+      "output": 20,
+      "repeatStatus": "already_executed",
+      "scope": "isolated_ephemeral_ci_directory_removed_not_production"
+    },
+    "scriptedCorrectionInteractionFieldsPerCase": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "userCorrectionsActuallyMeasured": false,
+    "actualHumanCorrectiveInteractions": null,
+    "providerTokens": null,
+    "matchedBaselineDurationMs": null
+  },
+  "ungroundedBySameClockComparison": false,
+  "hostUngrantSeven": {
+    "source": "docs/PP0007-NATIVE-HOST-TRIAL-2026-10-23.md",
+    "providerRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/39889956053",
+    "timingBoundary": "individual_native_reference_host_call_latency_ms_not_ui",
+    "caseIds": [
+      "qa",
+      "research",
+      "software",
+      "document",
+      "data",
+      "planning",
+      "novel"
+    ],
+    "hostElapsedMsReported": [
+      0.923,
+      0.108,
+      0.085,
+      0.083,
+      1.183,
+      0.049,
+      0.047
+    ],
+    "statuses": [
+      "unsupported",
+      "denied",
+      "unsupported",
+      "unsupported",
+      "completed",
+      "denied",
+      "unsupported"
+    ],
+    "localHandlerCompletions": 1,
+    "githubTransportAttempts": 0,
+    "separatelyGrantedResearchElapsedMs": 275.894,
+    "grantChanged": true,
+    "providerReportedTokens": null,
+    "taskSuccessRatings": null
+  },
+  "separateStructuredFour": {
+    "sourceArtifact": ".pro-papa/evidence/PP-0007/structured-local-observation.json",
+    "providerRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/39722383548",
+    "timingBoundary": "measured_node_host_execute_elapsed_ms_for_four_explicit_local_inputs_only",
+    "completedMechanicalCases": 4,
+    "negativeRequestsSafelyRefused": 5,
+    "totalHostCalls": 9,
+    "totalHostElapsedMsReported": 4.749,
+    "meanHostElapsedMsReported": 1.187,
+    "perCase": [
+      {
+        "id": "calculation",
+        "hostElapsedMs": 2.553
+      },
+      {
+        "id": "schedule",
+        "hostElapsedMs": 1.12
+      },
+      {
+        "id": "memo",
+        "hostElapsedMs": 0.487
+      },
+      {
+        "id": "software",
+        "hostElapsedMs": 0.589
+      }
+    ],
+    "externalToolCalls": 0,
+    "realGitHubCalls": 0,
+    "receiptCount": 0,
+    "actualHumanCorrections": null,
+    "correctiveInteractionsMeasured": false,
+    "tokenUsage": null,
+    "representativeOriginalSeven": false
+  },
+  "historicalUi": {
+    "source": "private_secondary_report_described_in_PR_34_public_summary",
+    "sourceNotOriginals": true,
+    "originalScreenshotsReadThisGate": false,
+    "timingBoundary": "ChatGPT_UI_Worked_for_label_seconds_operator_reported_not_standardized_total_elapsed",
+    "caseLabels": [
+      {
+        "id": "qa",
+        "regularWorkedForSecondsReported": null,
+        "projectWorkedForSecondsReported": 38,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      },
+      {
+        "id": "research",
+        "regularWorkedForSecondsReported": 26,
+        "projectWorkedForSecondsReported": 52,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      },
+      {
+        "id": "software",
+        "regularWorkedForSecondsReported": 183,
+        "projectWorkedForSecondsReported": 280,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      },
+      {
+        "id": "document",
+        "regularWorkedForSecondsReported": null,
+        "projectWorkedForSecondsReported": 52,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      },
+      {
+        "id": "data",
+        "regularWorkedForSecondsReported": null,
+        "projectWorkedForSecondsReported": 49,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      },
+      {
+        "id": "planning",
+        "regularWorkedForSecondsReported": null,
+        "projectWorkedForSecondsReported": 126,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      },
+      {
+        "id": "novel",
+        "regularWorkedForSecondsReported": null,
+        "projectWorkedForSecondsReported": 71,
+        "matchedClockBoundaryVerified": false,
+        "matchedModelAndPermissionsVerified": false,
+        "originalUiRecordsInspectedThisGate": false,
+        "humanCorrectionTurnsVerified": null
+      }
+    ],
+    "onlyCasesWithBothArmsReported": [
+      "research",
+      "software"
+    ],
+    "note": "For the only two reported paired UI labels: research 26 vs 52 sec, software 183 vs 280 sec. These are NOT comparable matched clocks or corrected-time/quality judgments.",
+    "requiredExactOneSidedValuesRemainNull": true,
+    "completeResponsesAvailableThisGate": false,
+    "studyPreregistered": false
+  },
+  "separatelyReportedSingleUiExamples": [
+    {
+      "id": "native_pdf_example",
+      "reportedSecondsApproximate": 101,
+      "description": "native Project two-page PDF creation",
+      "source": "docs/DEVELOPMENT-ROADMAP.md at PR #32",
+      "originalTimingEvidenceReinspected": false,
+      "pairedControlArm": null
+    },
+    {
+      "id": "explicit_tool_plus_github_receipt_example",
+      "reportedSecondsApproximate": 152,
+      "description": "ChatGPT explicit read-only MCP tool plus receipt",
+      "source": "docs/DEVELOPMENT-ROADMAP.md at PR #32",
+      "originalTimingEvidenceReinspected": false,
+      "pairedControlArm": null
+    }
+  ],
+  "correctionAccounting": {
+    "automatedFixedInputNoConversationTurns": true,
+    "nodeReporterCorrectionInteractionsObservedZeroIsNotUserCorrectionsZero": true,
+    "authenticHumanFollowUpCorrectionsMeasured": false,
+    "regularUiCorrectionTurns": null,
+    "projectUiCorrectionTurns": null,
+    "modelRetries": null,
+    "providerErrorRetries": null,
+    "manualReworkMinutes": null,
+    "totalHumanCorrections": null,
+    "warning": "Do not recode noninteractive 0 correction prompts in fixture into 0 real user corrections."
+  },
+  "observabilityAndCost": {
+    "scope": "No apples-to-apples assistant-overhead assessment is currently possible",
+    "llmProviderTokenTotals": null,
+    "llmInputTokens": null,
+    "llmOutputTokens": null,
+    "netlifyMeasuredWallClockLatencyMs": null,
+    "chatgptTotalTimePerCaseMs": null,
+    "externalProviderBilledCostUsd": null,
+    "userCorrectionMinutes": null,
+    "matchedModelEffortAndPermissionParity": false,
+    "taskQualityNormalizedEffort": null,
+    "comparativeLatencyRatio": null,
+    "perEndToEndInvocationActualToolTracesAcrossSeven": null,
+    "prospectiveUiV2ObservedCount": 0,
+    "prospectiveUiV2PlannedCount": 42
+  },
+  "ownerDecision": {
+    "responsivenessAccepted": true,
+    "date": "2026-10-25",
+    "kind": "product_usefulness_signoff",
+    "independentPerformanceSuperiorityProven": false,
+    "requiresNewSpeedOptimization": false,
+    "source": "https://github.com/Papa3445/Pro-Papa/pull/32"
+  },
+  "safetyBoundary": {
+    "doNotPoolDistinctStudies": true,
+    "noNewProviderOrModelCallsInThisGate": true,
+    "thisIsNewBenchmark": false,
+    "publicRawPrivateScreenshotsOrPromptsStored": false,
+    "originalPp0007AcceptanceRewritten": false,
+    "pp0007TaskClosed": false,
+    "finalComparativeConclusion": "not_established",
+    "nextGate": "007-E artifact validation and privacy-safe evidence inventory"
+  }
+}
