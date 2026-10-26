@@ -242,5 +242,26 @@
     "mergeOrDeployWithoutGovernance": true,
     "modifyOriginalCanonicalTrials": true,
     "declareStatisticalPerformanceSuperiority": true
+  },
+  "exactLedgerCompatibility": {
+    "historicalMainBlob": "c5470334097519f36c0a788bffc9a666db61abdf",
+    "historicalMainRevision": 72,
+    "historicalMainTaskCount": 7,
+    "separateOwnerRoadmapPr": 32,
+    "separateApprovedProposedBlob": "17ed8276b56c35c965d6444ac95d84116ebe239b",
+    "separateApprovedProposedRevision": 73,
+    "separateApprovedProposedTaskCount": 11,
+    "addedFutureTaskIds": [
+      "PP-0008",
+      "PP-0009",
+      "PP-0010",
+      "PP-0011"
+    ],
+    "futureTasksAllPendingDependentOn": "PP-0007",
+    "pp0007OriginalAcceptanceUnchanged": true,
+    "pp0007EvidenceCount": 82,
+    "pp0007Status": "in_progress",
+    "allowedBlobCount": 2,
+    "scope": "historical main versus exact reviewed roadmap-preview version only; no arbitrary task ledger mutation authorized"
   }
 }
