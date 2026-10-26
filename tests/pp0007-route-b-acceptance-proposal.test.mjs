@@ -43,7 +43,7 @@ test('Route B proposal preserves original literal clauses/82-item evidence and r
 test('Route B proposes exactly four scoped new criteria with no acceptance/application/closeout by implication',()=>{
  assert.equal(p.proposedTaskAfter.acceptance.length,4);
  assert.ok(p.proposedTaskAfter.acceptance.every(x=>x.length>110));
- assert.notDeepEqual(p.proposedTaskAfter.acceptance,task.acceptance);
+ assert.notDeepEqual(p.proposedTaskAfter.acceptance,p.taskBefore.acceptance);
  assert.match(p.proposedTaskAfter.acceptance[0],/read-only OAuth MCP executions/);
  assert.match(p.proposedTaskAfter.acceptance[0],/separately from native ChatGPT-created artifacts/);
  assert.match(p.proposedTaskAfter.acceptance[1],/missing signed-JWT production adversarial coverage/);
