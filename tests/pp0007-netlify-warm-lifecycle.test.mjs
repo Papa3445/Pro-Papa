@@ -88,7 +88,7 @@ test('PP-0007 Netlify warm validator reuses JWKS and fails closed for rotation, 
   await permit(1,bearerA);
   await permit(2,bearerA);
   assert.equal(lookups,1,'sequential calls reuse warm validator');
-  await Promise.all(Array.from({length:9},(_,i)=>permit(20+i,bearerA)));
+  // Stay below the intentional eight-active warm-instance cap here; the\n  // separate held-provider test challenges the ninth request denial.\n  await Promise.all(Array.from({length:7},(_,i)=>permit(20+i,bearerA)));
   assert.equal(lookups,1,'concurrent calls share warm JWKS');
   clock+=299;
   await permit(3,bearerA);
