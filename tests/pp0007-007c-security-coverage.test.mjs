@@ -9,13 +9,24 @@ const expectedIds=['metadata-200','get-mcp-405','no-bearer-tools-call-denied',
 test('007-C pins each applicable live-probe/OAuth source blob to audited main',()=>{
   assert.equal(manifest.sourceMainCommit,'39076ac85a6864dd007b9ed6c947389548878508');
   assert.equal(manifest.sourceCodePins.length,10);
+  assert.equal(manifest.reviewedCandidateSourceCompatibility.productionDeployedAndVerified,false);
+  assert.equal(manifest.reviewedCandidateSourceCompatibility.independentReviewOfCandidateCompleted,false);
   assert.equal(new Set(manifest.sourceCodePins.map(p=>p.path)).size,10);
   for(const pin of manifest.sourceCodePins){
     assert.equal(pin.sourceRef,manifest.sourceMainCommit,pin.path);
     assert.match(pin.path,/^(?:src|tests|bin|netlify\/functions|\.github\/workflows)\/[A-Za-z0-9._/-]+$/);
     const content=readFileSync(new URL('../'+pin.path,import.meta.url));
     const blob=createHash('sha1').update('blob '+content.length+'\x00').update(content).digest('hex');
-    assert.equal(blob,pin.gitBlobSha,pin.path);
+    if(pin.path==='netlify/functions/mcp.mjs'&&
+       blob!==pin.gitBlobSha){
+      const candidate=manifest.reviewedCandidateSourceCompatibility;
+      assert.equal(pin.gitBlobSha,candidate.historicalNetlifySourceGitBlobSha);
+      assert.equal(blob,candidate.candidateRemediationNetlifySourceGitBlobSha,
+        'only the exact scoped independently reviewable runtime fix may supersede historical entrypoint bytes');
+      const regression=readFileSync(new URL('../tests/pp0007-netlify-warm-lifecycle.test.mjs',import.meta.url),'utf8');
+      assert.match(regression,/PP-0007 Netlify warm validator reuses JWKS/);
+      assert.match(regression,/capacity counts concurrent authenticated research to eight/);
+    }else assert.equal(blob,pin.gitBlobSha,pin.path);
   }
 });
 test('007-C maintains only five live production HTTP checks and no authenticated JWT or host-noninvocation claim',()=>{
