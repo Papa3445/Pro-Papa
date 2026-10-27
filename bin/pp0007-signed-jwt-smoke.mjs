@@ -53,13 +53,27 @@ const passed=rpc=>rpc?.jsonrpc==='2.0'&&rpc.id===801&&
   Array.isArray(rpc.result.content)&&rpc.result.content.length===1&&
   rpc.result.content[0]?.type==='text'&&
   rpc.result.content[0].text===JSON.stringify(rpc.result.structuredContent);
-const denied=rpc=>rpc?.jsonrpc==='2.0'&&rpc.id===802&&
-  rpc.result?.isError===true&&
-  !Object.hasOwn(rpc.result,'structuredContent')&&
-  rpc.result.content?.some(x=>x?.type==='text'&&x.text==='Authentication required')&&
-  rpc.result._meta?.['mcp/www_authenticate']?.some(x=>
-    typeof x==='string'&&x.includes('error="invalid_token"')&&
-    x.includes('resource_metadata="'+PRODUCTION_ORIGIN+'/.well-known/oauth-protected-resource"'));
+// Match the exact error-only shape emitted by our MCP handler. A denial with
+// additional text, structured data or unrecognized fields is NOT a safe denial.
+const onlyKeys=(value,keys)=>value!==null&&typeof value==='object'&&
+  !Array.isArray(value)&&Object.keys(value).length===keys.length&&
+  keys.every(key=>Object.hasOwn(value,key));
+const denied=rpc=>onlyKeys(rpc,['jsonrpc','id','result'])&&
+  rpc.jsonrpc==='2.0'&&rpc.id===802&&
+  onlyKeys(rpc.result,['isError','content','_meta'])&&
+  rpc.result.isError===true&&
+  Array.isArray(rpc.result.content)&&rpc.result.content.length===1&&
+  onlyKeys(rpc.result.content[0],['type','text'])&&
+  rpc.result.content[0].type==='text'&&
+  rpc.result.content[0].text==='Authentication required'&&
+  onlyKeys(rpc.result._meta,['mcp/www_authenticate'])&&
+  Array.isArray(rpc.result._meta['mcp/www_authenticate'])&&
+  rpc.result._meta['mcp/www_authenticate'].length===1&&
+  typeof rpc.result._meta['mcp/www_authenticate'][0]==='string'&&
+  rpc.result._meta['mcp/www_authenticate'][0].startsWith('Bearer ')&&
+  rpc.result._meta['mcp/www_authenticate'][0].includes('error="invalid_token"')&&
+  rpc.result._meta['mcp/www_authenticate'][0].includes(
+    'resource_metadata="'+PRODUCTION_ORIGIN+'/.well-known/oauth-protected-resource"');
 
 /** Four bounded HTTPS requests; verify the issuer out-of-band BEFORE transmitting secrets. */
 export async function runSignedJwtSmoke({fetchImpl=globalThis.fetch,
