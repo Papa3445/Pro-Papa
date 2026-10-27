@@ -25,6 +25,7 @@ test('Route B candidate ledger applies exact approved wording and preserves all 
  if(snapshot.isSuccessor){
   const work=previous.tasks.find(x=>x.id==='PP-0008');
   work.status='pending';work.owner=null;delete work.requiresTrustedReview;
+  delete work.reviewTarget;
  }
  previous.revision=75;
  previous.tasks=previous.tasks.filter(x=>x.id!=='PP-0013');
