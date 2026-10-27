@@ -2,6 +2,7 @@
 // No token, secret, issuer hostname, JWT claims or response body may be logged.
 import {pathToFileURL} from 'node:url';
 import {PRODUCTION_ORIGIN,boundedJson} from './pp0007-production-smoke.mjs';
+import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 
 const fail=(message)=>{throw Error(message)};
 const issuerOk=s=>typeof s==='string'&&s.length<=512&&
@@ -44,7 +45,14 @@ const passed=rpc=>rpc?.jsonrpc==='2.0'&&rpc.id===801&&
   rpc.result.structuredContent?.execution?.output?.total===7&&
   rpc.result.structuredContent?.execution?.output?.count===2&&
   rpc.result.structuredContent?.trace?.state==='released'&&
-  rpc.result.structuredContent?.trace?.dispatchedCapability==='math.sum';
+  rpc.result.structuredContent?.trace?.dispatchedCapability==='math.sum'&&
+  rpc.result.structuredContent?.execution?.provenance?.provider==='local-node'&&
+  rpc.result.structuredContent?.execution?.provenance?.operation==='math.sum'&&
+  verifyReleasedExecution(rpc.result.structuredContent)&&
+  // A server must not supply contradictory user-visible and structured outputs.
+  Array.isArray(rpc.result.content)&&rpc.result.content.length===1&&
+  rpc.result.content[0]?.type==='text'&&
+  rpc.result.content[0].text===JSON.stringify(rpc.result.structuredContent);
 const denied=rpc=>rpc?.jsonrpc==='2.0'&&rpc.id===802&&
   rpc.result?.isError===true&&
   !Object.hasOwn(rpc.result,'structuredContent')&&
