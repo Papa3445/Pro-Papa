@@ -2,11 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
 const at=new URL('../',import.meta.url);
 const read=x=>JSON.parse(readFileSync(new URL(x,at),'utf8'));
 const blob=x=>{const b=readFileSync(new URL(x,at));return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');};
 const ledger=read('.pro-papa/tasks.json'),proposal=read('fixtures/pp0007-route-b-acceptance-proposal.json'),app=read('fixtures/pp0007-route-b-application-authorization.json');
 const active=ledger.tasks.find(x=>x.id==='PP-0007'),successor=ledger.tasks.find(x=>x.id==='PP-0012');
+const snapshot=pp0007LedgerSnapshot(ledger);
 const evidenceLedgerSha='7bf9061e1463521d045183010b29f1d890b02a4a';
 const finalCloseoutLedgerSha='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const productionEvidence='.pro-papa/evidence/PP-0007/production-auth0-signed-jwt-2026-10-27.json';
@@ -16,10 +18,14 @@ const hashBlobText=x=>{const b=Buffer.from(x);return createHash('sha1').update('
 test('Route B candidate ledger applies exact approved wording and preserves all historical evidence bytes',()=>{
  // Preserve the original reviewed Route B rev74 bytes by reconstructing the
  // previous ledger from the evidence-only rev75 transition, not rewriting its fixture.
- assert.equal(blob('.pro-papa/tasks.json'),finalCloseoutLedgerSha);
- assert.equal(ledger.revision,76);assert.equal(ledger.tasks.length,13);
+ assert.equal(snapshot.canonicalBlob,finalCloseoutLedgerSha);
+ assert.equal(ledger.revision,snapshot.isSuccessor?77:76);assert.equal(ledger.tasks.length,13);
  // Reconstruct exact trusted prior rev75 to prove this is append-only closure.
  const previous=structuredClone(ledger);
+ if(snapshot.isSuccessor){
+  const work=previous.tasks.find(x=>x.id==='PP-0008');
+  work.status='pending';work.owner=null;delete work.requiresTrustedReview;
+ }
  previous.revision=75;
  previous.tasks=previous.tasks.filter(x=>x.id!=='PP-0013');
  const previousActive=previous.tasks.find(x=>x.id==='PP-0007');
@@ -79,13 +85,15 @@ test('Route B successor preserves original full benchmark and cannot start',()=>
  assert.equal(successor.objective,proposal.taskBefore.objective);
  assert.deepEqual(successor.acceptance.slice(0,4),proposal.taskBefore.acceptance);
  assert.deepEqual(successor.acceptance.slice(4),proposal.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
- assert.equal(ledger.tasks.filter(x=>x.status==='in_progress').length,0);
+ assert.equal(ledger.tasks.filter(x=>x.status==='in_progress').length,snapshot.isSuccessor?1:0);
  const deferred=ledger.tasks.find(x=>x.id==='PP-0013');
  assert.equal(deferred.status,'pending');assert.equal(deferred.profile,'software');
  assert.deepEqual(deferred.dependsOn,['PP-0007']);
  assert.equal(deferred.evidence.length,0);
  assert.deepEqual(ledger.tasks.slice(7,11).map(x=>x.id),['PP-0008','PP-0009','PP-0010','PP-0011']);
- assert.ok(ledger.tasks.slice(7,11).every(x=>x.status==='pending'&&JSON.stringify(x.dependsOn)==='["PP-0007"]'));
+ assert.ok(ledger.tasks.slice(7,11).every(x=>
+   (x.status==='pending'||snapshot.isSuccessor&&x.id==='PP-0008'&&x.status==='in_progress')&&
+   JSON.stringify(x.dependsOn)==='["PP-0007"]'));
 });
 test('Route B candidate original trial, historical blocked verdict and approval boundaries unchanged',()=>{
  const frozen=read('fixtures/pp0007-paired-trial-collection-template.json'),ui=read('fixtures/pp0007-ui-v2-contract.json');
