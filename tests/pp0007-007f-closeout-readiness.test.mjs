@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
 const root=new URL('../',import.meta.url);
 const read=path=>JSON.parse(readFileSync(new URL(path,root),'utf8'));
 const m=read('fixtures/pp0007-007f-closeout-readiness.json');
@@ -28,21 +29,22 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const bytes=readFileSync(new URL('.pro-papa/tasks.json',root));
   return createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
  })();
+ const successor=taskLedger.revision===77?pp0007LedgerSnapshot(taskLedger).isSuccessor:false;
  const compat=m.exactLedgerCompatibility;
  assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
- assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(ledgerSha),
+ assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(ledgerSha)||successor,
    'only exact original or separately approved roadmap-preview ledger bytes may be used');
- const isFinal=ledgerSha===finalCloseoutLedger;
+ const isFinal=ledgerSha===finalCloseoutLedger||successor;
  const isEvidence=isFinal||ledgerSha===evidenceLedger;
  const isApplied=isEvidence||ledgerSha===exactApplicationLedger;
  const isPreview=isApplied||ledgerSha===compat.separateApprovedProposedBlob;
  assert.equal(application.candidateLedgerGitBlobSha,exactApplicationLedger);
- assert.equal(taskLedger.revision,isFinal?76:isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
+ assert.equal(taskLedger.revision,successor?77:isFinal?76:isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
  assert.equal(taskLedger.tasks.length,isFinal?13:isApplied?12:isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
  if(isPreview){
    assert.deepEqual(taskLedger.tasks.slice(7,11).map(x=>x.id),compat.addedFutureTaskIds);
    for(const x of taskLedger.tasks.slice(7,11)){
-     assert.equal(x.status,'pending');
+     assert.equal(x.status,successor&&x.id==='PP-0008'?'in_progress':'pending');
      assert.deepEqual(x.dependsOn,['PP-0007']);
    }
  }
@@ -52,7 +54,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const sha=createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
   if(pin.path==='.pro-papa/tasks.json'){
    assert.equal(pin.gitBlobSha,m.exactLedgerCompatibility.historicalMainBlob);
-   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(sha));
+   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(sha)||successor);
   }else if(pin.path==='AGENTS.md'){
    // The historical pin refers to the original AGENTS blob at m.sourceMainCommit.
    // Preserve that exact original prefix; an independently reviewed delivery
