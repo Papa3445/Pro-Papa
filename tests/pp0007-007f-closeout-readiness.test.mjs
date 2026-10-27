@@ -12,6 +12,7 @@ const proposal=read('fixtures/pp0007-route-b-acceptance-proposal.json');
 const application=read('fixtures/pp0007-route-b-application-authorization.json');
 const exactApplicationLedger='a28a48789714c1051482b7c3201aac4e9a8c0a69';
 const evidenceLedger='7bf9061e1463521d045183010b29f1d890b02a4a';
+const finalCloseoutLedger='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const exactCriteria=[
 'Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request',
 'For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts',
@@ -29,14 +30,15 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  })();
  const compat=m.exactLedgerCompatibility;
  assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
- assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger].includes(ledgerSha),
+ assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(ledgerSha),
    'only exact original or separately approved roadmap-preview ledger bytes may be used');
- const isEvidence=ledgerSha===evidenceLedger;
+ const isFinal=ledgerSha===finalCloseoutLedger;
+ const isEvidence=isFinal||ledgerSha===evidenceLedger;
  const isApplied=isEvidence||ledgerSha===exactApplicationLedger;
  const isPreview=isApplied||ledgerSha===compat.separateApprovedProposedBlob;
  assert.equal(application.candidateLedgerGitBlobSha,exactApplicationLedger);
- assert.equal(taskLedger.revision,isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
- assert.equal(taskLedger.tasks.length,isApplied?12:isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
+ assert.equal(taskLedger.revision,isFinal?76:isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
+ assert.equal(taskLedger.tasks.length,isFinal?13:isApplied?12:isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
  if(isPreview){
    assert.deepEqual(taskLedger.tasks.slice(7,11).map(x=>x.id),compat.addedFutureTaskIds);
    for(const x of taskLedger.tasks.slice(7,11)){
@@ -50,7 +52,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const sha=createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
   if(pin.path==='.pro-papa/tasks.json'){
    assert.equal(pin.gitBlobSha,m.exactLedgerCompatibility.historicalMainBlob);
-   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger].includes(sha));
+   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(sha));
   }else if(pin.path==='AGENTS.md'){
    // The historical pin refers to the original AGENTS blob at m.sourceMainCommit.
    // Preserve that exact original prefix; an independently reviewed delivery
@@ -68,7 +70,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   }else assert.equal(sha,pin.gitBlobSha,pin.path);
  }
  const task=taskLedger.tasks.find(x=>x.id==='PP-0007');
- assert.equal(task.status,'in_progress');
+ assert.equal(task.status,isFinal?'verified':'in_progress');
  assert.deepEqual(proposal.taskBefore.acceptance,exactCriteria);
  assert.deepEqual(task.acceptance,isApplied?proposal.proposedTaskAfter.acceptance:exactCriteria);
  if(isApplied){
@@ -88,9 +90,17 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  const historicalTarget=isEvidence?proposal.source.originalReviewTarget:task.reviewTarget;
  assert.deepEqual(m.currentReviewTarget,{...historicalTarget,isCurrentCloseoutTarget:false});
  if(isEvidence){
-  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:52,
-    baseRef:'main',baseSha:'837283019ba062933ec2775c27f405f8bcace8e4'});
-  assert.equal(task.evidence.length,83);
+  assert.deepEqual(task.reviewTarget,isFinal?{repository:'Papa3445/Pro-Papa',pullRequest:53,
+    baseRef:'main',baseSha:'6fa479f20e1c94643ebf0b7ceaa4509caaacf189'}:
+    {repository:'Papa3445/Pro-Papa',pullRequest:52,baseRef:'main',
+    baseSha:'837283019ba062933ec2775c27f405f8bcace8e4'});
+  assert.equal(task.evidence.length,isFinal?85:83);
+  if(isFinal){
+   assert.ok(Number.isFinite(Date.parse(task.verifiedAt)));
+   const deferred=taskLedger.tasks.find(x=>x.id==='PP-0013');
+   assert.equal(deferred.status,'pending');
+   assert.deepEqual(deferred.dependsOn,['PP-0007']);
+  }
  }
 });
 test('007-F fails task-success promotion despite scoped approved CI/reviews',()=>{

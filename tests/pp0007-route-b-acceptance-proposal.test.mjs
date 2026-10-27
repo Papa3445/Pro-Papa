@@ -12,40 +12,50 @@ const oldLedger='c5470334097519f36c0a788bffc9a666db61abdf';
 const futureLedger='17ed8276b56c35c965d6444ac95d84116ebe239b';
 const applicationLedger='a28a48789714c1051482b7c3201aac4e9a8c0a69';
 const evidenceLedger='7bf9061e1463521d045183010b29f1d890b02a4a';
+const finalCloseoutLedger='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const scopeApplication=read('fixtures/pp0007-route-b-application-authorization.json');
-const isEvidence=blobSha('.pro-papa/tasks.json')===evidenceLedger;
+const isFinal=blobSha('.pro-papa/tasks.json')===finalCloseoutLedger;
+const isEvidence=isFinal||blobSha('.pro-papa/tasks.json')===evidenceLedger;
 const isApplication=isEvidence||blobSha('.pro-papa/tasks.json')===applicationLedger;
 test('Route B proposal preserves original literal clauses/82-item evidence and rejects unknown canonical ledger mutations',()=>{
  assert.equal(p.kind,'proposed_task_acceptance_change_not_applied');
  assert.equal(p.source.commit,'39076ac85a6864dd007b9ed6c947389548878508');
  assert.equal(p.source.taskLedgerGitBlobSha,oldLedger);
  const sha=blobSha('.pro-papa/tasks.json');
- assert.ok([oldLedger,futureLedger,applicationLedger,evidenceLedger].includes(sha),'unexpected ledger must fail closed');
- assert.equal(ledger.revision,isEvidence?75:isApplication?74:sha===oldLedger?72:73);
- assert.equal(ledger.tasks.length,isApplication?12:sha===oldLedger?7:11);
+ assert.ok([oldLedger,futureLedger,applicationLedger,evidenceLedger,finalCloseoutLedger].includes(sha),'unexpected ledger must fail closed');
+ assert.equal(ledger.revision,isFinal?76:isEvidence?75:isApplication?74:sha===oldLedger?72:73);
+ assert.equal(ledger.tasks.length,isFinal?13:isApplication?12:sha===oldLedger?7:11);
  if(sha!==oldLedger)for(const future of ledger.tasks.slice(7,11)){
   assert.deepEqual(future.dependsOn,['PP-0007']);
   assert.equal(future.status,'pending');
  }
- assert.equal(task.status,'in_progress');
- assert.equal(task.evidence.length,isEvidence?83:p.source.originalTaskEvidenceCount);
+ assert.equal(task.status,isFinal?'verified':'in_progress');
+ assert.equal(task.evidence.length,isFinal?85:isEvidence?83:p.source.originalTaskEvidenceCount);
  const earlier=task.evidence.slice(0,82);
  const earlierBytes=Buffer.from(JSON.stringify(earlier));
  const earlierBlob=createHash('sha1').update('blob '+earlierBytes.length+String.fromCharCode(0))
    .update(earlierBytes).digest('hex');
  assert.equal(earlierBlob,scopeApplication.originalEvidenceArrayGitBlobSha);
  if(isEvidence){
-  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:52,
-    baseRef:'main',baseSha:'837283019ba062933ec2775c27f405f8bcace8e4'});
-  assert.equal(task.evidence.at(-1).path,'.pro-papa/evidence/PP-0007/production-auth0-signed-jwt-2026-10-27.json');
+  assert.deepEqual(task.reviewTarget,isFinal?{repository:'Papa3445/Pro-Papa',pullRequest:53,
+    baseRef:'main',baseSha:'6fa479f20e1c94643ebf0b7ceaa4509caaacf189'}:
+    {repository:'Papa3445/Pro-Papa',pullRequest:52,baseRef:'main',
+      baseSha:'837283019ba062933ec2775c27f405f8bcace8e4'});
+  assert.equal(task.evidence[82].path,'.pro-papa/evidence/PP-0007/production-auth0-signed-jwt-2026-10-27.json');
+  if(isFinal){
+   assert.equal(task.evidence[83].kind,'validation');
+   assert.equal(task.evidence[84].kind,'review');
+   assert.equal(task.evidence[84].actor,'papa4568');
+   assert.equal(ledger.tasks.find(x=>x.id==='PP-0013').status,'pending');
+  }
  }else assert.deepEqual(task.reviewTarget,p.source.originalReviewTarget);
  assert.deepEqual(task.acceptance,isApplication?p.proposedTaskAfter.acceptance:p.taskBefore.acceptance);
  assert.equal(task.title,isApplication?p.proposedTaskAfter.title:p.taskBefore.title);
  assert.equal(task.objective,isApplication?p.proposedTaskAfter.objective:p.taskBefore.objective);
  if(isApplication){
   assert.equal(scopeApplication.candidateLedgerGitBlobSha,applicationLedger);
-  assert.deepEqual(ledger.tasks.at(-1).acceptance.slice(0,4),p.taskBefore.acceptance);
-  assert.deepEqual(ledger.tasks.at(-1).acceptance.slice(4),p.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
+  assert.deepEqual(ledger.tasks.find(x=>x.id==='PP-0012').acceptance.slice(0,4),p.taskBefore.acceptance);
+  assert.deepEqual(ledger.tasks.find(x=>x.id==='PP-0012').acceptance.slice(4),p.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
  }
  assert.equal(p.deferredOriginalObligations.everyOriginalAcceptancePreserved.length,4);
  assert.deepEqual(p.deferredOriginalObligations.everyOriginalAcceptancePreserved,p.taskBefore.acceptance);

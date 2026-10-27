@@ -284,21 +284,22 @@ test('base and review state must have valid identity',()=>{
   assert.throws(()=>validateReviewTarget({...target,baseSha:'b'.repeat(40)}),/exact GitHub repository/);
 });
 
-test('PP-0007 new production-evidence review cannot reuse older OAuth approvals',async()=>{
+test('PP-0007 final Route B closeout review cannot reuse earlier approvals',async()=>{
   const task=JSON.parse(await readFile(new URL('../.pro-papa/tasks.json',import.meta.url),'utf8')).tasks.find(x=>x.id==='PP-0007');
-  assert.equal(task.status,'in_progress');
+  assert.equal(task.status,'verified');
   assert.equal(task.requiresTrustedReview,true);
-  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:52,
-    baseRef:'main',baseSha:'837283019ba062933ec2775c27f405f8bcace8e4'});
-  const p={number:52,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',
-    sha:'837283019ba062933ec2775c27f405f8bcace8e4'},head:{sha:'c'.repeat(40)},
+  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:53,
+    baseRef:'main',baseSha:'6fa479f20e1c94643ebf0b7ceaa4509caaacf189'});
+  const p={number:53,base:{repo:{full_name:'Papa3445/Pro-Papa'},ref:'main',
+    sha:'6fa479f20e1c94643ebf0b7ceaa4509caaacf189'},head:{sha:'c'.repeat(40)},
     user:{id:124238718,login:'Papa3445'}};
   const prior=review('APPROVED',{commit_id:'d'.repeat(40)});
-  for(const earlier of [26,27,49,51])
+  for(const earlier of [26,27,49,51,52])
     assert.throws(()=>evalReviews(task.reviewTarget,{...p,number:earlier},[prior]),/identity/);
   assert.equal(evalReviews(task.reviewTarget,p,[prior]).verdict,'FAIL');
   assert.equal(evalReviews(task.reviewTarget,p,[review('APPROVED',{commit_id:p.head.sha})]).verdict,'PASS');
   assert.ok(task.evidence.some(e=>e.path==='src/oauth-resource.mjs'));
   assert.ok(task.evidence.some(e=>e.path==='src/mcp-web.mjs'));
-  assert.equal(task.evidence.at(-1).kind,'test');
+  assert.equal(task.evidence.at(-1).kind,'review');
+  assert.equal(task.evidence.at(-1).actor,'papa4568');
 });
