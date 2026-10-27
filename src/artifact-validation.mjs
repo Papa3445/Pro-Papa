@@ -132,22 +132,24 @@ function parsePDF(bytes){
   const pagesRoot=ref(catalog,'Pages');
   const visited=new Set();
   const pageIds=[];
-  function walk(id,depth){
+  function walk(id,depth,parent=null){
     if(depth>8||visited.has(id))reject();
     visited.add(id);
     const obj=get(id);
+    // A page-tree node must name its actual referring parent. The root has none.
+    if(parent===null){if(/\/Parent\b/.test(obj))reject();}
+    else if(ref(obj,'Parent')!==parent)reject();
     if(/\/Type\s*\/Pages\b/.test(obj)){
       const kids=/\/Kids\s*\[([^\]]+)\]/.exec(obj);
       const expected=Number(/\/Count\s+(\d+)\b/.exec(obj)?.[1]);
       if(!kids||!Number.isSafeInteger(expected)||expected<1||expected>20)reject();
       const refs=[...kids[1].matchAll(/(\d+)\s+0\s+R\b/g)].map(x=>Number(x[1]));
       if(!refs.length||refs.length>20||kids[1].replace(/\d+\s+0\s+R\b/g,'').trim())reject();
-      let count=0;for(const child of refs)count+=walk(child,depth+1);
+      let count=0;for(const child of refs)count+=walk(child,depth+1,id);
       if(count!==expected)reject();
       return count;
     }
     if(!/\/Type\s*\/Page\b(?!s)/.test(obj))reject();
-    if(ref(obj,'Parent')===id)reject();
     pageIds.push(id);
     return 1;
   }
@@ -155,8 +157,9 @@ function parsePDF(bytes){
   if(pageIds.length<1||pageIds.length>20||
      [...objects.values()].filter(s=>/\/Type\s*\/Page\b(?!s)/.test(s)).length!==pageIds.length)reject();
   // Refuse unsupported interactive/embedded/encrypted/object-stream constructs.
-  if([...objects.values()].some(s=>/\/(?:ObjStm|Encrypt|JavaScript|JS|Launch|EmbeddedFiles|XFA)\b/.test(s)))reject();
+  if([...objects.values()].some(s=>/\/(?:ObjStm|Encrypt|JavaScript|JS|Launch|EmbeddedFiles|EmbeddedFile|XFA|Annots|AcroForm|OpenAction|AA|URI|RichMedia|SubmitForm|GoToR|ImportData)\b/.test(s)))reject();
   let combined='';
+  const perPageText=[];
   for(const id of pageIds){
     const page=get(id);
     const contents=/\/Contents\s*(\[[^\]]+\]|\d+\s+0\s+R\b)/.exec(page);
@@ -187,10 +190,11 @@ function parsePDF(bytes){
       pageText+=' '+textFromStream(decoded);
     }
     if(!pageText.trim())reject();
+    perPageText.push(pageText.replace(/\s+/g,' ').trim());
     combined+=' '+pageText;
   }
   if(Buffer.byteLength(combined)>MAX_TEXT_BYTES)reject();
-  return {pageCount:pageIds.length,text:combined.replace(/\s+/g,' ').trim()};
+  return {pageCount:pageIds.length,text:combined.replace(/\s+/g,' ').trim(),perPageText};
 }
 /**
  * Operator grant AND per-call explicit declaration required. Never returns the
@@ -209,8 +213,10 @@ export function validatePdfArtifact(inputs,{enabled=false}={}){
   const bytes=Buffer.from(inputs.dataBase64,'base64');
   if(!bytes.length||bytes.length>MAX_PDF_BYTES||
      bytes.toString('base64')!==inputs.dataBase64)reject();
-  const {pageCount,text}=parsePDF(bytes);
-  const matches=inputs.mustContain.map(needle=>text.includes(needle));
+  const {pageCount,text,perPageText}=parsePDF(bytes);
+  // A phrase must occur within one page: concatenating page streams would
+  // otherwise satisfy a check whose words never occur together in the PDF.
+  const matches=inputs.mustContain.map(needle=>perPageText.some(page=>page.includes(needle)));
   if(matches.some(x=>!x))reject(); // A required mechanical check must fail closed.
   return Object.freeze({format:'application/pdf',byteLength:bytes.length,
     sha256:createHash('sha256').update(bytes).digest('hex'),
