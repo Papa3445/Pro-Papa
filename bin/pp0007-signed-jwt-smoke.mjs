@@ -2,6 +2,7 @@
 // No token, secret, issuer hostname, JWT claims or response body may be logged.
 import {pathToFileURL} from 'node:url';
 import {PRODUCTION_ORIGIN,boundedJson} from './pp0007-production-smoke.mjs';
+import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 
 const fail=(message)=>{throw Error(message)};
 const issuerOk=s=>typeof s==='string'&&s.length<=512&&
@@ -44,14 +45,35 @@ const passed=rpc=>rpc?.jsonrpc==='2.0'&&rpc.id===801&&
   rpc.result.structuredContent?.execution?.output?.total===7&&
   rpc.result.structuredContent?.execution?.output?.count===2&&
   rpc.result.structuredContent?.trace?.state==='released'&&
-  rpc.result.structuredContent?.trace?.dispatchedCapability==='math.sum';
-const denied=rpc=>rpc?.jsonrpc==='2.0'&&rpc.id===802&&
-  rpc.result?.isError===true&&
-  !Object.hasOwn(rpc.result,'structuredContent')&&
-  rpc.result.content?.some(x=>x?.type==='text'&&x.text==='Authentication required')&&
-  rpc.result._meta?.['mcp/www_authenticate']?.some(x=>
-    typeof x==='string'&&x.includes('error="invalid_token"')&&
-    x.includes('resource_metadata="'+PRODUCTION_ORIGIN+'/.well-known/oauth-protected-resource"'));
+  rpc.result.structuredContent?.trace?.dispatchedCapability==='math.sum'&&
+  rpc.result.structuredContent?.execution?.provenance?.provider==='local-node'&&
+  rpc.result.structuredContent?.execution?.provenance?.operation==='math.sum'&&
+  verifyReleasedExecution(rpc.result.structuredContent)&&
+  // A server must not supply contradictory user-visible and structured outputs.
+  Array.isArray(rpc.result.content)&&rpc.result.content.length===1&&
+  rpc.result.content[0]?.type==='text'&&
+  rpc.result.content[0].text===JSON.stringify(rpc.result.structuredContent);
+// Match the exact error-only shape emitted by our MCP handler. A denial with
+// additional text, structured data or unrecognized fields is NOT a safe denial.
+const onlyKeys=(value,keys)=>value!==null&&typeof value==='object'&&
+  !Array.isArray(value)&&Object.keys(value).length===keys.length&&
+  keys.every(key=>Object.hasOwn(value,key));
+const denied=rpc=>onlyKeys(rpc,['jsonrpc','id','result'])&&
+  rpc.jsonrpc==='2.0'&&rpc.id===802&&
+  onlyKeys(rpc.result,['isError','content','_meta'])&&
+  rpc.result.isError===true&&
+  Array.isArray(rpc.result.content)&&rpc.result.content.length===1&&
+  onlyKeys(rpc.result.content[0],['type','text'])&&
+  rpc.result.content[0].type==='text'&&
+  rpc.result.content[0].text==='Authentication required'&&
+  onlyKeys(rpc.result._meta,['mcp/www_authenticate'])&&
+  Array.isArray(rpc.result._meta['mcp/www_authenticate'])&&
+  rpc.result._meta['mcp/www_authenticate'].length===1&&
+  typeof rpc.result._meta['mcp/www_authenticate'][0]==='string'&&
+  rpc.result._meta['mcp/www_authenticate'][0].startsWith('Bearer ')&&
+  rpc.result._meta['mcp/www_authenticate'][0].includes('error="invalid_token"')&&
+  rpc.result._meta['mcp/www_authenticate'][0].includes(
+    'resource_metadata="'+PRODUCTION_ORIGIN+'/.well-known/oauth-protected-resource"');
 
 /** Four bounded HTTPS requests; verify the issuer out-of-band BEFORE transmitting secrets. */
 export async function runSignedJwtSmoke({fetchImpl=globalThis.fetch,
