@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0008",
+  "evidenceClass": "artifact",
+  "source": "original user-facing ChatGPT native-tool-generated artifact, in the current Pro-Papa conversation",
+  "provenance": {
+    "observedInConversationFiles": "generated",
+    "fileName": "pp0008_exact_pdf_fixture.zip",
+    "zipSha256": "71e56b4d67b70022b11dc1c40c71689d4f2c84bbdfc14a00748823ef885a7540",
+    "generatedFileMetadataFrom": "ChatGPT Files conversation list",
+    "workSessionDirectlyWitnessedOriginalCreation": false
+  },
+  "artifact": {
+    "entry": "pp0008_native_created.pdf",
+    "byteLength": 2424,
+    "sha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+    "generatorRecordedInZipManifest": "ReportLab Canvas with invariant metadata",
+    "reportlabPdfHeaderPresent": true,
+    "pageCount": 2,
+    "checkOnPage1": "PP0008 LIVE SMOKE SAMPLE",
+    "checkOnPage2": "SECOND PAGE CHECK"
+  },
+  "crossSurfaceIdentity": {
+    "actualConnectedMcpValidationSha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+    "hashesMatch": true
+  },
+  "limits": "Original creation operation was in the earlier ChatGPT conversation, not re-executed in Work. File-source metadata and byte equality support provenance, but do not authenticate tool logs or PDF layout quality. No PDF bytes or private conversation are committed."
+}
