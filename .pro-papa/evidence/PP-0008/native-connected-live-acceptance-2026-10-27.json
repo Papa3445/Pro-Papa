@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0008",
+  "kind": "native-creation-connected-validation-and-restoration",
+  "date": "2026-10-27",
+  "implementationCommit": "17d5887b6be61cda5de3508807cf404f1cd391f3",
+  "supersedesForNativeCreationAcceptance": "Earlier evidence in this directory concerns a different PDF and does not establish native creation; historical records remain unchanged.",
+  "nativeCreation": {
+    "observation": "Opened the original ChatGPT conversation and expanded its original Analyzed Python tool card; directly inspected ReportLab creation source and matching STDOUT/STDERR. This is separate from generated-file registration.",
+    "tool": "python_user_visible.exec",
+    "generator": "reportlab.pdfgen.canvas.Canvas",
+    "creationTimeUtc": "2026-10-27T23:09:06.506841+00:00",
+    "runId": "0928867315b1",
+    "originalInvocationId": null,
+    "signedAttestation": false,
+    "limitation": "The UI exposes Python source and stdout, not a signed invocation identifier or cryptographic creation attestation.",
+    "originalPdfFileReference": "file_00000000709c81f599db5350bc714440",
+    "originalZipFileReference": "file_00000000bf8881f5987e3c72346485d9",
+    "privateInspectionRecord": "PP0008-native-connected-live-acceptance-2026-10-27.md"
+  },
+  "suppliedArtifact": {
+    "source": "Independently extracted original PDF entry from preserved ZIP; standalone modified export was not used.",
+    "zipSha256": "c52936ab97319665e9c708a9d7d7523ed13c8757a14df80480d2681f32a056a7",
+    "zipEntry": "pp0008_native_created.pdf",
+    "byteLength": 2827,
+    "sha256": "c76e7422fb9f9935c17d22d71a872d02edcbff2fe8824c6f1a251a1e8483f57e",
+    "pageCount": 2,
+    "mustContain": [
+      "PP0008 NATIVE CHATGPT CREATION CHECK",
+      "PP0008 SEPARATE MCP VALIDATION CHECK"
+    ],
+    "independentStrictPdfParsing": true
+  },
+  "connectedValidation": {
+    "tool": "pro_papa_execute_readonly",
+    "capability": "artifact.validate",
+    "authorization": "validate_supplied_bytes_only",
+    "transport": "Real connected Pro-Papa MCP; plugin settings showed OAuth authorization; refreshed tools before invocation.",
+    "observedAt": "2026-10-27T23:31:51.525Z",
+    "result": {
+      "status": "completed",
+      "capability": "artifact.validate",
+      "suggestedRoute": "artifact.validate",
+      "tracking": {
+        "mode": "ephemeral"
+      },
+      "execution": {
+        "output": {
+          "format": "application/pdf",
+          "byteLength": 2827,
+          "sha256": "c76e7422fb9f9935c17d22d71a872d02edcbff2fe8824c6f1a251a1e8483f57e",
+          "pageCount": 2,
+          "extractableCharacters": 461,
+          "requiredChecks": 2,
+          "matchedChecks": 2,
+          "mechanicalOnly": true
+        },
+        "provenance": {
+          "provider": "local-node",
+          "operation": "artifact.validate"
+        }
+      },
+      "audit": {
+        "status": "not_requested"
+      },
+      "trace": {
+        "schemaVersion": 1,
+        "state": "released",
+        "events": [
+          {
+            "sequence": 1,
+            "step": "request.accepted"
+          },
+          {
+            "sequence": 2,
+            "step": "audit.not_required"
+          },
+          {
+            "sequence": 3,
+            "step": "route.selected"
+          },
+          {
+            "sequence": 4,
+            "step": "handler.started"
+          },
+          {
+            "sequence": 5,
+            "step": "handler.returned"
+          },
+          {
+            "sequence": 6,
+            "step": "output.validated"
+          },
+          {
+            "sequence": 7,
+            "step": "response.released"
+          }
+        ],
+        "route": "artifact.validate",
+        "dispatchedCapability": "artifact.validate",
+        "auditRequired": false,
+        "auditReceiptCommit": null,
+        "provider": "local-node",
+        "executionSha256": "dd1249b2d7d083502e0d45eab7e1269c14ab8502a9bf3128b3e3844b92b144f7",
+        "providerAuthenticated": false,
+        "scope": "single_explicit_reference_host_invocation"
+      }
+    },
+    "independentlyRecomputedExecutionSha256": "dd1249b2d7d083502e0d45eab7e1269c14ab8502a9bf3128b3e3844b92b144f7",
+    "digestMethod": "SHA-256 of UTF-8 compact JSON serialization of execution, preserving response key order; independently recomputed with Python.",
+    "interpretation": "OAuth authenticates the MCP transport. providerAuthenticated:false describes the local-node execution provider. The digest proves consistency, not signed provenance; validation is mechanical only."
+  },
+  "productionCycle": {
+    "authorization": "One owner-authorized bounded production-only flag cycle; no source, secrets or unrelated configuration changes.",
+    "enabled": {
+      "flag": "true",
+      "deployId": "6ae134312bfa5451fddfaa3f",
+      "commit": "17d5887b6be61cda5de3508807cf404f1cd391f3",
+      "publishedAt": "2026-10-27T23:31:13.770Z",
+      "state": "ready"
+    },
+    "restored": {
+      "flag": "false",
+      "deployId": "6ae134933d193f104d809060",
+      "commit": "17d5887b6be61cda5de3508807cf404f1cd391f3",
+      "publishedAt": "2026-10-27T23:32:50.995Z",
+      "state": "ready",
+      "verifiedCurrentPublished": true
+    },
+    "afterRefresh": {
+      "artifactValidate": {
+        "error": "McpServerError: Invalid tool arguments",
+        "error_code": "INVALID_ARGUMENT",
+        "error_data": {
+          "type": "json_rpc_error",
+          "code": -32602,
+          "message": "Invalid tool arguments"
+        }
+      },
+      "mathSum": {
+        "input": [
+          3,
+          4
+        ],
+        "status": "completed",
+        "total": 7,
+        "count": 2,
+        "traceState": "released",
+        "executionSha256": "3172e14568deab482320a47548f8f6244082e08af86f4d46c381651020693f95"
+      }
+    }
+  },
+  "previewInvestigation": {
+    "inspectedDeploy": "6ae12a475b3565e9e61a3af2",
+    "head": "fde2571d55872808a6cc1055b65f80bcc2c4820e",
+    "result": "npm run check: 305 tests, 303 passed, 2 failed; preview did not publish.",
+    "failedTests": [
+      "PP-0007 Netlify entrypoint refuses to serve when runtime config absent",
+      "007-C: pinned historical Netlify cache loss versus exact remediation candidate"
+    ],
+    "diagnosis": "Source/log inference: preview's empty artifact feature flag is inherited by test mocks that isolate other environment variables. Runtime requires literal true or false for a present flag, causing 503 instead of expected JSON/200.",
+    "acceptanceImpact": "Does not negate the completed published-production smoke. Preview remains failed; no test/config fix included in this evidence-only change. Current ruleset requires GitHub Actions check from app 15368, not Netlify preview checks."
+  },
+  "disposition": {
+    "liveAcceptanceObservations": "satisfied; submitted for independent assessment",
+    "independentReview": "fresh papa4568 review required on updated exact head",
+    "taskStatus": "in_progress",
+    "taskClosurePerformed": false,
+    "merged": false,
+    "dependentTasksAdvanced": false
+  },
+  "redaction": "No PDF bytes/base64, tokens, credentials, private transcript or conversation URL."
+}
