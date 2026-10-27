@@ -6,7 +6,7 @@ export const PRODUCTION_ORIGIN = 'https://pro-papa-mcp.netlify.app';
 const MAX_RESPONSE = 16384;
 const fail = (message) => {throw Error(message);};
 
-async function boundedJson(response) {
+export async function boundedJson(response) {
   if (!response || typeof response.status !== 'number') fail('no HTTP response');
   if (!/^application\/json(?:\s*;|$)/i.test(response.headers.get('content-type') ?? ''))
     fail('unexpected response content type');
