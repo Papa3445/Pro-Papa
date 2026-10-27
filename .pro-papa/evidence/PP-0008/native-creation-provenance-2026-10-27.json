@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "taskId": "PP-0008",
   "evidenceClass": "artifact",
-  "source": "Synthetic ChatGPT conversation-generated file; first-party conversation file-registration metadata observed, underlying generator tool invocation not independently attested.",
+  "source": "Reported origin of the original ZIP in a prior ChatGPT chat; PDF byte identity verified, native PDF generator invocation not independently verified.",
   "provenance": {
-    "firstPartySource": "ChatGPT Files conversation list (files.list), surface=conversation, first-party file registration",
+    "firstPartySource": "Reported by implementation-side conversation Files listing; original file ID and source_kind were not independently retrievable by reviewer.",
     "originalFileRecord": {
       "name": "pp0008_exact_pdf_fixture.zip",
       "fileId": "file_00000000cd3481f59ce42f8cb9be4465",
@@ -20,17 +20,17 @@
       "userTurnIndex": 8
     },
     "firstPartyToolArtifactRegistration": {
-      "toolUploadedZipFile": true,
+      "toolUploadedZipFile": null,
       "registeredContainerPath": "/mnt/data/pp0008_exact_pdf_fixture.zip",
-      "linkage": "The original conversation's tool-generated file registration and the first-party Files list identify the same file name and original file ID; original ChatGPT turn 8.",
+      "linkage": "Original file registration was observed by implementation operator but could not be fetched from independent review context. It is NOT provider-attested evidence of a native tool invocation.",
       "underlyingGeneratorInvocationId": null,
-      "underlyingGeneratorMethod": "not observable from the independent Work review",
+      "underlyingGeneratorMethod": "unverified original invocation",
       "sourceKindDoesNotCryptographicallyAttestToolExecution": true
     },
     "zipSha256": "71e56b4d67b70022b11dc1c40c71689d4f2c84bbdfc14a00748823ef885a7540",
     "separateWorkSessionWitnessedCreation": false,
     "separateWorkSessionWitnessedValidation": true,
-    "inspectability": "The first-party original-conversation file record is available to authorized viewers of that chat/project; a Library copy may expose model_generated=false and is not the originating metadata."
+    "inspectability": "Reviewer could not retrieve originating Files IDs; these are reported, unverified metadata. Original ZIP and exact PDF hashes were independently checked via later copy."
   },
   "artifact": {
     "entry": "pp0008_native_created.pdf",
@@ -46,5 +46,5 @@
     "actualConnectedMcpValidationSha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
     "hashesMatch": true
   },
-  "limits": "The original conversation first-party generated file record, original file ID and timestamp are newly recorded; this is provenance of file registration, not a signed transcript of the native tool invocation. The ZIP manifest's ReportLab claim by itself does not authenticate creation. If the independent reviewer cannot verify the originating record/tool link, creation acceptance remains pending. No raw PDF, private chat text or access token included."
+  "limits": "PROVENANCE UNVERIFIED: original PDF/ZIP native ChatGPT generator invocation is not established by accessible provider evidence. This file is valid partial PDF/hash evidence only. Full native-creation-followed-by-MCP acceptance remains pending and PP-0008 must stay in_progress. A newly witnessed native creation followed by separate authenticated validation is the next proposed test. No raw conversation, PDF bytes or credentials are published."
 }
