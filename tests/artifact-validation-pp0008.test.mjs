@@ -130,7 +130,6 @@ test('PP-0008 separately validates actual ReportLab-created two-page PDF through
   assert.equal(pdf.length,1862);
   assert.equal(createHash('sha256').update(pdf).digest('hex'),
     '021193766742a4460a506df24ed07e95d4b5ccf6fa4cfe88af3e683195af7df9');
-  process.env.PP0008_DIAGNOSTIC='synthetic_ci_only';
   const app=createReadOnlyMcpWebHandler({bearerToken:SECRET,hostname:HOST,
     artifactValidationEnabled:true});
   const response=await (await app(mcpCall(input(pdf,['PP0008 native PDF validated','Second page checksum'])))).json();
