@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runSignedJwtSmoke} from '../bin/pp0007-signed-jwt-smoke.mjs';
 import {PRODUCTION_ORIGIN} from '../bin/pp0007-production-smoke.mjs';
+import {releaseExecutionTrace} from '../src/execution-trace.mjs';
 const issuer='https://pp-sample.auth0.com/',clientId='fake-client',clientSecret='fake-secret';
 const jwt='aaa.bbb.ccc';
 const inputs={clientId,clientSecret,expectedIssuer:issuer};
@@ -10,9 +11,20 @@ const json=(body,status=200)=>new Response(JSON.stringify(body),
 const meta={resource:PRODUCTION_ORIGIN,authorization_servers:[issuer],
   scopes_supported:['pro_papa.read']};
 const token={token_type:'Bearer',expires_in:300,access_token:jwt};
+// A fully consistent host-local release fixture; no actual Auth0 or JWT is simulated.
+const completed={status:'completed',capability:'math.sum',suggestedRoute:'math.sum',
+  tracking:{mode:'ephemeral'},
+  execution:{output:{total:7,count:2},
+    provenance:{provider:'local-node',operation:'math.sum'}},
+  audit:{status:'not_requested'}};
+const structured={...completed,trace:releaseExecutionTrace({
+  steps:['request.accepted','audit.not_required','route.selected',
+    'handler.started','handler.returned','output.validated'],
+  route:'math.sum',dispatched:'math.sum',result:completed,
+  audit:completed.audit,requiredAudit:false
+})};
 const good={jsonrpc:'2.0',id:801,result:{isError:false,
-  structuredContent:{status:'completed',execution:{output:{total:7,count:2}},
-    trace:{state:'released',dispatchedCapability:'math.sum'}}}};
+  structuredContent:structured,content:[{type:'text',text:JSON.stringify(structured)}]}};
 const no={jsonrpc:'2.0',id:802,result:{isError:true,
   content:[{type:'text',text:'Authentication required'}],
   _meta:{'mcp/www_authenticate':[
@@ -83,6 +95,34 @@ test('a tampered signature leaking structured data fails closed',async()=>{
   await assert.rejects(()=>runSignedJwtSmoke({...inputs,fetchImpl:f.fetchImpl}),
     /tampered_jwt_not_rejected/);
   assert.equal(f.calls.length,4);
+});
+test('forged release metadata cannot pass signed-JWT production smoke',async()=>{
+  for(const forged of [
+    {...structured,trace:{...structured.trace,executionSha256:'0'.repeat(64)}},
+    {...structured,trace:{...structured.trace,events:[]}},
+    {...structured,trace:{...structured.trace,route:'research'}},
+    {...structured,execution:{...structured.execution,
+      provenance:{provider:'github',operation:'math.sum'}}}
+  ]){
+    const f=fixture(stage=>stage==='good'?json({...good,result:{
+      ...good.result,structuredContent:forged,
+      content:[{type:'text',text:JSON.stringify(forged)}]}}):null);
+    await assert.rejects(()=>runSignedJwtSmoke({...inputs,fetchImpl:f.fetchImpl}),
+      /valid_jwt_not_authorized/);
+    assert.deepEqual(f.calls.map(x=>x.stage),['metadata','token','good']);
+  }
+});
+test('contradictory user-visible and structured release output fails closed',async()=>{
+  for(const content of [
+    [{type:'text',text:'fabricated'}],[],
+    [{type:'text',text:JSON.stringify(structured)},{type:'text',text:'extra output'}]
+  ]){
+    const f=fixture(stage=>stage==='good'?json({...good,result:{
+      ...good.result,content}}):null);
+    await assert.rejects(()=>runSignedJwtSmoke({...inputs,fetchImpl:f.fetchImpl}),
+      /valid_jwt_not_authorized/);
+    assert.equal(f.calls.length,3);
+  }
 });
 test('malformed or redirected HTTP response cannot pass',async()=>{
   for(const wrong of [json(good,302),new Response('bad',{status:200,
