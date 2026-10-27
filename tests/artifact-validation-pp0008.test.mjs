@@ -10,7 +10,7 @@ import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 // Actual self-contained classic PDF fixture: xref byte offsets, page tree,
 // optional FlateDecode streams and real BT/Tj text. No private test document.
 function pdfFixture({pages=['Native PDF validation works'],compressed=true,
-  pageParent=2,pageExtra='',catalogExtra='',extraObject=null,contentExtra=''}={}){
+  pageParent=2,pageExtra='',catalogExtra='',extraObject=null,contentExtra='',contentPrefix=''}={}){
   const objects=['',
     '<< /Type /Catalog /Pages 2 0 R '+catalogExtra+' >>',
     '<< /Type /Pages /Kids ['+pages.map((_,i)=>(3+i)+' 0 R').join(' ')+'] /Count '+pages.length+' >>'];
@@ -20,7 +20,7 @@ function pdfFixture({pages=['Native PDF validation works'],compressed=true,
   }
   for(let i=0;i<pages.length;i++){
     const escaped=pages[i].replace(/[\\()]/g,s=>'\\'+s);
-    const bytes=Buffer.from('BT /F1 12 Tf 72 700 Td ('+escaped+') Tj ET'+contentExtra,'ascii');
+    const bytes=Buffer.from(contentPrefix+'BT /F1 12 Tf 72 700 Td ('+escaped+') Tj ET'+contentExtra,'ascii');
     const stream=compressed?deflateSync(bytes):bytes;
     objects[3+pages.length+i]='<< /Length '+stream.length+
       (compressed?' /Filter /FlateDecode':'')+' >>\nstream\n'+stream.toString('latin1')+
@@ -140,6 +140,42 @@ test('PP-0008 ignores PDF comment text and denies encoded action names across MC
     assert.equal(JSON.stringify(result).includes('Ghost required phrase'),false);
     assert.equal(JSON.stringify(result).includes('Visible statement'),false);
   }
+});
+
+test('PP-0008 rejects actual RGB inline image samples containing forged required text',async()=>{
+  // Genuine 14 x 1 RGB/8 image: exactly 42 raw pixel bytes, not operators.
+  // Both a strict PDF reader and plain text extractor should ignore the samples
+  // for visible text extraction: only "Visible statement" is drawn as text.
+  const pixels='BT /F1 12 Tf (Ghost required phrase) Tj ET';
+  assert.equal(Buffer.byteLength(pixels,'ascii'),42);
+  const inline='q\nBI /W 14 /H 1 /BPC 8 /CS /RGB ID\n'+pixels+'\nEI\nQ\n';
+  const host=createReferenceHost({artifactValidationEnabled:true,traceMode:'enforced'});
+  const app=createReadOnlyMcpWebHandler({bearerToken:SECRET,hostname:HOST,
+    artifactValidationEnabled:true});
+  for(const compressed of [false,true]){
+    const bytes=pdfFixture({pages:['Visible statement'],compressed,contentPrefix:inline});
+    assert.match(bytes.toString('latin1'),/^%PDF-1\.4\n/);
+    assert.throws(()=>validatePdfArtifact(input(bytes,['Ghost required phrase']),
+      {enabled:true}),/denied/);
+    assert.throws(()=>validatePdfArtifact(input(bytes,['Visible statement']),
+      {enabled:true}),/denied/,'inline images are entirely unsupported');
+    const blocked=await host.execute(args(input(bytes,['Ghost required phrase'])));
+    assert.notEqual(blocked.status,'completed');
+    assert.equal(blocked.execution,null);
+    assert.equal(blocked.trace.state,'not_released');
+    const reply=await (await app(mcpCall(input(bytes,['Ghost required phrase'])))).json();
+    assert.equal(reply.result.isError,true);
+    assert.equal(reply.result.structuredContent,undefined);
+    assert.equal(JSON.stringify(reply).includes('Ghost required phrase'),false);
+    assert.equal(JSON.stringify(reply).includes('Visible statement'),false);
+  }
+  // Do not reject BI, ID, EI *inside* legitimate strings or PDF comments.
+  const harmless=pdfFixture({pages:['Visible BI ID EI statement'],compressed:false,
+    contentExtra:'\n% BI /W 14 /H 1 ID ignored EI\n'});
+  const verified=validatePdfArtifact(input(harmless,['Visible BI ID EI statement']),
+    {enabled:true});
+  assert.equal(verified.matchedChecks,1);
+  assert.equal(verified.pageCount,1);
 });
 
 test('PP-0008 host release validates authorized bytes and rejects missing checks',async()=>{
