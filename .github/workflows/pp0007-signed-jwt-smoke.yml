@@ -1,0 +1,22 @@
+name: PP-0007 signed JWT production verification (manual only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  signed-jwt-production-smoke:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production-smoke
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify real signed Auth0 token and tampered signature
+        env:
+          PRO_PAPA_SMOKE_CLIENT_ID: ${{ secrets.PRO_PAPA_SMOKE_CLIENT_ID }}
+          PRO_PAPA_SMOKE_CLIENT_SECRET: ${{ secrets.PRO_PAPA_SMOKE_CLIENT_SECRET }}
+          PRO_PAPA_SMOKE_EXPECTED_ISSUER: ${{ secrets.PRO_PAPA_SMOKE_EXPECTED_ISSUER }}
+        run: node bin/pp0007-signed-jwt-smoke.mjs --live

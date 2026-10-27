@@ -1,0 +1,22 @@
+name: PP-0007 production unauthenticated smoke
+on:
+  push:
+    branches:
+      - verification/pp0007-production-smoke
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pp0007-production-smoke
+  cancel-in-progress: false
+jobs:
+  public-negative-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe production metadata and two denied unauthenticated calls (no tokens)
+        run: node bin/pp0007-production-smoke.mjs --live
