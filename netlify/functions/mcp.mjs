@@ -15,6 +15,12 @@ export default async function mcp(request){
     const hostname=env('PRO_PAPA_MCP_PUBLIC_HOSTNAME');
     const issuer=env('PRO_PAPA_AUTH0_ISSUER');
     const resource=env('PRO_PAPA_MCP_RESOURCE');
+    const artifactSetting=env('PRO_PAPA_MCP_ARTIFACT_VALIDATION');
+    if(artifactSetting!==undefined&&!['true','false'].includes(artifactSetting)){
+      warmHandler=null;
+      throw Error('Invalid protected artifact validation setting');
+    }
+    const artifactValidationEnabled=artifactSetting==='true';
     if(typeof hostname!=='string'||!hostname||
        typeof issuer!=='string'||!issuer||
        typeof resource!=='string'||!resource){
@@ -23,7 +29,8 @@ export default async function mcp(request){
     }
     let current=warmHandler;
     if(!current||current.hostname!==hostname||
-       current.issuer!==issuer||current.resource!==resource){
+       current.issuer!==issuer||current.resource!==resource||
+       current.artifactValidationEnabled!==artifactValidationEnabled){
       // Invalidate before revalidating. Invalid configuration cannot
       // fall back to a previously privileged handler.
       warmHandler=null;
@@ -31,9 +38,9 @@ export default async function mcp(request){
       const handler=createReadOnlyMcpWebHandler({
         oauthValidator,hostname,allowedOrigins:[],
         allowRepositories:['Papa3445/Pro-Papa'],
-        githubResearch:true,githubToken:undefined
+        githubResearch:true,githubToken:undefined,artifactValidationEnabled
       });
-      current=Object.freeze({hostname,issuer,resource,handler});
+      current=Object.freeze({hostname,issuer,resource,artifactValidationEnabled,handler});
       warmHandler=current;
     }
     // Snapshot handles a concurrent config replacement safely.
