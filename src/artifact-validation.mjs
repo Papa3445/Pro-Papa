@@ -9,7 +9,7 @@ const MAX_TEXT_BYTES=262144;
 const SHA=/^[a-f0-9]{64}$/;
 const isObject=x=>x!==null&&typeof x==='object'&&!Array.isArray(x)&&
   (Object.getPrototypeOf(x)===Object.prototype||Object.getPrototypeOf(x)===null);
-const reject=()=>{throw Error('Artifact validation denied: invalid or unsupported PDF');};
+const reject=()=>{if(process.env.PP0008_DIAGNOSTIC==='synthetic_ci_only')console.error('PP0008 synthetic fixture rejection',new Error().stack);throw Error('Artifact validation denied: invalid or unsupported PDF');};
 const ref=(source,key)=>{
   const match=new RegExp('/'+key+'\\s+(\\d+)\\s+0\\s+R\\b').exec(source);
   if(!match)reject();
