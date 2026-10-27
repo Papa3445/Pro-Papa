@@ -9,7 +9,7 @@ const MAX_TEXT_BYTES=262144;
 const SHA=/^[a-f0-9]{64}$/;
 const isObject=x=>x!==null&&typeof x==='object'&&!Array.isArray(x)&&
   (Object.getPrototypeOf(x)===Object.prototype||Object.getPrototypeOf(x)===null);
-const reject=()=>{if(process.env.PP0008_DIAGNOSTIC==='synthetic_ci_only')console.error('PP0008 synthetic fixture rejection',new Error().stack);throw Error('Artifact validation denied: invalid or unsupported PDF');};
+const reject=()=>{throw Error('Artifact validation denied: invalid or unsupported PDF');};
 const ref=(source,key)=>{
   const match=new RegExp('/'+key+'\\s+(\\d+)\\s+0\\s+R\\b').exec(source);
   if(!match)reject();
@@ -171,7 +171,7 @@ function parsePDF(bytes){
       if(!begin||!Number.isSafeInteger(length)||length<1||length>MAX_PDF_BYTES)reject();
       const start=begin.index+begin[0].length;
       const streamBytes=Buffer.from(obj.slice(start,start+length),'latin1');
-      if(streamBytes.length!==length||!/^\r?\nendstream\s*$/.test(obj.slice(start+length)))reject();
+      if(streamBytes.length!==length||!/^(?:\r?\n)?endstream\s*$/.test(obj.slice(start+length)))reject();
       const header=obj.slice(0,begin.index);
       const filter=/\/Filter\s*(\[[^\]]{1,80}\]|\/[A-Za-z0-9]+)/.exec(header)?.[1];
       let decoded=streamBytes;
