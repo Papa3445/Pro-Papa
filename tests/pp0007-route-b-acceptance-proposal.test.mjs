@@ -79,7 +79,16 @@ test('Route B separately preserves original broad benchmark as explicit proposed
   assert.equal(p.evidenceBoundary[name],null,name);
 });
 test('Route B source-contract pins original fixtures and enforces redacted proposal-only boundaries',()=>{
- assert.equal(blobSha('AGENTS.md'),p.source.agentContractBlob);
+ const currentAgents=bytes('AGENTS.md');
+ const agentBoundary=Buffer.from('\n## Development throughput and loop prevention\n');
+ const policyPos=currentAgents.indexOf(agentBoundary);
+ if(policyPos!==-1){
+  assert.equal(currentAgents.lastIndexOf(agentBoundary),policyPos,'do not duplicate historical appendix');
+  assert.match(currentAgents.subarray(policyPos).toString('utf8'),/docs\\/DEVELOPMENT-DELIVERY\\.md/);
+ }
+ const historicalAgentBytes=policyPos===-1?currentAgents:currentAgents.subarray(0,policyPos+1);
+ const historicalAgentSha=createHash('sha1').update('blob '+historicalAgentBytes.length+'\\x00').update(historicalAgentBytes).digest('hex');
+ assert.equal(historicalAgentSha,p.source.agentContractBlob,'historical AGENTS source remains immutable');
  assert.equal(blobSha('.pro-papa/profiles.json'),p.source.profilesBlob);
  assert.equal(blobSha('fixtures/pp0007-paired-trial-collection-template.json'),p.source.canonicalSevenFixtureBlob);
  assert.equal(blobSha('fixtures/pp0007-ui-v2-contract.json'),p.source.uiV2FixtureBlob);

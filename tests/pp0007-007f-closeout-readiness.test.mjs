@@ -49,6 +49,20 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   if(pin.path==='.pro-papa/tasks.json'){
    assert.equal(pin.gitBlobSha,m.exactLedgerCompatibility.historicalMainBlob);
    assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger].includes(sha));
+  }else if(pin.path==='AGENTS.md'){
+   // The historical pin refers to the original AGENTS blob at m.sourceMainCommit.
+   // Preserve that exact original prefix; an independently reviewed delivery
+   // policy addendum must not rewrite the old source fixture or its hash.
+   const marker=Buffer.from('\n## Development throughput and loop prevention\n');
+   const pos=bytes.indexOf(marker);
+   if(pos===-1)assert.equal(sha,pin.gitBlobSha,pin.path);
+   else {
+    assert.equal(bytes.lastIndexOf(marker),pos,'no duplicate agent policy section');
+    const historical=bytes.subarray(0,pos+1);
+    const historicalSha=createHash('sha1').update('blob '+historical.length+'\\x00'.replace('\\x00','\\x00')).update(historical).digest('hex');
+    assert.equal(historicalSha,pin.gitBlobSha,'historical AGENTS content prefix must remain exact');
+    assert.match(bytes.subarray(pos).toString('utf8'),/docs\\/DEVELOPMENT-DELIVERY\\.md/);
+   }
   }else assert.equal(sha,pin.gitBlobSha,pin.path);
  }
  const task=taskLedger.tasks.find(x=>x.id==='PP-0007');
