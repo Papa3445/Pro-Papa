@@ -56,6 +56,33 @@ function textFromStream(stream){
   if(!collected.trim())reject();
   return collected.replace(/\s+/g,' ').trim();
 }
+// PDF ASCII85Decode (as used by ReportLab) with explicit output bound.
+function decodeASCII85(bytes){
+  const raw=bytes.toString('ascii').replace(/\s+/g,'');
+  if(!raw.endsWith('~>'))reject();
+  const data=raw.slice(0,-2),out=[];let group='';
+  function emit(digits,length){
+    let n=0;
+    for(const d of digits)n=n*85+(d.charCodeAt(0)-33);
+    if(n>0xffffffff||!Number.isSafeInteger(n))reject();
+    out.push(...[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].slice(0,length));
+    if(out.length>MAX_PDF_BYTES)reject();
+  }
+  for(const ch of data){
+    if(ch==='z'){
+      if(group)reject();
+      out.push(0,0,0,0);
+      if(out.length>MAX_PDF_BYTES)reject();
+    }else{
+      if(ch<'!'||ch>'u')reject();
+      group+=ch;
+      if(group.length===5){emit(group,4);group='';}
+    }
+  }
+  if(group.length===1)reject();
+  if(group.length>1)emit(group.padEnd(5,'u'),group.length-1);
+  return Buffer.from(out);
+}
 function parsePDF(bytes){
   const raw=bytes.toString('latin1');
   if(!/^%PDF-1\.[0-7][\r\n]/.test(raw))reject();
@@ -146,9 +173,16 @@ function parsePDF(bytes){
       const streamBytes=Buffer.from(obj.slice(start,start+length),'latin1');
       if(streamBytes.length!==length||!/^\r?\nendstream\s*$/.test(obj.slice(start+length)))reject();
       const header=obj.slice(0,begin.index);
-      if(/\/Filter\b/.test(header)&&!/\/Filter\s*\/FlateDecode\b/.test(header))reject();
-      const decoded=/\/Filter\b/.test(header)?
-        inflateSync(streamBytes,{maxOutputLength:MAX_TEXT_BYTES}):streamBytes;
+      const filter=/\/Filter\s*(\[[^\]]{1,80}\]|\/[A-Za-z0-9]+)/.exec(header)?.[1];
+      let decoded=streamBytes;
+      if(/\/Filter\b/.test(header)&&!filter)reject();
+      if(filter){
+        if(/^\/FlateDecode$/.test(filter))
+          decoded=inflateSync(streamBytes,{maxOutputLength:MAX_TEXT_BYTES});
+        else if(/^\[\s*\/ASCII85Decode\s+\/FlateDecode\s*\]$/.test(filter))
+          decoded=inflateSync(decodeASCII85(streamBytes),{maxOutputLength:MAX_TEXT_BYTES});
+        else reject();
+      }
       if(decoded.length>MAX_TEXT_BYTES)reject();
       pageText+=' '+textFromStream(decoded);
     }
