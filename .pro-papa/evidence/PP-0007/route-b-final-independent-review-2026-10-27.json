@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent_conditional_milestone_review_provenance",
+  "taskId": "PP-0007",
+  "reviewActor": "papa4568",
+  "implementerOwner": "chatgpt-implementation",
+  "authoritativeSource": {
+    "repository": "Papa3445/Pro-Papa",
+    "baselineCommit": "6fa479f20e1c94643ebf0b7ceaa4509caaacf189",
+    "baselineLedgerRevision": 75,
+    "baselineLedgerGitBlob": "7bf9061e1463521d045183010b29f1d890b02a4a",
+    "productionEvidence": "https://github.com/Papa3445/Pro-Papa/actions/runs/40553891521"
+  },
+  "authenticatedReviewerDecision": {
+    "url": "https://github.com/Papa3445/Pro-Papa/issues/36#issuecomment-6451056371",
+    "commentId": 6451056371,
+    "actor": "papa4568",
+    "scope": "conditional_bounded_route_b_acceptance_only",
+    "fullMilestoneFinalApprovedInThatComment": false
+  },
+  "finalReviewGate": {
+    "pullRequest": 53,
+    "baseRef": "main",
+    "baseSha": "6fa479f20e1c94643ebf0b7ceaa4509caaacf189",
+    "requiresActualIndependentCurrentHeadApproval": true,
+    "requestedReviewer": "papa4568",
+    "noApprovalRecordedInThisFile": true,
+    "realProviderDecisionMustMatchEvidenceActor": true
+  },
+  "observed": {
+    "readOnlyMcpCalls": [
+      "math.sum",
+      "text.metrics",
+      "research"
+    ],
+    "actualSignedAuth0PositiveAndTamperedNegative": true,
+    "latestMainCI": "https://github.com/Papa3445/Pro-Papa/actions/runs/40562582953",
+    "trustedGitHubBranchProtectionObserved": true
+  },
+  "explicitlyDeferred": {
+    "originalBenchmark": "PP-0012",
+    "auth0JwksCacheDistributedQuotaAndRollback": "PP-0013",
+    "payloadAttribution": "PP-0009",
+    "issue37MustRemainOpen": true,
+    "liveWrongAudience": false,
+    "liveWrongScope": false,
+    "liveExpiredJwt": false,
+    "warmCacheHitsMeasured": false,
+    "rollbackExercised": false,
+    "distributedQuotaEstablished": false,
+    "globalChatGPTInterceptionEstablished": false,
+    "statisticalSuperiorityProven": false
+  },
+  "boundaries": {
+    "fileBackedReviewPassMeansVerifiedConditionalReviewSourceExists": true,
+    "finalGitHubApprovalSeparatelyRequired": true,
+    "mergeAuthorizationGiven": false,
+    "netlifyDeploymentAuthorizationGiven": false,
+    "unmergedCandidateNotCanonicalTaskCloseout": true
+  }
+}
