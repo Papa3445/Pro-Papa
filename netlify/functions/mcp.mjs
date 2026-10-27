@@ -16,7 +16,7 @@ export default async function mcp(request){
     const issuer=env('PRO_PAPA_AUTH0_ISSUER');
     const resource=env('PRO_PAPA_MCP_RESOURCE');
     const artifactSetting=env('PRO_PAPA_MCP_ARTIFACT_VALIDATION');
-    if(artifactSetting!==undefined&&!['true','false'].includes(artifactSetting)){
+    if(artifactSetting!=null&&!['true','false'].includes(artifactSetting)){
       warmHandler=null;
       throw Error('Invalid protected artifact validation setting');
     }
