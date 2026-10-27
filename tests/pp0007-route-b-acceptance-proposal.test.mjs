@@ -84,10 +84,10 @@ test('Route B source-contract pins original fixtures and enforces redacted propo
  const policyPos=currentAgents.indexOf(agentBoundary);
  if(policyPos!==-1){
   assert.equal(currentAgents.lastIndexOf(agentBoundary),policyPos,'do not duplicate historical appendix');
-  assert.match(currentAgents.subarray(policyPos).toString('utf8'),/docs\\/DEVELOPMENT-DELIVERY\\.md/);
+  assert.ok(currentAgents.subarray(policyPos).toString('utf8').includes('docs/DEVELOPMENT-DELIVERY.md'));
  }
  const historicalAgentBytes=policyPos===-1?currentAgents:currentAgents.subarray(0,policyPos+1);
- const historicalAgentSha=createHash('sha1').update('blob '+historicalAgentBytes.length+'\\x00').update(historicalAgentBytes).digest('hex');
+ const historicalAgentSha=createHash('sha1').update('blob '+historicalAgentBytes.length+String.fromCharCode(0)).update(historicalAgentBytes).digest('hex');
  assert.equal(historicalAgentSha,p.source.agentContractBlob,'historical AGENTS source remains immutable');
  assert.equal(blobSha('.pro-papa/profiles.json'),p.source.profilesBlob);
  assert.equal(blobSha('fixtures/pp0007-paired-trial-collection-template.json'),p.source.canonicalSevenFixtureBlob);

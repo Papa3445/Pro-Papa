@@ -59,9 +59,9 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
    else {
     assert.equal(bytes.lastIndexOf(marker),pos,'no duplicate agent policy section');
     const historical=bytes.subarray(0,pos+1);
-    const historicalSha=createHash('sha1').update('blob '+historical.length+'\\x00'.replace('\\x00','\\x00')).update(historical).digest('hex');
+    const historicalSha=createHash('sha1').update('blob '+historical.length+String.fromCharCode(0)).update(historical).digest('hex');
     assert.equal(historicalSha,pin.gitBlobSha,'historical AGENTS content prefix must remain exact');
-    assert.match(bytes.subarray(pos).toString('utf8'),/docs\\/DEVELOPMENT-DELIVERY\\.md/);
+    assert.ok(bytes.subarray(pos).toString('utf8').includes('docs/DEVELOPMENT-DELIVERY.md'));
    }
   }else assert.equal(sha,pin.gitBlobSha,pin.path);
  }
