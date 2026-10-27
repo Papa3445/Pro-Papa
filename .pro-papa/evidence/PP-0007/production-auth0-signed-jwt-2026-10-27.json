@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "kind": "bounded_authenticated_production_observation",
+  "recordedDate": "2026-10-27",
+  "trustedSource": {
+    "repository": "Papa3445/Pro-Papa",
+    "protectedMainCommit": "837283019ba062933ec2775c27f405f8bcace8e4",
+    "priorTaskLedgerGitBlobSha": "a28a48789714c1051482b7c3201aac4e9a8c0a69",
+    "signedSmokeSourceGitBlobSha": "46ed5b6d540ef72d2d59719272bc7e9d54718d24",
+    "workflowSourceGitBlobSha": "c331bd57c68b59eccd0dd6a77cf685b919f562be",
+    "netlifyFunctionSourceGitBlobSha": "3c225ee178f3c949aff60c0e75b9ef40bf69a7d4"
+  },
+  "production": {
+    "site": "pro-papa-mcp",
+    "origin": "https://pro-papa-mcp.netlify.app",
+    "deployId": "6ae0e058d74ba6be80c2d68b",
+    "deployUrl": "https://app.netlify.com/projects/pro-papa-mcp/deploys/6ae0e058d74ba6be80c2d68b",
+    "state": "ready",
+    "context": "production",
+    "commitRef": "837283019ba062933ec2775c27f405f8bcace8e4",
+    "publishedAt": "2026-10-27T17:33:31.258Z"
+  },
+  "manualAuthorizedRun": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40553891521",
+    "runId": 40553891521,
+    "attempt": 1,
+    "jobId": 122364642922,
+    "event": "workflow_dispatch",
+    "actor": "Papa3445",
+    "environment": "production-smoke",
+    "approvedBy": "papa4568",
+    "environmentApprovalRecorded": true,
+    "environmentAdminBypass": false,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "837283019ba062933ec2775c27f405f8bcace8e4",
+    "verifiedLogTimestamp": "2026-10-27T18:15:19.3742903Z",
+    "command": "node bin/pp0007-signed-jwt-smoke.mjs --live",
+    "observedChecks": [
+      "pinned_auth0_token_issued",
+      "authorized_math_sum_released",
+      "tampered_signature_denied"
+    ],
+    "authorizedMathInput": [
+      3,
+      4
+    ],
+    "authorizedMathTotal": 7
+  },
+  "negativeProductionRun": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40444439078/attempts/3",
+    "runId": 40444439078,
+    "attempt": 3,
+    "jobId": 122357444463,
+    "checks": [
+      "oauth_resource_metadata",
+      "unauthenticated",
+      "malformed_token"
+    ],
+    "result": "passed",
+    "reusedPinnedSourceCommit": "cf03bafacad0055f2f3534e9ed987ce799281bb5"
+  },
+  "integratedCI": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40551671006",
+    "runId": 40551671006,
+    "headSha": "837283019ba062933ec2775c27f405f8bcace8e4",
+    "testsPassed": 296,
+    "testsFailed": 0
+  },
+  "explicitLimitations": {
+    "actualWrongScopeJwtTested": false,
+    "actualWrongAudienceJwtTested": false,
+    "actualExpiredJwtTested": false,
+    "productionJwksRotationTested": false,
+    "productionWarmCacheHitMeasured": false,
+    "distributedConcurrencyQuotaTested": false,
+    "productionRollbackExecuted": false,
+    "endToEndChatGptInterceptionVerified": false,
+    "originalSevenCaseBenchmarkCollected": false,
+    "realTotalTokens": null,
+    "realHumanCorrections": null,
+    "matchedEndToEndLatency": null,
+    "matchedDirectAssistantQuality": null,
+    "ownerFinalCloseoutAuthorized": false
+  },
+  "evidenceScope": "Provider-observed bounded manual Auth0 M2M positive and tampered-signature negative checks; runner log is a tool output claim corroborated by reviewed source, not direct access to tokens. No public secret, JWT, issuer tenant ID, personal chat text, production stress or rollback.",
+  "sourceComment": "https://github.com/Papa3445/Pro-Papa/issues/37#issuecomment-6450106181",
+  "milestoneDecision": "keep_in_progress_pending_specific_revised_acceptance_review_and_residual_gaps"
+}

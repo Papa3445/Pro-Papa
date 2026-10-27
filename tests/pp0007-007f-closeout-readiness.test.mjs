@@ -11,6 +11,7 @@ const v2=read('fixtures/pp0007-ui-v2-contract.json');
 const proposal=read('fixtures/pp0007-route-b-acceptance-proposal.json');
 const application=read('fixtures/pp0007-route-b-application-authorization.json');
 const exactApplicationLedger='a28a48789714c1051482b7c3201aac4e9a8c0a69';
+const evidenceLedger='7bf9061e1463521d045183010b29f1d890b02a4a';
 const exactCriteria=[
 'Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request',
 'For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts',
@@ -28,12 +29,13 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  })();
  const compat=m.exactLedgerCompatibility;
  assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
- assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger].includes(ledgerSha),
+ assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger].includes(ledgerSha),
    'only exact original or separately approved roadmap-preview ledger bytes may be used');
- const isApplied=ledgerSha===exactApplicationLedger;
+ const isEvidence=ledgerSha===evidenceLedger;
+ const isApplied=isEvidence||ledgerSha===exactApplicationLedger;
  const isPreview=isApplied||ledgerSha===compat.separateApprovedProposedBlob;
  assert.equal(application.candidateLedgerGitBlobSha,exactApplicationLedger);
- assert.equal(taskLedger.revision,isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
+ assert.equal(taskLedger.revision,isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
  assert.equal(taskLedger.tasks.length,isApplied?12:isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
  if(isPreview){
    assert.deepEqual(taskLedger.tasks.slice(7,11).map(x=>x.id),compat.addedFutureTaskIds);
@@ -48,7 +50,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const sha=createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
   if(pin.path==='.pro-papa/tasks.json'){
    assert.equal(pin.gitBlobSha,m.exactLedgerCompatibility.historicalMainBlob);
-   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger].includes(sha));
+   assert.ok([pin.gitBlobSha,m.exactLedgerCompatibility.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger].includes(sha));
   }else if(pin.path==='AGENTS.md'){
    // The historical pin refers to the original AGENTS blob at m.sourceMainCommit.
    // Preserve that exact original prefix; an independently reviewed delivery
@@ -81,7 +83,15 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  assert.equal(original.trials.length,7);
  assert.ok(original.trials.every(x=>x.baselineTrial===null&&x.hostTrial===null&&x.independentQualityAssessment===null));
  assert.equal(v2.status,'predeclared_not_executed');
- assert.deepEqual(m.currentReviewTarget, {...task.reviewTarget,isCurrentCloseoutTarget:false});
+ // 007-F is a frozen historical blocked-readiness decision, not an updated
+ // milestone verdict. New current review pins must not rewrite its source record.
+ const historicalTarget=isEvidence?proposal.source.originalReviewTarget:task.reviewTarget;
+ assert.deepEqual(m.currentReviewTarget,{...historicalTarget,isCurrentCloseoutTarget:false});
+ if(isEvidence){
+  assert.deepEqual(task.reviewTarget,{repository:'Papa3445/Pro-Papa',pullRequest:52,
+    baseRef:'main',baseSha:'837283019ba062933ec2775c27f405f8bcace8e4'});
+  assert.equal(task.evidence.length,83);
+ }
 });
 test('007-F fails task-success promotion despite scoped approved CI/reviews',()=>{
  assert.deepEqual(m.acceptance.map(x=>x.verdict),['not_met','partial','partial','partial']);
