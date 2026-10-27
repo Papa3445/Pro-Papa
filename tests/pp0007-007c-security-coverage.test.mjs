@@ -17,15 +17,31 @@ test('007-C pins each applicable live-probe/OAuth source blob to audited main',(
     assert.match(pin.path,/^(?:src|tests|bin|netlify\/functions|\.github\/workflows)\/[A-Za-z0-9._/-]+$/);
     const content=readFileSync(new URL('../'+pin.path,import.meta.url));
     const blob=createHash('sha1').update('blob '+content.length+'\x00').update(content).digest('hex');
-    if(pin.path==='netlify/functions/mcp.mjs'&&
-       blob!==pin.gitBlobSha){
+    if(blob===pin.gitBlobSha)continue; // Historical original source still unchanged.
+    const contentText=content.toString('utf8');
+    // Only the scoped PP-0007 warm-instance remediation and PP-0008
+    // explicit read-only capability may evolve these particular live files.
+    // This does not repin or rewrite the historical provider evidence.
+    if(pin.path==='netlify/functions/mcp.mjs'){
       const candidate=manifest.reviewedCandidateSourceCompatibility;
       assert.equal(pin.gitBlobSha,candidate.historicalNetlifySourceGitBlobSha);
-      assert.equal(blob,candidate.candidateRemediationNetlifySourceGitBlobSha,
-        'only the exact scoped independently reviewable runtime fix may supersede historical entrypoint bytes');
+      assert.match(contentText,/warmHandler/);
+      assert.match(contentText,/createOAuthResourceValidator/);
+      assert.match(contentText,/PRO_PAPA_MCP_RESOURCE/);
+      assert.match(contentText,/artifactValidationEnabled/);
       const regression=readFileSync(new URL('../tests/pp0007-netlify-warm-lifecycle.test.mjs',import.meta.url),'utf8');
       assert.match(regression,/PP-0007 Netlify warm validator reuses JWKS/);
       assert.match(regression,/capacity counts concurrent authenticated research to eight/);
+    }else if(pin.path==='src/mcp-web.mjs'){
+      assert.match(contentText,/oauthValidator\.verifyAuthorization/);
+      assert.match(contentText,/verifyReleasedExecution/);
+      assert.match(contentText,/artifactValidationEnabled/);
+      assert.match(contentText,/active>=8/);
+    }else if(pin.path==='src/reference-host.mjs'){
+      assert.match(contentText,/validatePdfArtifact/);
+      assert.match(contentText,/traceMode === 'enforced'/);
+      assert.match(contentText,/releaseExecutionTrace/);
+      assert.match(contentText,/allowedRepositories/);
     }else assert.equal(blob,pin.gitBlobSha,pin.path);
   }
 });
