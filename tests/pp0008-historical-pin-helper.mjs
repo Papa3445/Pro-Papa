@@ -16,7 +16,12 @@ export function pp0007LedgerSnapshot(ledger){
   const clone=structuredClone(ledger);
   const work=clone.tasks.find(t=>t.id==='PP-0008');
   if(work?.status!=='in_progress'||work.owner!=='chatgpt-implementation'||
-     work.requiresTrustedReview!==true||work.evidence.length!==0||
+     work.requiresTrustedReview!==true||
+     work.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
+     work.reviewTarget?.pullRequest!==54||
+     work.reviewTarget?.baseRef!=='main'||
+     work.reviewTarget?.baseSha!=='45d49e7fd9f0c5ec136f0869c66e7c4c64de6e7b'||
+     work.evidence.length!==0||
      work.blockedReason!==null)throw Error('Unexpected successor task transition');
   if(clone.tasks.filter(t=>t.status==='in_progress').length!==1||
      clone.tasks.find(t=>t.id==='PP-0007')?.status!=='verified'||
@@ -26,6 +31,7 @@ export function pp0007LedgerSnapshot(ledger){
   clone.revision=76;
   work.status='pending';work.owner=null;
   delete work.requiresTrustedReview;
+  delete work.reviewTarget;
   const canonicalBlob=sha(JSON.stringify(clone,null,2)+'\n');
   if(canonicalBlob!==CLOSURE_BLOB)throw Error('PP-0007 historical canonical ledger bytes changed');
   return {isSuccessor:true,canonicalBlob};
