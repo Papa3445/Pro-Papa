@@ -1428,14 +1428,23 @@
           "sha256": "712d58efb9c478864994daeb2deafefe86400c02af07661e780d7ae0c0e43100",
           "recordedAt": "2026-10-24T03:53:59.890Z",
           "note": "Provider configuration gates, metadata route, tool scopes and no static bearer fallback documented. No production Auth0/ChatGPT proof."
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "path": ".pro-papa/evidence/PP-0007/production-auth0-signed-jwt-2026-10-27.json",
+          "sha256": "5e30604377b37f8f7bccc341562eae497031b368e9869746735e7369528a58b7",
+          "recordedAt": "2026-10-27T18:36:27.890Z",
+          "note": "Real 2026-10-27 protected production Auth0 M2M run 40553891521: approved by independent papa4568, signed math.sum(3,4)=7 released; tampered JWT signature denied. Netlify ready deploy commit 8372830..., negative live smoke passed. Scope limited to covered cases; no global cache quota, expiry/wrong-scope/audience JWT, rollback, all-turn interception or matched seven-case success."
         }
       ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
-        "pullRequest": 27,
+        "pullRequest": 52,
         "baseRef": "main",
-        "baseSha": "8b058d1a4cf56dee46af0df6895c066f496bf636"
+        "baseSha": "837283019ba062933ec2775c27f405f8bcace8e4"
       }
     },
     {
@@ -1539,5 +1548,5 @@
       "evidence": []
     }
   ],
-  "revision": 74
+  "revision": 75
 }
