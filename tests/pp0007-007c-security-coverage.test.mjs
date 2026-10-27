@@ -3,6 +3,13 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const manifest=JSON.parse(readFileSync(new URL('../fixtures/pp0007-007c-security-coverage.json',import.meta.url),'utf8'));
+// Historical evidence pins remain immutable. Successor modifications are
+// accepted ONLY at these exact audited-by-CI candidate source blob hashes.
+const pp0008SuccessorBlobs=Object.freeze({
+  'netlify/functions/mcp.mjs':'0ef7bb4244705fcc6cace0a55c20b679d83770c0',
+  'src/mcp-web.mjs':'c596870eaa3e8311c99ee9d7154ae199530a4ca9',
+  'src/reference-host.mjs':'88df62ac32acd62cf0a6ff38ce188153474ddd2c'
+});
 const expectedIds=['metadata-200','get-mcp-405','no-bearer-tools-call-denied',
   'invalid-bearer-tools-call-denied','cross-origin-403'];
 
@@ -18,6 +25,8 @@ test('007-C pins each applicable live-probe/OAuth source blob to audited main',(
     const content=readFileSync(new URL('../'+pin.path,import.meta.url));
     const blob=createHash('sha1').update('blob '+content.length+'\x00').update(content).digest('hex');
     if(blob===pin.gitBlobSha)continue; // Historical original source still unchanged.
+    assert.equal(blob,pp0008SuccessorBlobs[pin.path],
+      'Unreviewed PP-0008 mutation to PP-0007 security-critical source: '+pin.path);
     const contentText=content.toString('utf8');
     // Only the scoped PP-0007 warm-instance remediation and PP-0008
     // explicit read-only capability may evolve these particular live files.
