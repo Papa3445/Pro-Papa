@@ -11,7 +11,7 @@ const evidenceLedgerSha='7bf9061e1463521d045183010b29f1d890b02a4a';
 const productionEvidence='.pro-papa/evidence/PP-0007/production-auth0-signed-jwt-2026-10-27.json';
 const productionEvidenceSha256='5e30604377b37f8f7bccc341562eae497031b368e9869746735e7369528a58b7';
 const hashSha256=x=>createHash('sha256').update(readFileSync(new URL(x,at))).digest('hex');
-const hashBlobText=x=>{const b=Buffer.from(x);return createHash('sha1').update('blob '+b.length+'\\x00').update(b).digest('hex');};
+const hashBlobText=x=>{const b=Buffer.from(x);return createHash('sha1').update('blob '+b.length+String.fromCharCode(0)).update(b).digest('hex');};
 test('Route B candidate ledger applies exact approved wording and preserves all historical evidence bytes',()=>{
  // Preserve the original reviewed Route B rev74 bytes by reconstructing the
  // previous ledger from the evidence-only rev75 transition, not rewriting its fixture.
@@ -22,7 +22,7 @@ test('Route B candidate ledger applies exact approved wording and preserves all 
  const previousActive=previous.tasks.find(x=>x.id==='PP-0007');
  previousActive.evidence=previousActive.evidence.slice(0,82);
  previousActive.reviewTarget=proposal.source.originalReviewTarget;
- assert.equal(hashBlobText(JSON.stringify(previous,null,2)+'\\n'),app.candidateLedgerGitBlobSha);
+ assert.equal(hashBlobText(JSON.stringify(previous,null,2)+String.fromCharCode(10)),app.candidateLedgerGitBlobSha);
  assert.equal(app.reviewedProposalHead,'c2d06b2ccd5e127d42236e93dbf3c6a8817dd0a8');
  assert.equal(blob('fixtures/pp0007-route-b-acceptance-proposal.json'),app.reviewedProposalGitBlobSha);
  assert.equal(active.status,'in_progress'); assert.equal(active.owner,'chatgpt-implementation');
