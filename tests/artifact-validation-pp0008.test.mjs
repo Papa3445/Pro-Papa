@@ -9,13 +9,14 @@ import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 
 // Actual self-contained classic PDF fixture: xref byte offsets, page tree,
 // optional FlateDecode streams and real BT/Tj text. No private test document.
-function pdfFixture({pages=['Native PDF validation works'],compressed=true}={}){
+function pdfFixture({pages=['Native PDF validation works'],compressed=true,
+  pageParent=2,pageExtra=''}={}){
   const objects=['',
     '<< /Type /Catalog /Pages 2 0 R >>',
     '<< /Type /Pages /Kids ['+pages.map((_,i)=>(3+i)+' 0 R').join(' ')+'] /Count '+pages.length+' >>'];
   for(let i=0;i<pages.length;i++){
-    objects[3+i]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << >> /Contents '+
-      (3+pages.length+i)+' 0 R >>';
+    objects[3+i]='<< /Type /Page /Parent '+pageParent+' 0 R /MediaBox [0 0 612 792] /Resources << >> /Contents '+
+      (3+pages.length+i)+' 0 R '+pageExtra+' >>';
   }
   for(let i=0;i<pages.length;i++){
     const escaped=pages[i].replace(/[\\()]/g,s=>'\\'+s);
@@ -87,6 +88,26 @@ test('PP-0008 rejects malformed, contradictory and dangerous PDFs and tampered c
   for(const probe of probes)assert.throws(()=>validatePdfArtifact(probe,{enabled:true}),
     /denied/,JSON.stringify(Object.keys(probe)));
 });
+test('PP-0008 rejects malformed tree links, interactive annotations, and cross-page false matches',async()=>{
+  const mismatchedParent=pdfFixture({pageParent:1});
+  const annotation=pdfFixture({pageExtra:'/Annots []'});
+  const extraAction=pdfFixture({pageExtra:'/OpenAction 10 0 R'});
+  const separatePages=pdfFixture({pages:['Alpha','Beta']});
+  for(const pdf of [mismatchedParent,annotation,extraAction]){
+    assert.throws(()=>validatePdfArtifact(input(pdf,['Native']),{enabled:true}),/denied/);
+  }
+  assert.throws(()=>validatePdfArtifact(input(separatePages,['Alpha Beta']),
+    {enabled:true}),/denied/);
+  // Both independently extractable page-local values remain valid.
+  assert.equal(validatePdfArtifact(input(separatePages,['Alpha','Beta']),
+    {enabled:true}).matchedChecks,2);
+  const host=createReferenceHost({artifactValidationEnabled:true,traceMode:'enforced'});
+  const denied=await host.execute(args(input(separatePages,['Alpha Beta'])));
+  assert.notEqual(denied.status,'completed');
+  assert.equal(denied.trace.state,'not_released');
+  assert.equal(denied.execution,null);
+});
+
 test('PP-0008 host release validates authorized bytes and rejects missing checks',async()=>{
   const bytes=pdfFixture();
   const host=createReferenceHost({artifactValidationEnabled:true,traceMode:'enforced'});
