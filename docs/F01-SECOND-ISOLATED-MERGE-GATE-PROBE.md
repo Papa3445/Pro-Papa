@@ -22,3 +22,11 @@ review+CI rules. The branch **MUST NEVER be merged into `main`**.
 The reviewer is asked to approve only this nonproduction, explicitly
 nonmergeable-by-policy **test exercise**, not a product change. Close the
 PR without merging after tests, and don't tamper with code on `main`.
+
+## Stage C — new reviewable change
+
+This harmless new paragraph is deliberately added **after** independent
+review of the previous commit, to verify that stale approval no longer
+qualifies when a reviewable commit changes the proposed pull request.
+
+No real software, CI workflow or task evidence was changed. Never merge.
