@@ -37,25 +37,88 @@ function decodeString(raw){
   if(bytes.some(n=>n>126||(n<32&&n!==9&&n!==10&&n!==13)))reject();
   return Buffer.from(bytes).toString('ascii');
 }
-function textFromStream(stream){
-  const str=stream.toString('latin1');
-  let collected='';
-  const sections=[...str.matchAll(/\bBT\b([\s\S]*?)\bET\b/g)];
-  if(sections.length===0)reject();
-  for(const section of sections){
-    const ops=section[1].matchAll(/\(((?:\\[\s\S]|[^\\)])*)\)\s*Tj\b|\[((?:[^\]\\]|\\[\s\S])*)\]\s*TJ\b/g);
-    for(const op of ops){
-      if(op[1]!==undefined)collected+=decodeString(op[1])+' ';
-      else {
-        const strings=[...op[2].matchAll(/\(((?:\\[\s\S]|[^\\)])*)\)/g)];
-        if(!strings.length)reject();
-        collected+=strings.map(s=>decodeString(s[1])).join('')+' ';
+// A deliberately small PDF content-stream lexer. Comments are not executable
+// tokens and a parenthesized literal string cannot introduce PDF operators.
+function contentTokens(stream){
+  const raw=stream.toString('latin1');
+  const tokens=[];
+  const delim=ch=>ch===undefined||/[\x00\t\n\f\r /%()[\]{}<>]/.test(ch);
+  for(let i=0;i<raw.length;){
+    const ch=raw[i];
+    if(/[\x00\t\n\f\r ]/.test(ch)){i++;continue;}
+    if(ch==='%'){
+      while(i<raw.length&&!/[\n\r]/.test(raw[i]))i++;
+      continue;
+    }
+    if(ch==='('){
+      let depth=1;const start=++i;
+      while(i<raw.length&&depth>0){
+        if(raw[i]==='\\'){i+=2;continue;}
+        if(raw[i]==='(')depth++;
+        if(raw[i]===')')depth--;
+        i++;
       }
+      if(depth!==0)reject();
+      tokens.push({kind:'string',value:decodeString(raw.slice(start,i-1))});
+    }else if(ch==='['||ch===']'){
+      tokens.push({kind:ch});i++;
+    }else if(ch==='/'){
+      const start=++i;
+      while(i<raw.length&&!delim(raw[i]))i++;
+      const name=raw.slice(start,i);
+      // Escaped names can disguise an operator or font identifier.
+      if(!name||name.includes('#'))reject();
+      tokens.push({kind:'name',value:name});
+    }else if(')]{}<>'.includes(ch))reject();
+    else{
+      const start=i;
+      while(i<raw.length&&!delim(raw[i]))i++;
+      if(i===start)reject();
+      const value=raw.slice(start,i);
+      if(/[^!-~]/.test(value))reject();
+      tokens.push({kind:'word',value});
+    }
+    if(tokens.length>4096)reject();
+  }
+  return tokens;
+}
+const pdfNumber=/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)$/;
+function textFromStream(stream){
+  let collected='',insideText=false,operands=[];
+  for(const token of contentTokens(stream)){
+    if(token.kind==='word'&&!pdfNumber.test(token.value)){
+      const op=token.value;
+      if(op==='BT'){
+        if(insideText)reject();
+        insideText=true;
+      }else if(op==='ET'){
+        if(!insideText)reject();
+        insideText=false;
+      }else if(op==='Tj'){
+        if(!insideText||operands.length!==1||operands[0].kind!=='string')reject();
+        collected+=operands[0].value+' ';
+      }else if(op==='TJ'){
+        if(!insideText||operands.length<3||
+           operands[0].kind!=='['||operands.at(-1).kind!==']')reject();
+        const entries=operands.slice(1,-1);
+        if(entries.some(x=>x.kind!=='string'&&
+           !(x.kind==='word'&&pdfNumber.test(x.value)))||
+           !entries.some(x=>x.kind==='string'))reject();
+        collected+=entries.filter(x=>x.kind==='string').map(x=>x.value).join('')+' ';
+      }else if(op==="'"||op==='"'){
+        // These text-showing operators require separate semantics.
+        reject();
+      }
+      operands=[];
+    }else{
+      operands.push(token);
+      if(operands.length>4096)reject();
     }
   }
-  if(!collected.trim())reject();
+  if(insideText||!collected.trim())reject();
   return collected.replace(/\s+/g,' ').trim();
 }
+
 // PDF ASCII85Decode (as used by ReportLab) with explicit output bound.
 function decodeASCII85(bytes){
   const raw=bytes.toString('ascii').replace(/\s+/g,'');
@@ -126,6 +189,15 @@ function parsePDF(bytes){
     if(!object)reject();
     objects.set(id,object[1]);
   }
+  // PDF names permit #hh escapes (e.g. /Open#41ction). This restricted
+  // validator rejects *every* encoded name before literal security matching.
+  // Do not scan binary stream bodies, whose compressed bytes are not PDF names.
+  for(const body of objects.values()){
+    const streamStart=body.search(/\bstream\r?\n/);
+    const dictionary=streamStart===-1?body:body.slice(0,streamStart);
+    for(const match of dictionary.matchAll(/\/([^\s\/<>\[\]()%]+)/g))
+      if(match[1].includes('#'))reject();
+  }
   const get=id=>{if(!objects.has(id))reject();return objects.get(id);};
   const catalog=get(root);
   if(!/\/Type\s*\/Catalog\b/.test(catalog)||/\/(?:OpenAction|AA|AcroForm|Names)\b/.test(catalog))reject();
@@ -157,7 +229,7 @@ function parsePDF(bytes){
   if(pageIds.length<1||pageIds.length>20||
      [...objects.values()].filter(s=>/\/Type\s*\/Page\b(?!s)/.test(s)).length!==pageIds.length)reject();
   // Refuse unsupported interactive/embedded/encrypted/object-stream constructs.
-  if([...objects.values()].some(s=>/\/(?:ObjStm|Encrypt|JavaScript|JS|Launch|EmbeddedFiles|EmbeddedFile|XFA|Annots|AcroForm|OpenAction|AA|URI|RichMedia|SubmitForm|GoToR|ImportData)\b/.test(s)))reject();
+  if([...objects.values()].some(s=>/\/(?:ObjStm|Encrypt|JavaScript|JS|Action|Launch|EmbeddedFiles|EmbeddedFile|XFA|Annots|AcroForm|OpenAction|AA|URI|RichMedia|SubmitForm|GoToR|ImportData)\b/.test(s)))reject();
   let combined='';
   const perPageText=[];
   for(const id of pageIds){
