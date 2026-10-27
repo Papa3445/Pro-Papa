@@ -76,6 +76,11 @@ function contentTokens(stream){
       if(i===start)reject();
       const value=raw.slice(start,i);
       if(/[^!-~]/.test(value))reject();
+      // BI/ID/EI are PDF inline-image delimiters; bytes between ID and EI
+      // are image samples, not PDF instructions. Parsing them as words could
+      // falsely "extract" a required text phrase from invisible pixel data.
+      // Inline images are outside the supported text-only PDF subset.
+      if(value==='BI'||value==='ID'||value==='EI')reject();
       tokens.push({kind:'word',value});
     }
     if(tokens.length>4096)reject();
