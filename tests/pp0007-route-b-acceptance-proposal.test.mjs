@@ -86,7 +86,7 @@ test('Route B source-contract pins original fixtures and enforces redacted propo
   assert.equal(currentAgents.lastIndexOf(agentBoundary),policyPos,'do not duplicate historical appendix');
   assert.ok(currentAgents.subarray(policyPos).toString('utf8').includes('docs/DEVELOPMENT-DELIVERY.md'));
  }
- const historicalAgentBytes=policyPos===-1?currentAgents:currentAgents.subarray(0,policyPos+1);
+ const historicalAgentBytes=policyPos===-1?currentAgents:currentAgents.subarray(0,policyPos);
  const historicalAgentSha=createHash('sha1').update('blob '+historicalAgentBytes.length+String.fromCharCode(0)).update(historicalAgentBytes).digest('hex');
  assert.equal(historicalAgentSha,p.source.agentContractBlob,'historical AGENTS source remains immutable');
  assert.equal(blobSha('.pro-papa/profiles.json'),p.source.profilesBlob);
