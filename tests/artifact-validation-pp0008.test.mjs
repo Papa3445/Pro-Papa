@@ -10,9 +10,9 @@ import {verifyReleasedExecution} from '../src/execution-trace.mjs';
 // Actual self-contained classic PDF fixture: xref byte offsets, page tree,
 // optional FlateDecode streams and real BT/Tj text. No private test document.
 function pdfFixture({pages=['Native PDF validation works'],compressed=true,
-  pageParent=2,pageExtra=''}={}){
+  pageParent=2,pageExtra='',catalogExtra='',extraObject=null,contentExtra=''}={}){
   const objects=['',
-    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Catalog /Pages 2 0 R '+catalogExtra+' >>',
     '<< /Type /Pages /Kids ['+pages.map((_,i)=>(3+i)+' 0 R').join(' ')+'] /Count '+pages.length+' >>'];
   for(let i=0;i<pages.length;i++){
     objects[3+i]='<< /Type /Page /Parent '+pageParent+' 0 R /MediaBox [0 0 612 792] /Resources << >> /Contents '+
@@ -20,12 +20,13 @@ function pdfFixture({pages=['Native PDF validation works'],compressed=true,
   }
   for(let i=0;i<pages.length;i++){
     const escaped=pages[i].replace(/[\\()]/g,s=>'\\'+s);
-    const bytes=Buffer.from('BT /F1 12 Tf 72 700 Td ('+escaped+') Tj ET','ascii');
+    const bytes=Buffer.from('BT /F1 12 Tf 72 700 Td ('+escaped+') Tj ET'+contentExtra,'ascii');
     const stream=compressed?deflateSync(bytes):bytes;
     objects[3+pages.length+i]='<< /Length '+stream.length+
       (compressed?' /Filter /FlateDecode':'')+' >>\nstream\n'+stream.toString('latin1')+
       '\nendstream';
   }
+  if(extraObject!==null)objects.push(extraObject);
   let raw='%PDF-1.4\n';
   const offsets=[0];
   for(let i=1;i<objects.length;i++){
@@ -106,6 +107,39 @@ test('PP-0008 rejects malformed tree links, interactive annotations, and cross-p
   assert.notEqual(denied.status,'completed');
   assert.equal(denied.trace.state,'not_released');
   assert.equal(denied.execution,null);
+});
+
+test('PP-0008 ignores PDF comment text and denies encoded action names across MCP',async()=>{
+  // Real classic-xref byte fixtures. The only drawn text is "Visible statement".
+  const onlyComment=pdfFixture({pages:['Visible statement'],compressed:false,
+    contentExtra:'\n% BT /F1 12 Tf (Ghost required phrase) Tj ET\n'});
+  const escapedAction=pdfFixture({pages:['Visible statement'],
+    catalogExtra:'/Open#41ction 5 0 R',
+    extraObject:'<< /Type /Action /S /Java#53cript /J#53 (ignored) >>'});
+  const escapedPage=pdfFixture({pages:['Visible statement'],
+    pageExtra:'/AA << /O << /S /Java#53cript >> >>'});
+  assert.equal(validatePdfArtifact(input(onlyComment,['Visible statement']),
+    {enabled:true}).matchedChecks,1);
+  assert.throws(()=>validatePdfArtifact(input(onlyComment,['Ghost required phrase']),
+    {enabled:true}),/denied/);
+  for(const pdf of [escapedAction,escapedPage]){
+    assert.throws(()=>validatePdfArtifact(input(pdf,['Visible statement']),
+      {enabled:true}),/denied/);
+  }
+  const host=createReferenceHost({artifactValidationEnabled:true,traceMode:'enforced'});
+  const negative=await host.execute(args(input(onlyComment,['Ghost required phrase'])));
+  assert.equal(negative.trace.state,'not_released');
+  assert.equal(negative.execution,null);
+  const app=createReadOnlyMcpWebHandler({bearerToken:SECRET,hostname:HOST,
+    artifactValidationEnabled:true});
+  for(const [pdf,required] of [[onlyComment,'Ghost required phrase'],
+                                [escapedAction,'Visible statement']]){
+    const result=await (await app(mcpCall(input(pdf,[required])))).json();
+    assert.equal(result.result.isError,true);
+    assert.equal(result.result.structuredContent,undefined);
+    assert.equal(JSON.stringify(result).includes('Ghost required phrase'),false);
+    assert.equal(JSON.stringify(result).includes('Visible statement'),false);
+  }
 });
 
 test('PP-0008 host release validates authorized bytes and rejects missing checks',async()=>{
