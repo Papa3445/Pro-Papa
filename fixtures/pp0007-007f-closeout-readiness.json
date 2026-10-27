@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "gate": "007-F",
+  "kind": "formal_closeout_readiness_assessment_not_task_transition",
+  "decision": "blocked_keep_in_progress",
+  "recordStatus": "candidate_for_independent_review_not_an_final_task_approval",
+  "sourceMainCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "pinSources": [
+    {
+      "path": "AGENTS.md",
+      "gitBlobSha": "beec6a79d8773edec086ad52ca09f51041c93edf"
+    },
+    {
+      "path": ".pro-papa/profiles.json",
+      "gitBlobSha": "7dc0e6b9670d4408b1f140c056c28e1dd1321073"
+    },
+    {
+      "path": ".pro-papa/tasks.json",
+      "gitBlobSha": "c5470334097519f36c0a788bffc9a666db61abdf"
+    },
+    {
+      "path": "fixtures/pp0007-paired-trial-collection-template.json",
+      "gitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    }
+  ],
+  "sourceTaskLedgerRevision": 72,
+  "sourceTaskCount": 7,
+  "sourcePp0007EvidenceRecords": 82,
+  "currentReviewTarget": {
+    "repository": "Papa3445/Pro-Papa",
+    "pullRequest": 27,
+    "baseRef": "main",
+    "baseSha": "8b058d1a4cf56dee46af0df6895c066f496bf636",
+    "isCurrentCloseoutTarget": false
+  },
+  "acceptanceCount": 4,
+  "acceptance": [
+    {
+      "criterion": 1,
+      "label": "Seven original-category end-to-end user tasks including novel fallback",
+      "verdict": "not_met",
+      "observation": {
+        "originalCanonicalFixtureStatus": "not_collected",
+        "ungrantedHostCompletions": 1,
+        "grantedHostCompletions": 2,
+        "structuredLocalDifferentInputsCompletions": 4,
+        "prospectiveUiObservationsCollected": 0
+      },
+      "requiredToPass": "Complete inspectable, reproducible comparable authorized user tasks across all seven original case categories, or obtain a separately independently reviewed, explicit owner-authorized change to the acceptance contract."
+    },
+    {
+      "criterion": 2,
+      "label": "Per-pilot tool/permission/persistence/receipt/output evidence and negative cases",
+      "verdict": "partial",
+      "observation": {
+        "originalPerCaseOutputsIndependentlyVerified": false,
+        "sourceInstrumentedGitHubGetObserved": 1,
+        "realNegativeLiveHttpChecks": 5,
+        "perCanonicalPilotPrivateReceipts": null,
+        "perOriginalCaseOutputQualityGrades": null
+      },
+      "requiredToPass": "For each in-scope completed user task reconcile actual authorized tools/outputs, task evidence and receipts where relevant; assess positive quality and negative denial with genuinely independently inspectable records. No new secrets or raw private outputs in public."
+    },
+    {
+      "criterion": 3,
+      "label": "Comparable quality, success, correction and overhead reporting",
+      "verdict": "partial",
+      "observation": {
+        "localHostExecutionTimingsObserved": true,
+        "uiLabelsOperatorReported": true,
+        "ownerPracticalUsefulnessAccepted": true,
+        "matchedDirectAssistantOutputQualityGrade": null,
+        "humanCorrectionTurns": null,
+        "providerReportedTokens": null,
+        "matchedTotalLatency": null,
+        "causalSuperiorityEstimate": null
+      },
+      "requiredToPass": "Report measured per-task quality and comparisons for original comparable arms, mark unmeasured cost/tokens/corrections null; an owner-authorized independently reviewed scope change may replace a strict superiority study but cannot manufacture source data."
+    },
+    {
+      "criterion": 4,
+      "label": "Reproducible fixtures/results, exact-head CI, independent final milestone review",
+      "verdict": "partial",
+      "observation": {
+        "canonicalFixtureGitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4",
+        "sourcePinnedIndividualPrCiPassing": true,
+        "cumulativeSevenPrCiPassCount": 270,
+        "cumulativeSevenPrCiRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/40257971700",
+        "sourceHeadIndependentReviewsRecorded": 7,
+        "newCloseoutCurrentHeadIndependentApproval": false,
+        "pp0007FormalReviewTargetCurrentPr": false
+      },
+      "requiredToPass": "After obligations are met or explicitly revised, create fresh scoped closeout PR with PP-0007 reviewTarget pinned to a genuinely trusted base and current PR, exact-head CI and independent new milestone approval. Enforce GitHub native merge protection before claiming release governance."
+    }
+  ],
+  "reviewAndIntegration": {
+    "individuallyApprovedScopedPrs": [
+      {
+        "number": 32,
+        "head": "aa2792886b9d60696de28b1b1e58c4972f11a568",
+        "scope": "owner_decision_and_future_queue",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/32",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      },
+      {
+        "number": 33,
+        "head": "f750b900791ba8fc91bafb8bb302e7b8bdae3b7a",
+        "scope": "007-A_original_case_permission_matrix",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/33",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      },
+      {
+        "number": 34,
+        "head": "97d788989d873a83ee97519a501c5a01e2ef7e09",
+        "scope": "007-B_retrospective_baseline_and_owner",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/34",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      },
+      {
+        "number": 35,
+        "head": "247c639841236d4574ebe277bb1b4c24c6785215",
+        "scope": "007-C_security_known_vs_untested",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/35",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      },
+      {
+        "number": 38,
+        "head": "8263293ce1ac58ceed176b7ce541f137bb5e2a2c",
+        "scope": "candidate_warm_Netlify_remediation_not_deployed",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/38",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      },
+      {
+        "number": 39,
+        "head": "080421adf3a7e956ee6660e57bf19c77754e24cb",
+        "scope": "007-D_overhead_correction_nulls",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/39",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      },
+      {
+        "number": 40,
+        "head": "9bfe2de6054eeab13efb08772845593cada3f54b",
+        "scope": "007-E_artifact_inventory_prior_inspections_only",
+        "url": "https://github.com/Papa3445/Pro-Papa/pull/40",
+        "currentAtInventory": "open_unmerged",
+        "independentReviewer": "papa4568",
+        "scopedApprovalObserved": true,
+        "approvalForFinalMilestone": false
+      }
+    ],
+    "combinedHead": "877eec90642ccefbaa9f73eef60bdeb129aae09c",
+    "combinedTree": "44d4116262562e9f20ef350940ea830893d2ce02",
+    "combinedCiRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/40257971700",
+    "combinedTestsPassed": 270,
+    "combinedTestsFailed": 0,
+    "combinedTestsSkipped": 0,
+    "combinedTaskCount": 11,
+    "wasMergedToMain": false,
+    "wasDeployed": false,
+    "doesNotCountAsMilestoneApproval": true
+  },
+  "releaseBlockers": [
+    {
+      "id": "native_github_required_review_and_ci_rules",
+      "status": "not_enforced",
+      "evidence": "https://api.github.com/repos/Papa3445/Pro-Papa/branches/main",
+      "protected": false,
+      "requiredFor": "claiming_enforced_release_governance"
+    },
+    {
+      "id": "candidate_netlify_exact_deployed_sha_and_postdeploy_smoke",
+      "status": "unverified",
+      "candidatePr": 38,
+      "requiredFor": "claiming_updated_production_runtime"
+    },
+    {
+      "id": "live_signed_jwt_adversarial_matrix",
+      "status": "unperformed_optional_unless_broad_security_claim",
+      "requiredFor": "certifying_broader_production_jwt_threat_coverage"
+    },
+    {
+      "id": "original_chatgpt_payload_to_mcp_tool_call_binding",
+      "status": "not_proven",
+      "requiredFor": "specific_turn_or_artifact_method_attribution"
+    }
+  ],
+  "provenanceBoundaries": {
+    "historicalWebsiteStudyReportedOnly": true,
+    "originalPrivateScreenshotBytesReinspectedThisGate": false,
+    "originalPrivateZipBytesReinspectedThisGate": false,
+    "priorPdfInspectionsReportedNotReproducedHere": true,
+    "ownerPracticalAcceptance": true,
+    "ownerAuthorizedRewriteOfCurrentAcceptance": false,
+    "prospectivePairObservationsActuallyCollected": 0,
+    "prospectivePairObservationsPlanned": 42,
+    "selfReviewCannotCountAsIndependentApproval": true,
+    "approvalDoesNotTransferFromChildPrs": true,
+    "noNewProviderOrModelTrialPerformed": true,
+    "noSecretsOrPrivateConversationMaterialRecorded": true
+  },
+  "decisionPaths": [
+    {
+      "id": "original_contract_completion",
+      "ownerActionRequired": false,
+      "condition": "Perform inspectable seven-category original comparable requests and obtain per-pilot task-quality/provenance/baseline/permission and independent grading as required; keep actual null metrics unknown where unmeasurable.",
+      "taskStatusUntilSatisfied": "in_progress"
+    },
+    {
+      "id": "explicit_owner_scope_change",
+      "ownerActionRequired": true,
+      "condition": "Obtain the owner's explicit authorization for precise replacement acceptance strings. Preserve historic acceptance and evidence in an independently reviewed versioned change; do not call old requirements fulfilled.",
+      "taskStatusUntilApproved": "in_progress"
+    }
+  ],
+  "nextStep": "independently_review_this_blocked_status_record_then_collect_missing_evidence_or_request_explicit_scope_revision",
+  "unsafeActionsProhibited": {
+    "markPp0007Verified": true,
+    "repinToThisPrAsFinalCloseout": true,
+    "mergeOrDeployWithoutGovernance": true,
+    "modifyOriginalCanonicalTrials": true,
+    "declareStatisticalPerformanceSuperiority": true
+  },
+  "exactLedgerCompatibility": {
+    "historicalMainBlob": "c5470334097519f36c0a788bffc9a666db61abdf",
+    "historicalMainRevision": 72,
+    "historicalMainTaskCount": 7,
+    "separateOwnerRoadmapPr": 32,
+    "separateApprovedProposedBlob": "17ed8276b56c35c965d6444ac95d84116ebe239b",
+    "separateApprovedProposedRevision": 73,
+    "separateApprovedProposedTaskCount": 11,
+    "addedFutureTaskIds": [
+      "PP-0008",
+      "PP-0009",
+      "PP-0010",
+      "PP-0011"
+    ],
+    "futureTasksAllPendingDependentOn": "PP-0007",
+    "pp0007OriginalAcceptanceUnchanged": true,
+    "pp0007EvidenceCount": 82,
+    "pp0007Status": "in_progress",
+    "allowedBlobCount": 2,
+    "scope": "historical main versus exact reviewed roadmap-preview version only; no arbitrary task ledger mutation authorized"
+  }
+}

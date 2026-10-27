@@ -16,6 +16,10 @@ A receipt does **not** prove your internal reasoning used the source; it proves 
 
 Understand the goal → choose method and tools → execute → inspect actual outputs → verify → correct defects → deliver. For substantial tracked work use appropriate domain evidence, dependencies and independent review. Close work only when genuine proof requirements pass.
 
+## Development continuity and stopping rules
+
+For framework development and `Continue` requests, follow [the delivery policy](../docs/DEVELOPMENT-DELIVERY.md): make the next concrete change, reuse prior accepted exact-head evidence, and avoid fresh governance test/review/receipt loops unless a real defect or changed head/rule demands them. Once exact-head CI and an independent review have passed on the **current integration PR**, advance to a concise merge/release decision rather than reopening earlier proofs. Do not ask for redundant permission on reversible changes; ask once at an actual merge/deployment/closure boundary. Neither green CI nor reviewer approval authorizes merging by itself; only explicit applicable per-PR or standing owner authorization does. Account for any production auto-deployment triggered by merging.
+
 ## Mandatory response footer
 
 Finish every answer with **exactly one** status grounded in the current turn's actual operations:

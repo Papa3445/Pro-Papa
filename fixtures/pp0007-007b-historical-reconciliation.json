@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0007",
+  "gate": "007-B",
+  "status": "owner_acceptance_recorded_recovered_private_secondary_summaries_only",
+  "sourceMainCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "canonicalFixture": {
+    "path": "fixtures/pp0007-paired-trial-collection-template.json",
+    "gitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4",
+    "unchanged": true
+  },
+  "ownerDecision": {
+    "date": "2026-10-25",
+    "kind": "product_owner_practical_usability_acceptance",
+    "authorizedToContinue": true,
+    "ownerBelievesBetter": true,
+    "independentTechnicalApprovalForPP0007": false,
+    "statisticalSuperiorityProven": false,
+    "changesOriginalAcceptance": false,
+    "source": "https://github.com/Papa3445/Pro-Papa/pull/32"
+  },
+  "recovery": {
+    "searchPerformedInCurrentProjectConversation": true,
+    "currentConversationFileSearchMatchingOriginalArtifacts": 0,
+    "privateLibrarySecondaryReportsRead": 2,
+    "originalScreenshotBytesRecoveredInThisIncrement": 0,
+    "originalFullChatTranscriptsRecoveredInThisIncrement": 0,
+    "regularSoftwareZipRecoveredInThisIncrement": false,
+    "projectSoftwareZipRecoveredInThisIncrement": false,
+    "priorReportedScreenshots": {
+      "total": 35,
+      "regular": 15,
+      "project": 20,
+      "providerAttested": false,
+      "rawReinspectedNow": false
+    },
+    "scopeLimitation": "Search of current conversation and accessible Library returned two historic narrative reports; zero original files were inspected for this increment. This does not imply none exist elsewhere."
+  },
+  "archivedSecondaryReviewerRubric": {
+    "kind": "posthoc_reviewer_defined_0_to_4_from_private_secondary_report_not_provider_authenticated",
+    "date": "2026-10-23",
+    "regularTotalReported": 21,
+    "projectTotalReported": 23,
+    "maximumPerArm": 28,
+    "oneObservationPerCase": true,
+    "reportedPointsOnly": true,
+    "notOfficialFrameworkGrade": true,
+    "qualitySuperiorityProven": false,
+    "reviewerDidNotInspectOriginalScreenshots": true
+  },
+  "separateEarlierRetrospectiveScores": {
+    "kind": "independently_reported_nonblinded_aggregate_on_different_scale",
+    "regularScoreReported": 18,
+    "projectScoreReported": 21,
+    "maximumPerArm": 21,
+    "source": "docs/PP0007-EXISTING-BASELINE-REUSE-AUDIT.md",
+    "independentReplication": false,
+    "mayOverlapSameHistoricalCases": true,
+    "doNotAddToInterimReviewerScores": true
+  },
+  "cases": [
+    {
+      "id": "qa",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 4,
+        "uiWorkedForSecondsReported": null,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 4,
+        "uiWorkedForSecondsReported": 38,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "both_reported_paris_factual_tie",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    },
+    {
+      "id": "research",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": 26,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": 52,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "both_reported_relevant_metadata_urls_tool_provenance_unverified",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    },
+    {
+      "id": "software",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 2,
+        "uiWorkedForSecondsReported": 183,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": 280,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "project_artifact_reportedly_retested_baseline_zip_missing",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    },
+    {
+      "id": "document",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": null,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": 52,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "both_reported_memo_with_recommendations_full_content_unseen",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    },
+    {
+      "id": "data",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 4,
+        "uiWorkedForSecondsReported": null,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 4,
+        "uiWorkedForSecondsReported": 49,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "both_reported_ten_correct_arithmetic_tie",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    },
+    {
+      "id": "planning",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": null,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": 126,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "different_schedule_context_and_constraints_not_verified",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    },
+    {
+      "id": "novel",
+      "archiveEvidenceKind": "private_secondary_summary_reports_only",
+      "originalPromptEqualityReported": true,
+      "originalPromptParityIndependentlyConfirmed": false,
+      "regular": {
+        "reportedProvisionalInterimScoreOutOf4": 2,
+        "uiWorkedForSecondsReported": null,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "project": {
+        "reportedProvisionalInterimScoreOutOf4": 3,
+        "uiWorkedForSecondsReported": 71,
+        "fullResponseRecovered": false,
+        "sourceArtifactRecovered": false,
+        "taskCompletionIndependentlyVerified": null,
+        "correctionInteractions": null,
+        "providerTokens": null,
+        "permissionsVerified": false,
+        "actualModelVerified": false
+      },
+      "comparison": "project_chose_hypothetical_example_baseline_reasonably_clarified",
+      "reviewedUnderIdenticalIndependentAcceptanceTests": false
+    }
+  ],
+  "measuredBoundaries": {
+    "uiLabelsAreReportedNotStandardizedEndToEnd": true,
+    "pairedUiLabelsPresentForCases": [
+      "research",
+      "software"
+    ],
+    "matchedOutputQualityVerifiedCaseCount": 0,
+    "matchedComparablePermissionCaseCount": 0,
+    "originalCaseFullResponsesRecoveredCount": 0,
+    "providerReportedTokenTotals": null,
+    "totalHumanCorrections": null,
+    "comparableWallClockTaskDurationMs": null,
+    "qualityAdjustedEfficiency": null,
+    "causalEffectEstimate": null,
+    "estimatedCostSavings": null
+  },
+  "separateStudies": {
+    "referenceHostUngrant": "1/7 mechanically completed",
+    "referenceHostGrant": "2/7 limited outcomes",
+    "structuredHost": "4/4 fixed tasks",
+    "prospectiveUiV2Completed": 0,
+    "prospectiveUiV2Planned": 42
+  },
+  "decision": {
+    "canUseAsOwnerAcceptanceEvidence": true,
+    "canUseAsDescriptiveRetrospectiveReport": true,
+    "canUseAsIndependentVerifiedPerCaseGrades": false,
+    "canUseAsProspectiveTrialResults": false,
+    "canClosePP0007": false,
+    "originalAcceptanceStatus": "in_progress",
+    "comparisonWithoutPermissionParity": "not_valid"
+  },
+  "sourcesPublic": [
+    "https://github.com/Papa3445/Pro-Papa/blob/39076ac85a6864dd007b9ed6c947389548878508/docs/PP0007-EXISTING-BASELINE-REUSE-AUDIT.md",
+    "https://github.com/Papa3445/Pro-Papa/blob/39076ac85a6864dd007b9ed6c947389548878508/docs/PP0007-UI-PROSPECTIVE-V2.md",
+    "https://github.com/Papa3445/Pro-Papa/pull/32",
+    "https://github.com/Papa3445/Pro-Papa/pull/33"
+  ],
+  "privacy": "No private report text, user screenshot, transcript, file ID or private Library locator is in this public data."
+}

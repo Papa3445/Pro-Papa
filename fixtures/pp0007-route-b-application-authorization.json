@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "kind": "review_only_task_ledger_application_candidate",
+  "taskId": "PP-0007",
+  "explicitOwnerAuthorization": "prepare_only_separate_unmerged_pr_and_fresh_independent_review",
+  "sourceMainCommit": "39076ac85a6864dd007b9ed6c947389548878508",
+  "reviewedProposalPr": 43,
+  "reviewedProposalHead": "c2d06b2ccd5e127d42236e93dbf3c6a8817dd0a8",
+  "reviewedProposalGitBlobSha": "51215f7bd34ce7f848da0e355064e2d3db5174bb",
+  "reviewedProposalApproval": "https://github.com/Papa3445/Pro-Papa/pull/43#pullrequestreview-5659871717",
+  "reviewOnlyBaseHead": "ece6d1cd3f7e99d3353fee4a4e90f8a8424c7f04",
+  "mainLedgerGitBlobSha": "c5470334097519f36c0a788bffc9a666db61abdf",
+  "reviewedRoadmapPreviewGitBlobSha": "17ed8276b56c35c965d6444ac95d84116ebe239b",
+  "candidateLedgerGitBlobSha": "a28a48789714c1051482b7c3201aac4e9a8c0a69",
+  "originalEvidenceArrayGitBlobSha": "70643433163760eded3933cacea9c0288c94cc48",
+  "candidateTaskLedgerRevision": 74,
+  "candidateTaskCount": 12,
+  "taskBefore": {
+    "title": "Validate cross-domain outcomes and benchmark workflow overhead",
+    "objective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+    "acceptance": [
+      "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
+      "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
+      "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
+      "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness"
+    ]
+  },
+  "taskAfter": {
+    "title": "Validate bounded OAuth MCP and native-artifact integration with truthful evidence",
+    "objective": "Independently validate the genuinely authorized read-only MCP capabilities and separate native ChatGPT artifacts with source-pinned provenance, safe denials, honest overhead limits, and enforceable release governance; do not claim universal task superiority or whole-message MCP interception.",
+    "acceptance": [
+      "Demonstrate explicit read-only OAuth MCP executions for only the actually configured capabilities (math, text metrics, allowlisted public repository metadata), separately from native ChatGPT-created artifacts. Inspect genuine output/trace for each claimed completed bounded operation; distinguish user-facing Project capabilities from the standalone Node reference host, list the original seven-category gaps, and make no claim of general or automatic interception.",
+      "For claimed operations, distinguish actual tool grant/provider execution, released trace, durable task/evidence and private source-read receipt where relevant, from unavailable or merely reported observations. Verify negative unauthenticated/invalid-auth/unsafe/unavailable paths and register missing signed-JWT production adversarial coverage and exact ChatGPT-to-MCP payload provenance without implying they were tested.",
+      "Record the owner's explicit practical-usefulness acceptance, actual per-source bounded timing/tool counts, prior reported UI labels, missing human corrections, cost and tokens as null, and precise direct-assistant comparison limitations. Do not claim statistically controlled speed/outcome superiority or increase original-case success counts from distinct structured/native sessions.",
+      "Publish pinned reproducible implementation/security/evidence fixtures with exact-head CI, verified combined-head compatibility and a **new independent review** of the specific revised milestone acceptance. Keep `PP-0007` open until separate authorized GitHub branch protections and any required reviewed deployment and safe post-deploy checks are complete; require a correctly pinned new `reviewTarget` and evidence-safe ledger transition before starting dependent roadmap items."
+    ]
+  },
+  "successor": {
+    "id": "PP-0012",
+    "status": "pending",
+    "dependsOn": [
+      "PP-0007",
+      "PP-0011"
+    ],
+    "originalObjective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+    "originalAcceptancePreserved": [
+      "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
+      "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
+      "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
+      "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness"
+    ],
+    "expandedAcceptance": [
+      "Reproduce the seven frozen canonical case objectives (quick Q&A, sourced research, software, document, calculation/data, planning/operations, novel/fallback) in authorized user-facing sessions, checking actual submitted prompts, tool access, artifacts and representative outcomes.",
+      "For every original task inspect corresponding genuine final outputs and task/tool permission/persistence/receipt provenance, report fail-closed negative controls, and protect original private artifacts and credentials.",
+      "Report comparable direct-assistant and Project outcome quality and completion, observed human correction turns, recorded latency/tool calls and provider tokens if truly available. Record noncomparable or unavailable values as null; never pool the distinct historical Node and website populations.",
+      "Publish reproducible original fixture/provider pointers, exact-head CI and genuinely independent grading/review; do not claim a controlled or statistically validated superiority result without a separately run and qualified study."
+    ]
+  },
+  "protectionAndDeployment": {
+    "nativeMainProtectionEnforced": false,
+    "reviewedRuntimeCandidateDeployed": false
+  },
+  "limits": {
+    "newIndependentApplicationReviewReceived": false,
+    "mergeAuthorized": false,
+    "deployAuthorized": false,
+    "closePP0007Authorized": false,
+    "startDependentsAuthorized": false,
+    "actualMainChangedByThisBranch": false,
+    "newMcpOperationsTested": false,
+    "originalSevenTrialCompleted": false
+  },
+  "onlyReviewProposedCandidate": true
+}

@@ -1,0 +1,103 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+const root=new URL('../',import.meta.url);
+const get=path=>JSON.parse(readFileSync(new URL(path,root),'utf8'));
+const manifest=get('fixtures/pp0007-007e-artifact-evidence.json');
+const lookup=id=>{
+ const a=manifest.records.filter(x=>x.id===id);
+ assert.equal(a.length,1,id);
+ return a[0];
+};
+test('007-E pins the actual checked-in evidence and canonical original case identities',()=>{
+ assert.equal(manifest.scopeAtSourceCommit,'39076ac85a6864dd007b9ed6c947389548878508');
+ assert.equal(manifest.gate,'007-E');
+ assert.equal(manifest.checkedInGitBlobSources.length,5);
+ for(const s of manifest.checkedInGitBlobSources){
+  const raw=readFileSync(new URL(s.path,root));
+  const sha=createHash('sha1').update('blob '+raw.length+'\x00').update(raw).digest('hex');
+  assert.equal(sha,s.blob,s.path);
+ }
+ const benchmark=get('fixtures/pp0007-paired-trial-collection-template.json');
+ assert.equal(benchmark.status,'not_collected');
+ assert.deepEqual(manifest.originalSevenCase.ids,['qa','research','software','document','data','planning','novel']);
+ assert.equal(manifest.originalSevenCase.noGrantActualHandlerCompletions,1);
+ assert.equal(manifest.originalSevenCase.grantedLimitedResearchAndArithmeticCompletions,2);
+ assert.equal(manifest.originalSevenCase.distinctStructuredMechanicalCasesCompleted,4);
+ assert.equal(manifest.originalSevenCase.equalScopeComparisonPermitted,false);
+ const source=get('.pro-papa/evidence/PP-0007/live-read-only-github.json');
+ const structured=get('.pro-papa/evidence/PP-0007/structured-local-observation.json');
+ assert.equal(source.successfulUserTasks,2);
+ assert.equal(source.totalGitHubCallsObserved,1);
+ assert.equal(structured.observedReport.mechanicallyValidatedCompletions,4);
+ assert.equal(manifest.separateUnmergedReconciliations.length,2);
+ assert.equal(manifest.registeredFutureProtocol.observationsPlanned,42);
+ assert.equal(manifest.registeredFutureProtocol.observationsActuallyCollected,0);
+});
+test('007-E preserves reported prior PDF inspections without claiming fresh PDF access or MCP proof',()=>{
+ assert.equal(manifest.recordCount,manifest.records.length);
+ assert.equal(new Set(manifest.records.map(x=>x.id)).size,manifest.recordCount);
+ const pdf=lookup('pro_papa2_weekly_operations_pdf');
+ const smoke=lookup('pro_papa_explicit_mcp_pdf_smoke');
+ assert.equal(pdf.reportedSizeBytes,84308);
+ assert.equal(pdf.reportedOriginalByteSha256,'3ba4886e343a4dd572861013384863cb256d7f0a2ab2172f6a90c21a3e9c6f91');
+ assert.equal(pdf.reportedInspection.pageCount,2);
+ assert.deepEqual(pdf.reportedInspection.extractableTextCharsPerPage,[920,1316]);
+ assert.equal(pdf.reportedInspection.calculation.total,10);
+ assert.deepEqual(pdf.reportedInspection.calculation.partsPercent,[20,30,50]);
+ assert.equal(smoke.reportedSizeBytes,48246);
+ assert.equal(smoke.reportedOriginalByteSha256,'071a0385601b73bafb335abd5e4a6c448e48230daf2a66b2b4c09d8cfa48f064');
+ assert.equal(smoke.reportedInspection.pageCount,2);
+ assert.deepEqual(smoke.reportedInspection.extractableTextCharsPerPage,[1168,1833]);
+ assert.equal(smoke.origin==='ChatGPT_Project_Pro_Papa2',false);
+ for(const entry of [pdf,smoke]){
+  assert.equal(entry.originalBytesAccessedInThisGate,false);
+  assert.equal(entry.sha256RecomputedInThisGate,false);
+  assert.equal(entry.newVisualInspectionInThisGate,false);
+  assert.equal(entry.originalBytesStoredInPublicRepository,false);
+  assert.equal(entry.actualMcpMethodProvenFromThisArtifact,false);
+  assert.equal(entry.downloadableFileConfirmedInThisGate,false);
+  assert.equal(entry.independentlyValidatedInPriorChatAsReported,true);
+ }
+ const correlated=lookup('pro_papa2_pdf_automatic_mcp_cooccurrence');
+ assert.equal(correlated.relatedArtifactId,pdf.id);
+ assert.equal(correlated.doNotCountAsSecondPdf,true);
+ assert.equal(correlated.independentExactMcpJsonRpcBodyAvailable,false);
+ assert.equal(correlated.exactConversationToEdgeRequestCryptographicBinding,false);
+ assert.equal(correlated.reportedEdgeRequest.status,200);
+ assert.equal(lookup('explicit_readonly_mcp_math').perOriginalSevenMatchedToolTraceProven,false);
+ assert.equal(manifest.correlationLimits.mcpMathSmokeNotProofThatPdfUsedMathSum,true);
+});
+test('007-E rejects unsupported promotion of missing private originals to artifact-grade or quality claims',()=>{
+ const historic=lookup('historical_chatgpt_project_and_regular_screenshots');
+ const zips=lookup('historical_regular_and_project_parser_archives');
+ const images=lookup('native_chatgpt_generated_images');
+ assert.equal(historic.reportedScreenshotCount,35);
+ assert.equal(historic.reportedRegularCount+historic.reportedProjectCount,historic.reportedScreenshotCount);
+ assert.equal(historic.sourceScreenshotBytesRecoveredInThisGate,0);
+ assert.equal(historic.originalResponsesGradedInThisGate,0);
+ assert.equal(historic.independentReplicateStudy,false);
+ assert.equal(zips.regularZipRecoveredInThisGate,false);
+ assert.equal(zips.projectZipRecoveredInThisGate,false);
+ assert.equal(zips.independentOriginalSoftwareCorrectness,null);
+ assert.equal(images.actualRenderedImageBytesAccessedInThisGate,false);
+ assert.equal(images.actualImageHashesAvailableInThisGate,null);
+ assert.equal(images.imageOriginAuthenticatedByMcp,false);
+ const generated=lookup('structured_iso_parser_generated_module');
+ assert.equal(generated.originalSoftwareZipRecovered,false);
+ assert.equal(generated.independentRerunOfOriginalChatGptSoftwareZip,false);
+ assert.equal(generated.reportedValidation.dynamicallyImportedFromFixedGenerator,true);
+ const structured=lookup('structured_memo_and_schedule');
+ assert.equal(structured.independentSubjectiveMemoQualityGrade,null);
+ assert.equal(structured.originalUnstructuredMemoCompleted,false);
+ const receipt=lookup('private_github_usage_receipt');
+ assert.equal(receipt.toolInvocationMethodProven,false);
+ assert.equal(receipt.taskArtifactOutcomeQualityProven,false);
+ assert.equal(receipt.publicRawReceiptBytesCopied,false);
+ for(const key of ['publicRawPdfBytes','publicScreenshots','publicSoftwareZipBytes','publicRawUserTranscripts','publicTokensOrCredentials','publicReceiptPrivateFileContents'])
+  assert.equal(manifest.privacy[key],0,key);
+ assert.equal(manifest.privacy.noPrivateArtifactMaterializedInThisGate,true);
+ assert.equal(manifest.reportedPriorPdfValidationReexecutedInThisGate,false);
+ assert.equal(manifest.correlationLimits.independentWholeSystemOutcomeGrade,null);
+});
