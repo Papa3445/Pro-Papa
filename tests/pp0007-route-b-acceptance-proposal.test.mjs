@@ -54,8 +54,8 @@ test('Route B proposal preserves original literal clauses/82-item evidence and r
  assert.equal(task.objective,isApplication?p.proposedTaskAfter.objective:p.taskBefore.objective);
  if(isApplication){
   assert.equal(scopeApplication.candidateLedgerGitBlobSha,applicationLedger);
-  assert.deepEqual(ledger.tasks.at(-1).acceptance.slice(0,4),p.taskBefore.acceptance);
-  assert.deepEqual(ledger.tasks.at(-1).acceptance.slice(4),p.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
+  assert.deepEqual(ledger.tasks.find(x=>x.id==='PP-0012').acceptance.slice(0,4),p.taskBefore.acceptance);
+  assert.deepEqual(ledger.tasks.find(x=>x.id==='PP-0012').acceptance.slice(4),p.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
  }
  assert.equal(p.deferredOriginalObligations.everyOriginalAcceptancePreserved.length,4);
  assert.deepEqual(p.deferredOriginalObligations.everyOriginalAcceptancePreserved,p.taskBefore.acceptance);
