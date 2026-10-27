@@ -12,6 +12,7 @@ const NAME = /^[a-z][a-z0-9.-]{0,63}$/;
 const CAPABILITIES = Object.freeze({
   'text.metrics': Object.freeze({ profile: 'general', effect: 'read' }),
   'math.sum': Object.freeze({ profile: 'data', effect: 'read' }),
+  'artifact.validate': Object.freeze({ profile: 'document', effect: 'read' }),
   'plan.week': Object.freeze({ profile: 'operations', effect: 'read' }),
   'memo.draft': Object.freeze({ profile: 'document', effect: 'read' }),
   'code.iso-date': Object.freeze({ profile: 'software', effect: 'read' }),

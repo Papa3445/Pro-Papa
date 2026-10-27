@@ -6,16 +6,16 @@ import {verifyReleasedExecution} from './execution-trace.mjs';
 
 const MAX_BODY=65536;
 const PROTOCOLS=new Set(['2025-06-18','2025-11-25']);
-const CAPABILITIES=new Set(['math.sum','text.metrics','research']);
+const CAPABILITIES=new Set(['math.sum','text.metrics','research','artifact.validate']);
 const TOOL=Object.freeze({
   name:'pro_papa_execute_readonly',
   title:'Execute verified Pro-Papa read-only task',
-  description:'Run bounded sum, text metrics, or an allowlisted repository-metadata read through the host release gate. Trace attests only this explicit tool invocation; it does not govern other ChatGPT answers.',
+  description:'Run bounded sum, text metrics, opt-in PDF byte checks, or allowlisted repository metadata through the host release gate. Does not govern other ChatGPT answers.',
   inputSchema:{type:'object',additionalProperties:false,required:['objective','capability'],
     properties:{
       objective:{type:'string',minLength:1,maxLength:16384},
       capability:{type:'string',enum:[...CAPABILITIES]},
-      inputs:{type:'object',description:'math.sum: numbers array; research: repository owner/name; text.metrics: empty object'}
+      inputs:{type:'object',description:'artifact.validate: format, dataBase64, authorization, mustContain; math.sum: numbers; research: repository; text.metrics: empty object'}
     }},
   annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:true}
 });
@@ -62,12 +62,13 @@ async function readBounded(request){
   for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
   return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
 }
-function checkedArgs(params){
+function checkedArgs(params,artifactValidationEnabled){
   if(!own(params)||params.name!==TOOL.name||!own(params.arguments))return null;
   const args=params.arguments;
   if(Object.keys(args).some(x=>!['objective','capability','inputs'].includes(x))||
     typeof args.objective!=='string'||!args.objective.trim()||
     args.objective.length>16384||!CAPABILITIES.has(args.capability)||
+    (args.capability==='artifact.validate'&&!artifactValidationEnabled)||
     (args.inputs!==undefined&&!own(args.inputs)))return null;
   return {objective:args.objective,capability:args.capability,inputs:args.inputs??{}};
 }
@@ -79,7 +80,8 @@ function checkedArgs(params){
  */
 export function createReadOnlyMcpWebHandler({
   bearerToken,hostname,oauthValidator=null,allowedOrigins=[],allowRepositories=[],
-  githubResearch=false,fetchImpl=globalThis.fetch,githubToken=undefined,
+  githubResearch=false,artifactValidationEnabled=false,
+  fetchImpl=globalThis.fetch,githubToken=undefined,
   // Only for direct in-process local unit tests. Never set in production Netlify function.
   allowInsecureTestTransport=false
 }={}){
@@ -100,12 +102,14 @@ export function createReadOnlyMcpWebHandler({
       !/^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(x))||
     !Array.isArray(allowRepositories)||allowRepositories.length>16||
     allowRepositories.some(x=>typeof x!=='string'||!(/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i).test(x))||
-    typeof githubResearch!=='boolean'||typeof fetchImpl!=='function'||
+    typeof githubResearch!=='boolean'||typeof artifactValidationEnabled!=='boolean'||
+    typeof fetchImpl!=='function'||
     typeof allowInsecureTestTransport!=='boolean')
     throw Error('Invalid protected Netlify MCP server configuration');
   const host=createReferenceHost({
     allowedRepositories:allowRepositories,githubResearch,
-    traceMode:'enforced',auditMode:'off',token:githubToken,fetchImpl
+    traceMode:'enforced',auditMode:'off',token:githubToken,fetchImpl,
+    artifactValidationEnabled
   });
   let active=0;
   return async function handleMcpRequest(request){
@@ -160,9 +164,13 @@ export function createReadOnlyMcpWebHandler({
       }
       if(message.method==='ping')return json(200,result(id,{}));
       if(message.method==='tools/list'){
-        const listed=oauth?{...TOOL,securitySchemes:[
+        const visible={...TOOL,inputSchema:{...TOOL.inputSchema,properties:{
+          ...TOOL.inputSchema.properties,capability:{type:'string',enum:[...CAPABILITIES].filter(
+            x=>x!=='artifact.validate'||artifactValidationEnabled)}
+        }}};
+        const listed=oauth?{...visible,securitySchemes:[
           {type:'oauth2',scopes:[...oauthMeta.scopes_supported]}
-        ]}:TOOL;
+        ]}:visible;
         return json(200,result(id,{tools:[listed]}));
       }
       if(message.method!=='tools/call')return json(200,error(id,-32601,'Method not found'));
@@ -176,7 +184,7 @@ export function createReadOnlyMcpWebHandler({
             _meta:{'mcp/www_authenticate':[challenge]}}));
         }
       }
-      const args=checkedArgs(message.params);
+      const args=checkedArgs(message.params,artifactValidationEnabled);
       if(!args)return json(200,error(id,-32602,'Invalid tool arguments'));
       if(active>=8)return json(200,result(id,{isError:true,
         content:[{type:'text',text:'Execution unavailable: bridge at capacity'}]}));

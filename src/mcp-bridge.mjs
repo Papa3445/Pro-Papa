@@ -8,11 +8,11 @@ import {verifyReleasedExecution} from './execution-trace.mjs';
 const PROTOCOLS=new Set(['2025-06-18','2025-11-25']);
 const VERSION='2025-11-25',NAME='pro-papa-readonly';
 const PATH='/mcp',MAX_BYTES=65536;
-const CAPABILITIES=new Set(['math.sum','text.metrics','research']);
+const CAPABILITIES=new Set(['math.sum','text.metrics','research','artifact.validate']);
 const TOOL={
   name:'pro_papa_execute_readonly',
   title:'Execute verified Pro-Papa read-only task',
-  description:'Execute a bounded calculation, text measurement, or explicitly allowlisted repository-metadata lookup through the Pro-Papa reference host. Returns host-local verified execution trace, NOT model reasoning. Does not govern other ChatGPT messages.',
+  description:'Execute bounded calculation, text measurement, opt-in PDF byte inspection or allowlisted repository metadata. Result is host-local, not model reasoning.',
   inputSchema:{
     type:'object',
     additionalProperties:false,
@@ -20,7 +20,7 @@ const TOOL={
     properties:{
       objective:{type:'string',minLength:1,maxLength:16384},
       capability:{type:'string',enum:[...CAPABILITIES]},
-      inputs:{type:'object',description:'For math.sum use numbers: number[]; research use repository: owner/name; text.metrics needs no inputs.'}
+      inputs:{type:'object',description:'artifact.validate: format, dataBase64, authorization, mustContain; math.sum: numbers; research: repository.'}
     }
   },
   annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:true}
@@ -44,7 +44,7 @@ const validName=(x)=>typeof x==='string'&&/^[a-z0-9][a-z0-9.:-]*$/i.test(x)&&x.l
 export function createReadOnlyMcpServer({
   host='127.0.0.1',allowedHosts=['127.0.0.1','localhost'],allowedOrigins=[],
   bearerToken,allowRepositories=[],auditMode='off',auditRepository=null,
-  githubResearch=false,fetchImpl=globalThis.fetch,
+  githubResearch=false,artifactValidationEnabled=false,fetchImpl=globalThis.fetch,
   // Local explicit server-side options, NEVER read from tool arguments.
   sourceRepository='Papa3445/Pro-Papa',githubToken=process.env.GITHUB_TOKEN,
 }={}){
@@ -54,10 +54,12 @@ export function createReadOnlyMcpServer({
        !/^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(x))||
      typeof bearerToken!=='string'||bearerToken.length<32||
      !Array.isArray(allowRepositories)||auditMode!=='off'||auditRepository!==null||
-     typeof githubResearch!=='boolean')throw Error('Invalid trusted MCP configuration');
+     typeof githubResearch!=='boolean'||typeof artifactValidationEnabled!=='boolean')
+     throw Error('Invalid trusted MCP configuration');
   const reference=createReferenceHost({
     allowedRepositories:allowRepositories,githubResearch,auditMode:'off',
-    sourceRepository,token:githubToken,fetchImpl,traceMode:'enforced'
+    sourceRepository,token:githubToken,fetchImpl,traceMode:'enforced',
+    artifactValidationEnabled
   });
   let active=0;
   const server=createServer(async(req,res)=>{
@@ -111,12 +113,19 @@ export function createReadOnlyMcpServer({
         return;
       }
       if(msg.method==='ping'){respond(res,200,rpc(id,{}));return;}
-      if(msg.method==='tools/list'){respond(res,200,rpc(id,{tools:[TOOL]}));return;}
+      if(msg.method==='tools/list'){
+        const visible={...TOOL,inputSchema:{...TOOL.inputSchema,properties:{
+          ...TOOL.inputSchema.properties,capability:{type:'string',enum:[...CAPABILITIES].filter(
+            x=>x!=='artifact.validate'||artifactValidationEnabled)}
+        }}};
+        respond(res,200,rpc(id,{tools:[visible]}));return;
+      }
       if(msg.method!=='tools/call'){respond(res,200,fault(id,-32601,'Method not found'));return;}
       if(!plain(params)||params.name!==TOOL.name||!closed(params.arguments)||
          typeof params.arguments.objective!=='string'||!params.arguments.objective.trim()||
          params.arguments.objective.length>16384||
          !CAPABILITIES.has(params.arguments.capability)||
+         (params.arguments.capability==='artifact.validate'&&!artifactValidationEnabled)||
          (params.arguments.inputs!==undefined&&!plain(params.arguments.inputs))){
         respond(res,200,fault(id,-32602,'Invalid tool arguments'));return;
       }

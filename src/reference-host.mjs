@@ -7,6 +7,7 @@ import { blockedExecutionTrace, releaseExecutionTrace,
 import { buildWeeklyPlan } from './planning.mjs';
 import { draftMemo } from './memo.mjs';
 import { generateIsoDateModule } from './iso-date.mjs';
+import { validatePdfArtifact } from './artifact-validation.mjs';
 const REPO = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const plain = x => x !== null && typeof x === 'object' && !Array.isArray(x);
@@ -156,6 +157,7 @@ export function createReferenceHost({
   fetchImpl = globalThis.fetch, auditFetchImpl = undefined,
   auditTransport = 'native', traceMode = 'off',
   durableProject = null, durableSecret = process.env.PRO_PAPA_GATEWAY_SECRET,
+  artifactValidationEnabled = false,
 } = {}) {
   if (!Array.isArray(allowedRepositories) || allowedRepositories.length > 16 ||
       allowedRepositories.some(repo => typeof repo !== 'string' || !REPO.test(repo)) ||
@@ -169,7 +171,8 @@ export function createReferenceHost({
       (auditMode === 'required' &&
         (typeof auditRepository !== 'string' || !REPO.test(auditRepository) ||
           !REPO.test(sourceRepository) || same(auditRepository, sourceRepository))) ||
-      !(durableProject === null || typeof durableProject === 'string')) fail();
+      !(durableProject === null || typeof durableProject === 'string') ||
+      typeof artifactValidationEnabled !== 'boolean') fail();
   if (approvedIssue && (!plain(approvedIssue) || !UUID.test(approvedIssue.requestId ?? '') ||
       typeof approvedIssue.payloadSha256 !== 'string' ||
       !SHA256.test(approvedIssue.payloadSha256) ||
@@ -179,9 +182,14 @@ export function createReferenceHost({
 
   const grants = ['math.sum', 'text.metrics', 'plan.week', 'memo.draft', 'code.iso-date'];
   if (githubResearch) grants.push('research');
+  if (artifactValidationEnabled) grants.push('artifact.validate');
   if (approvedIssue) grants.push('operations');
 
   const handlers = {
+    'artifact.validate': async ({ inputs }) => ({
+      ok: true, output: validatePdfArtifact(inputs,{enabled:artifactValidationEnabled}),
+      provenance: {provider:'local-node',operation:'artifact.validate'},
+    }),
     'math.sum': async ({ inputs }) => {
       if (!plain(inputs) || !Array.isArray(inputs.numbers) ||
           inputs.numbers.length < 1 || inputs.numbers.length > 100 ||

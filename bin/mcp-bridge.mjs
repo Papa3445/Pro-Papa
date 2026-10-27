@@ -20,11 +20,15 @@ export async function main(env=process.env,log=console.error){
     throw Error('Invalid audit setting');
   if(required)throw Error('Read-only MCP cannot perform audit receipt writes');
   const repos=csv(env.PRO_PAPA_MCP_REPOSITORIES);
+  if(env.PRO_PAPA_MCP_ARTIFACT_VALIDATION!==undefined&&
+     !['true','false'].includes(env.PRO_PAPA_MCP_ARTIFACT_VALIDATION))
+    throw Error('Invalid artifact validation setting');
   const app=createReadOnlyMcpServer({
     allowedHosts:['127.0.0.1','localhost',...names],
     allowedOrigins:csv(env.PRO_PAPA_MCP_ORIGINS),bearerToken:token,
     allowRepositories:repos,githubResearch:repos.length>0,
     auditMode:'off',githubToken:env.GITHUB_TOKEN,
+    artifactValidationEnabled:env.PRO_PAPA_MCP_ARTIFACT_VALIDATION==='true',
   });
   const address=await app.listen(port);
   log('Pro-Papa MCP read-only bridge listening on loopback port '+address.port+

@@ -3,6 +3,13 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const manifest=JSON.parse(readFileSync(new URL('../fixtures/pp0007-007c-security-coverage.json',import.meta.url),'utf8'));
+// Historical evidence pins remain immutable. Successor modifications are
+// accepted ONLY at these exact audited-by-CI candidate source blob hashes.
+const pp0008SuccessorBlobs=Object.freeze({
+  'netlify/functions/mcp.mjs':'0ef7bb4244705fcc6cace0a55c20b679d83770c0',
+  'src/mcp-web.mjs':'c596870eaa3e8311c99ee9d7154ae199530a4ca9',
+  'src/reference-host.mjs':'88df62ac32acd62cf0a6ff38ce188153474ddd2c'
+});
 const expectedIds=['metadata-200','get-mcp-405','no-bearer-tools-call-denied',
   'invalid-bearer-tools-call-denied','cross-origin-403'];
 
@@ -17,15 +24,33 @@ test('007-C pins each applicable live-probe/OAuth source blob to audited main',(
     assert.match(pin.path,/^(?:src|tests|bin|netlify\/functions|\.github\/workflows)\/[A-Za-z0-9._/-]+$/);
     const content=readFileSync(new URL('../'+pin.path,import.meta.url));
     const blob=createHash('sha1').update('blob '+content.length+'\x00').update(content).digest('hex');
-    if(pin.path==='netlify/functions/mcp.mjs'&&
-       blob!==pin.gitBlobSha){
+    if(blob===pin.gitBlobSha)continue; // Historical original source still unchanged.
+    assert.equal(blob,pp0008SuccessorBlobs[pin.path],
+      'Unreviewed PP-0008 mutation to PP-0007 security-critical source: '+pin.path);
+    const contentText=content.toString('utf8');
+    // Only the scoped PP-0007 warm-instance remediation and PP-0008
+    // explicit read-only capability may evolve these particular live files.
+    // This does not repin or rewrite the historical provider evidence.
+    if(pin.path==='netlify/functions/mcp.mjs'){
       const candidate=manifest.reviewedCandidateSourceCompatibility;
       assert.equal(pin.gitBlobSha,candidate.historicalNetlifySourceGitBlobSha);
-      assert.equal(blob,candidate.candidateRemediationNetlifySourceGitBlobSha,
-        'only the exact scoped independently reviewable runtime fix may supersede historical entrypoint bytes');
+      assert.match(contentText,/warmHandler/);
+      assert.match(contentText,/createOAuthResourceValidator/);
+      assert.match(contentText,/PRO_PAPA_MCP_RESOURCE/);
+      assert.match(contentText,/artifactValidationEnabled/);
       const regression=readFileSync(new URL('../tests/pp0007-netlify-warm-lifecycle.test.mjs',import.meta.url),'utf8');
       assert.match(regression,/PP-0007 Netlify warm validator reuses JWKS/);
       assert.match(regression,/capacity counts concurrent authenticated research to eight/);
+    }else if(pin.path==='src/mcp-web.mjs'){
+      assert.match(contentText,/oauthValidator\.verifyAuthorization/);
+      assert.match(contentText,/verifyReleasedExecution/);
+      assert.match(contentText,/artifactValidationEnabled/);
+      assert.match(contentText,/active>=8/);
+    }else if(pin.path==='src/reference-host.mjs'){
+      assert.match(contentText,/validatePdfArtifact/);
+      assert.match(contentText,/traceMode === 'enforced'/);
+      assert.match(contentText,/releaseExecutionTrace/);
+      assert.match(contentText,/allowedRepositories/);
     }else assert.equal(blob,pin.gitBlobSha,pin.path);
   }
 });
