@@ -89,6 +89,31 @@ test('denied positive authorization is a genuine test failure',async()=>{
     /valid_jwt_not_authorized/);
   assert.equal(f.calls.length,3);
 });
+test('tampered JWT denial with extra execution text must fail',async()=>{
+  const response={...no,result:{...no.result,content:[
+    {type:'text',text:'Authentication required'},
+    {type:'text',text:JSON.stringify({status:'completed',
+      execution:{output:{total:7,count:2}}})}
+  ]}};
+  const f=fixture(stage=>stage==='bad'?json(response):null);
+  await assert.rejects(()=>runSignedJwtSmoke({...inputs,fetchImpl:f.fetchImpl}),
+    /tampered_jwt_not_rejected/);
+  assert.deepEqual(f.calls.map(x=>x.stage),['metadata','token','good','bad']);
+});
+test('tampered JWT denial with additional payload fields must fail',async()=>{
+  const cases=[
+    {...no,result:{...no.result,execution:{output:{total:7}}}},
+    {...no,result:{...no.result,content:[]}},
+    {...no,result:{...no.result,_meta:{...no.result._meta,extra:'invalid'}}},
+    {...no,extra:{output:{total:7}}}
+  ];
+  for(const response of cases){
+    const f=fixture(stage=>stage==='bad'?json(response):null);
+    await assert.rejects(()=>runSignedJwtSmoke({...inputs,fetchImpl:f.fetchImpl}),
+      /tampered_jwt_not_rejected/);
+    assert.equal(f.calls.length,4);
+  }
+});
 test('a tampered signature leaking structured data fails closed',async()=>{
   const f=fixture(stage=>stage==='bad'?json({...no,result:{
     ...no.result,structuredContent:{total:7}}}):null);
