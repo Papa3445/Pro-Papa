@@ -8,6 +8,8 @@ Pro-Papa extracts the reusable ideas behind [Ironshade Vector](https://github.co
 
 The built-in software, research and document adapters provide **real, bounded, read-only checks** instead of only accepting self-reported proof. An active task selects its adapter by profile; `.pro-papa/adapter-policy.json` can revoke permission but cannot supply executable commands. Check an active task with `node bin/pro-papa.mjs adapter-check --id PP-0001 --actor IMPLEMENTER --file src/adapters.mjs`. The adapter writes a SHA-256-backed report and records pass/fail proof; failing checks exit nonzero. See [the detailed adapter contract](docs/ADAPTERS.md). Syntax, citations and structure checks are **not** quality, truth or security certifications.
 
+**Development without review loops:** [Delivery and integration policy](docs/DEVELOPMENT-DELIVERY.md) explains how to advance from verified code to one integrated review, an explicit merge decision, and a separate production release. It does not weaken branch protection or turn a `Continue` request into merge permission.
+
 ## What's working in v0.1
 
 - Deterministic task selection and resume: ordered queue, one active task, validated dependencies, blocked-state handling and cycle detection.

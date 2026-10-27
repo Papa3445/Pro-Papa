@@ -39,7 +39,7 @@ Where available on your GitHub plan/repository, configure native branch protecti
 
 - Require pull requests and approval from eligible independent reviewers.
 - Dismiss stale approvals on new pushes and, where supported, require approval of the most recent reviewable push.
-- Require the ordinary `Verify Pro-Papa / check` CI result.
+- Require the **actual GitHub check-run context** `check` from the trusted GitHub Actions App (currently integration ID `15368`). The workflow display name is `Verify Pro-Papa`, but its emitted required check context is `check`; the synthetic string `Verify Pro-Papa / check` previously caused a false permanent block. Verify live provider context names after changing workflow jobs.
 - Restrict bypass privileges and avoid allowing PR authors to approve their own work.
 
 An administrator must configure these settings; their exact availability depends on repository plan and visibility. They govern **merging**, while Pro-Papa `close` verifies the separate opt-in task evidence. Neither automatically generates an independent AI review.
