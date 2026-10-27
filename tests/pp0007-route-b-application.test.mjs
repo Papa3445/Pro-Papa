@@ -61,8 +61,10 @@ test('Route B candidate ledger applies exact approved wording and preserves all 
  assert.equal(observed.manualAuthorizedRun.runId,40553891521);
  assert.deepEqual(observed.manualAuthorizedRun.observedChecks,[
    'pinned_auth0_token_issued','authorized_math_sum_released','tampered_signature_denied']);
- assert.equal(observed.manualAuthorizedRun.headSha,active.reviewTarget.baseSha);
- assert.equal(observed.production.commitRef,active.reviewTarget.baseSha);
+ // Source-pinned historical production run used the prior published main,
+ // not the new milestone PR's review base commit.
+ assert.equal(observed.manualAuthorizedRun.headSha,'837283019ba062933ec2775c27f405f8bcace8e4');
+ assert.equal(observed.production.commitRef,observed.manualAuthorizedRun.headSha);
  assert.equal(observed.explicitLimitations.originalSevenCaseBenchmarkCollected,false);
  assert.equal(observed.explicitLimitations.productionRollbackExecuted,false);
  assert.equal(active.title,proposal.proposedTaskAfter.title);
