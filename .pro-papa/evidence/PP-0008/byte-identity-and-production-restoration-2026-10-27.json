@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0008",
+  "evidenceClass": "validation",
+  "checks": {
+    "originalZipEntryByteLength": 2424,
+    "originalZipEntrySha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+    "workReportedLiveInputSha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+    "exactByteIdentityPass": true,
+    "originalPdfLocallyParsedBy": "pypdf strict",
+    "originalPageCount": 2,
+    "pageLocalRequiredPhraseMatch": [
+      true,
+      true
+    ],
+    "executionSha256RecomputedOverCompactJson": "f4cec270cb1da6860645bfdac912cadeadae290f07ded8a01b2230bfda383e90",
+    "traceDigestMatched": true,
+    "publishedEnabledDeploy": {
+      "id": "6ae11b3d7928e0b7ad9082f2",
+      "status": "ready",
+      "context": "production",
+      "sha": "17d5887b6be61cda5de3508807cf404f1cd391f3",
+      "publishedAt": "2026-10-27T21:44:48.380Z"
+    },
+    "publishedRestorationDeploy": {
+      "id": "6ae11d88a6df397b7428dce9",
+      "status": "ready",
+      "context": "production",
+      "sha": "17d5887b6be61cda5de3508807cf404f1cd391f3",
+      "publishedAt": "2026-10-27T21:54:35.476Z"
+    },
+    "currentProductionArtifactValidationFlag": "false",
+    "currentProductionDeployMatchesRestoration": true
+  },
+  "scope": "Actual Netlify API reads confirm deployment SHAs/states and flag=false; Work report separately observed disabled-state rejection and allowed math. No additional live production calls needed. Not a renderer, accessibility, antivirus, or global-ChatGPT enforcement proof."
+}

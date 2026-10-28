@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0008",
+  "evidenceClass": "test",
+  "source": "separate ChatGPT Work live acceptance report (private Library file PP0008-live-acceptance-2026-10-27.md)",
+  "actualConnectedCallReported": true,
+  "connectionAuthSettingObserved": "OAuth",
+  "tool": "pro_papa_execute_readonly",
+  "capability": "artifact.validate",
+  "authorization": "validate_supplied_bytes_only",
+  "format": "application/pdf",
+  "inputSha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+  "inputByteLength": 2424,
+  "mustContain": [
+    "PP0008 LIVE SMOKE SAMPLE",
+    "SECOND PAGE CHECK"
+  ],
+  "result": {
+    "status": "completed",
+    "output": {
+      "format": "application/pdf",
+      "byteLength": 2424,
+      "sha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+      "pageCount": 2,
+      "extractableCharacters": 295,
+      "requiredChecks": 2,
+      "matchedChecks": 2,
+      "mechanicalOnly": true
+    },
+    "provenance": {
+      "provider": "local-node",
+      "operation": "artifact.validate"
+    }
+  },
+  "trace": {
+    "state": "released",
+    "steps": [
+      "request.accepted",
+      "audit.not_required",
+      "route.selected",
+      "handler.started",
+      "handler.returned",
+      "output.validated",
+      "response.released"
+    ],
+    "executionSha256": "f4cec270cb1da6860645bfdac912cadeadae290f07ded8a01b2230bfda383e90",
+    "providerAuthenticated": false,
+    "scope": "single_explicit_reference_host_invocation"
+  },
+  "negativeAfterRestoration": {
+    "artifactValidationRejected": true,
+    "jsonRpcCode": -32602,
+    "mathSumNumbers": [
+      3,
+      4
+    ],
+    "mathSumTotal": 7
+  },
+  "limits": "Separate Work session witnessed the connected MCP call and OAuth setting; current session verified its report and hashes but did not re-run a credentialed live call. Host trace has providerAuthenticated:false and is not an end-user identity attestation."
+}

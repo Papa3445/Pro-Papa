@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0008",
+  "evidenceClass": "artifact",
+  "source": "Reported origin of the original ZIP in a prior ChatGPT chat; PDF byte identity verified, native PDF generator invocation not independently verified.",
+  "provenance": {
+    "firstPartySource": "Reported by implementation-side conversation Files listing; original file ID and source_kind were not independently retrievable by reviewer.",
+    "originalFileRecord": {
+      "name": "pp0008_exact_pdf_fixture.zip",
+      "fileId": "file_00000000cd3481f59ce42f8cb9be4465",
+      "sourceKind": "generated",
+      "uploadedAt": "2026-10-27T21:16:50.193658+00:00",
+      "userTurnIndex": 8
+    },
+    "companionFileRecord": {
+      "name": "pp0008_live_smoke_sample.pdf",
+      "fileId": "file_00000000199c81f595094a991da42328",
+      "sourceKind": "generated",
+      "uploadedAt": "2026-10-27T21:14:16.802253+00:00",
+      "userTurnIndex": 8
+    },
+    "firstPartyToolArtifactRegistration": {
+      "toolUploadedZipFile": null,
+      "registeredContainerPath": "/mnt/data/pp0008_exact_pdf_fixture.zip",
+      "linkage": "Original file registration was observed by implementation operator but could not be fetched from independent review context. It is NOT provider-attested evidence of a native tool invocation.",
+      "underlyingGeneratorInvocationId": null,
+      "underlyingGeneratorMethod": "unverified original invocation",
+      "sourceKindDoesNotCryptographicallyAttestToolExecution": true
+    },
+    "zipSha256": "71e56b4d67b70022b11dc1c40c71689d4f2c84bbdfc14a00748823ef885a7540",
+    "separateWorkSessionWitnessedCreation": false,
+    "separateWorkSessionWitnessedValidation": true,
+    "inspectability": "Reviewer could not retrieve originating Files IDs; these are reported, unverified metadata. Original ZIP and exact PDF hashes were independently checked via later copy."
+  },
+  "artifact": {
+    "entry": "pp0008_native_created.pdf",
+    "byteLength": 2424,
+    "sha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+    "generatorRecordedInZipManifest": "ReportLab Canvas with invariant metadata",
+    "reportlabPdfHeaderPresent": true,
+    "pageCount": 2,
+    "checkOnPage1": "PP0008 LIVE SMOKE SAMPLE",
+    "checkOnPage2": "SECOND PAGE CHECK"
+  },
+  "crossSurfaceIdentity": {
+    "actualConnectedMcpValidationSha256": "4db224a903ff01d78368536f5db2ebab6215775dfc098fe7c9378cb73d03da86",
+    "hashesMatch": true
+  },
+  "limits": "PROVENANCE UNVERIFIED: original PDF/ZIP native ChatGPT generator invocation is not established by accessible provider evidence. This file is valid partial PDF/hash evidence only. Full native-creation-followed-by-MCP acceptance remains pending and PP-0008 must stay in_progress. A newly witnessed native creation followed by separate authenticated validation is the next proposed test. No raw conversation, PDF bytes or credentials are published."
+}
