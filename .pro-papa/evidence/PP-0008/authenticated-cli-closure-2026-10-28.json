@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0008",
+  "evidenceKind": "authenticated_cli_closure_execution",
+  "observedAtUtc": "2026-10-28T21:59:09Z",
+  "trustBoundary": "Actual existing Pro-Papa CLI executed in trusted GitHub Actions environment with short-lived read-only github.token. Checkout fixed to previously protected rev78 main. No token or credentials disclosed in this record.",
+  "source": {
+    "repository": "Papa3445/Pro-Papa",
+    "mainSourceSha": "b24a2d76abcf9f6cc2a7c272126f253b803fa170",
+    "sourceRevision": 78,
+    "workflowPath": ".github/workflows/pp0008-closure-attestation.yml",
+    "workflowRemovedFromFinalDiff": true
+  },
+  "providerRun": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40776346789",
+    "id": 40776346789,
+    "jobId": 123126551237,
+    "runHeadSha": "b23da459a416a819234e9b201fe53e5f7cccfa18",
+    "conclusion": "success"
+  },
+  "commands": [
+    "node bin/pro-papa.mjs review-status --id PP-0008",
+    "node bin/pro-papa.mjs close --id PP-0008",
+    "node bin/pro-papa.mjs validate"
+  ],
+  "authenticatedReview": {
+    "verdict": "PASS",
+    "repository": "Papa3445/Pro-Papa",
+    "pullRequest": 55,
+    "headSha": "b2d5a6518af816be1fd07e3ad9066d1c77bf3fbe",
+    "baseSha": "17d5887b6be61cda5de3508807cf404f1cd391f3",
+    "reviewId": 5676361079,
+    "reviewer": "papa4568"
+  },
+  "verification": {
+    "required": [
+      "artifact",
+      "test",
+      "validation",
+      "review"
+    ],
+    "verifiedFileCount": 4,
+    "projectValidation": {
+      "valid": true,
+      "tasks": 13
+    },
+    "newRevision": 79,
+    "status": "verified",
+    "verifiedAt": "2026-10-28T21:59:08.228Z",
+    "pp0007HistoricalEvidenceCount": 85
+  },
+  "originalProviderArtifact": {
+    "id": 12855261293,
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40776346789/artifacts/12855261293",
+    "zipSha256": "692ebdbc2cd7de2b16b39636cafb1cba4d8dc805804e2b94bcc69adc90eed361",
+    "entries": {
+      ".pro-papa/tasks.json": {
+        "sha256": "294bf13f50c2a8fe0192f4ee99a03753f681d6df61c70fc3ce9502fa48860d1d",
+        "gitBlobSha": "38f2ead075ef78da59a4256ad2074eabe062cda5"
+      },
+      "review-status.json": {
+        "sha256": "db5ddd30f33a6e6096fcdad0afd1424c2e015b52aecbdbc6fa111bb4046ceaad"
+      },
+      "close-report.json": {
+        "sha256": "fa1b13c3347f879bd3da95a06a6135a4b7b01804b89010f0f00e00a4a6285be6"
+      }
+    }
+  },
+  "verificationScope": "Actual guarded closeTask/verifyClosure executed and emitted successful result on original in_progress source; branch ledger blob is byte-identical to the CLI-produced tasks.json. This is candidate evidence; independent current-head PR review, authorized merge and postdeploy readback are still required. No subjective PDF quality, signed native invocation, or generalized security certification claimed."
+}
