@@ -15,7 +15,7 @@ const applicationLedger='a28a48789714c1051482b7c3201aac4e9a8c0a69';
 const evidenceLedger='7bf9061e1463521d045183010b29f1d890b02a4a';
 const finalCloseoutLedger='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const scopeApplication=read('fixtures/pp0007-route-b-application-authorization.json');
-const successor=[77,78].includes(ledger.revision)?pp0007LedgerSnapshot(ledger).isSuccessor:false;
+const successor=[77,78,79].includes(ledger.revision)?pp0007LedgerSnapshot(ledger).isSuccessor:false;
 const isFinal=blobSha('.pro-papa/tasks.json')===finalCloseoutLedger||successor;
 const isEvidence=isFinal||blobSha('.pro-papa/tasks.json')===evidenceLedger;
 const isApplication=isEvidence||blobSha('.pro-papa/tasks.json')===applicationLedger;
@@ -29,7 +29,8 @@ test('Route B proposal preserves original literal clauses/82-item evidence and r
  assert.equal(ledger.tasks.length,isFinal?13:isApplication?12:sha===oldLedger?7:11);
  if(sha!==oldLedger)for(const future of ledger.tasks.slice(7,11)){
   assert.deepEqual(future.dependsOn,['PP-0007']);
-  assert.equal(future.status,successor&&future.id==='PP-0008'?'in_progress':'pending');
+  assert.equal(future.status,successor&&future.id==='PP-0008'?
+    (ledger.revision===79?'verified':'in_progress'):'pending');
  }
  assert.equal(task.status,isFinal?'verified':'in_progress');
  assert.equal(task.evidence.length,isFinal?85:isEvidence?83:p.source.originalTaskEvidenceCount);
