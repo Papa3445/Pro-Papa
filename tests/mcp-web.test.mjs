@@ -157,22 +157,26 @@ test('PP-0007 Netlify entrypoint refuses to serve when runtime config absent',as
   const old=globalThis.Netlify;
   const keys=['PRO_PAPA_MCP_PUBLIC_HOSTNAME','PRO_PAPA_AUTH0_ISSUER','PRO_PAPA_MCP_RESOURCE'];
   const saved=keys.map(key=>[key,process.env[key]]);
+  // Netlify previews may inject an empty artifact flag into process.env. These
+  // fixture calls exercise other config paths with an explicit disabled flag.
+  const fixtureNetlify=values=>({env:{get:key=>
+    key==='PRO_PAPA_MCP_ARTIFACT_VALIDATION'?'false':values[key]}});
   try {
     // The entrypoint falls back to process.env when Netlify.env returns undefined.
     // Builds may supply real runtime configuration; this fixture must isolate both sources.
     for(const key of keys) delete process.env[key];
-    globalThis.Netlify={env:{get:()=>undefined}};
+    globalThis.Netlify=fixtureNetlify({});
     const without=await netlifyMcp(request(call('tools/list',1,{})));
     assert.equal(without.status,503);
     assert.equal((await without.text()),'Service unavailable');
     const legacy={PRO_PAPA_MCP_TOKEN:KEY,PRO_PAPA_MCP_PUBLIC_HOSTNAME:HOST};
-    globalThis.Netlify={env:{get:key=>legacy[key]}};
+    globalThis.Netlify=fixtureNetlify(legacy);
     const staticBearerOnly=await netlifyMcp(request(call('tools/list',1,{})));
     assert.equal(staticBearerOnly.status,503);
     const values={PRO_PAPA_MCP_PUBLIC_HOSTNAME:HOST,
       PRO_PAPA_AUTH0_ISSUER:'https://personal-fixture.us.auth0.com/',
       PRO_PAPA_MCP_RESOURCE:'https://'+HOST};
-    globalThis.Netlify={env:{get:key=>values[key]}};
+    globalThis.Netlify=fixtureNetlify(values);
     const withOAuth=await parsed(await netlifyMcp(request(call('tools/list',1,{}))));
     assert.equal(withOAuth.status,200);
     assert.equal(withOAuth.body.result.tools[0].name,'pro_papa_execute_readonly');
