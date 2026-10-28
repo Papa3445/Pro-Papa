@@ -7,7 +7,7 @@ const manifest=JSON.parse(readFileSync(new URL('../fixtures/pp0007-007c-security
 // accepted ONLY at these exact audited-by-CI candidate source blob hashes.
 const pp0008SuccessorBlobs=Object.freeze({
   'netlify/functions/mcp.mjs':'0ef7bb4244705fcc6cace0a55c20b679d83770c0',
-  'src/mcp-web.mjs':'7079ca2f1136398b3a8f5b3f516b3d06412e86e4',
+  'src/mcp-web.mjs':'6a946d99962692a2c30595d0a77e87ce3b46439a',
   'src/reference-host.mjs':'88df62ac32acd62cf0a6ff38ce188153474ddd2c',
   // PP-0008 preview-only test fixture correction; immutable historical pin stays intact.
   'tests/mcp-web.test.mjs':'78066d454c8ba2f92bf6e7db37dbbe7745568eed'
