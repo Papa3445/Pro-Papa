@@ -3,6 +3,7 @@
 import {timingSafeEqual} from 'node:crypto';
 import {createReferenceHost} from './reference-host.mjs';
 import {verifyReleasedExecution} from './execution-trace.mjs';
+import {createMcpCallProvenance} from './mcp-call-provenance.mjs';
 
 const MAX_BODY=65536;
 const PROTOCOLS=new Set(['2025-06-18','2025-11-25']);
@@ -111,6 +112,7 @@ export function createReadOnlyMcpWebHandler({
     traceMode:'enforced',auditMode:'off',token:githubToken,fetchImpl,
     artifactValidationEnabled
   });
+  const provenance=createMcpCallProvenance();
   let active=0;
   return async function handleMcpRequest(request){
     if(!(request instanceof Request))return rejected(400,-32600,'Invalid request');
@@ -198,9 +200,20 @@ export function createReadOnlyMcpWebHandler({
         execution:null,audit:outcome.audit??{status:'not_requested'},
         trace:{state:'not_released',providerAuthenticated:false}
       };
+      // Bind one accepted, explicitly authorized tool invocation to its actual
+      // method/ID/arguments, verified capability, outcome, and released digest.
+      // The per-process HMAC key is never disclosed; only the random call ID and
+      // non-reversible binding travel in the response. Nothing is logged/stored.
+      const binding={message,capability:args.capability,status:checked.status,
+        executionSha256:valid?checked.trace.executionSha256:null};
+      const callProvenance=provenance.issue(binding);
+      if(!provenance.verify(callProvenance,binding))
+        return rejected(500,-32603,'Internal server error');
+      const released={...checked,callProvenance};
       return json(200,result(id,{isError:!valid,
-        content:[{type:'text',text:JSON.stringify(checked)}],
-        ...(valid?{structuredContent:checked}:{})}));
+        content:[{type:'text',text:JSON.stringify(released)}],
+        _meta:{'pro-papa/call-provenance':callProvenance},
+        ...(valid?{structuredContent:released}:{})}));
     }catch{
       return rejected(500,-32603,'Internal server error');
     }
