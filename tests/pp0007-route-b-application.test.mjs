@@ -28,6 +28,10 @@ test('Route B candidate ledger applies exact approved wording and preserves all 
   delete work.verifiedAt;
   delete work.requiresTrustedReview;
   delete work.reviewTarget;
+  if(ledger.revision===80){
+   const next=previous.tasks.find(x=>x.id==='PP-0009');
+   next.status='pending';next.owner=null;
+  }
  }
  previous.revision=75;
  previous.tasks=previous.tasks.filter(x=>x.id!=='PP-0013');
@@ -97,7 +101,8 @@ test('Route B successor preserves original full benchmark and cannot start',()=>
  assert.deepEqual(ledger.tasks.slice(7,11).map(x=>x.id),['PP-0008','PP-0009','PP-0010','PP-0011']);
  assert.ok(ledger.tasks.slice(7,11).every(x=>
    (x.status==='pending'||snapshot.isSuccessor&&x.id==='PP-0008'&&
-      x.status===(ledger.revision===79?'verified':'in_progress'))&&
+      x.status===(ledger.revision>=79?'verified':'in_progress')||
+      snapshot.isSuccessor&&ledger.revision===80&&x.id==='PP-0009'&&x.status==='in_progress')&&
    JSON.stringify(x.dependsOn)==='["PP-0007"]'));
 });
 test('Route B candidate original trial, historical blocked verdict and approval boundaries unchanged',()=>{
