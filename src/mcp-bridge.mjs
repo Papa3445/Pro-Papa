@@ -132,7 +132,16 @@ export function createReadOnlyMcpServer({
         respond(res,200,fault(id,-32602,'Invalid tool arguments'));return;
       }
       if(active>=8){
-        respond(res,200,rpc(id,{isError:true,content:[{type:'text',text:'Execution unavailable: bridge at capacity'}]}));return;
+        const binding={message:msg,capability:params.arguments.capability,
+          status:'capacity_denied',executionSha256:null};
+        const callProvenance=provenance.issue(binding);
+        if(!provenance.verify(callProvenance,binding)){
+          respond(res,500,fault(null,-32603,'Internal server error'));return;
+        }
+        respond(res,200,rpc(id,{isError:true,
+          content:[{type:'text',text:JSON.stringify({status:'capacity_denied',
+            reason:'Execution unavailable: bridge at capacity',callProvenance})}],
+          _meta:{'pro-papa/call-provenance':callProvenance}}));return;
       }
       active++;
       let result;
