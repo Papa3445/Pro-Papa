@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0009",
+  "kind": "production_implementation_acceptance_observation",
+  "evidenceStatus": "positive_call_verified_negative_auth_pending",
+  "recordedAtUtc": "2026-10-28T23:10:41.516Z",
+  "deployment": {
+    "sourceCommit": "f8d430245d10249eb85cf315ec43abdfeed642c7",
+    "deploymentId": "6ae27fe9f631c1114fb84d4e",
+    "deploymentState": "ready",
+    "context": "production",
+    "publishedAt": "2026-10-28T23:06:38.819Z"
+  },
+  "postMergeCI": {
+    "runId": 40784936752,
+    "jobId": 123155635050,
+    "tests": 308,
+    "passed": 308,
+    "failed": 0,
+    "projectValidator": "valid:true",
+    "taskCount": 13
+  },
+  "runtimeConfig": {
+    "variable": "PRO_PAPA_MCP_ARTIFACT_VALIDATION",
+    "productionValue": "false",
+    "readMethod": "authenticated Netlify site environment-variable read"
+  },
+  "connectedPositiveCall": {
+    "transport": "existing connected Pro-Papa MCP tool (user-authorized read-only call)",
+    "method": "tools/call",
+    "capability": "math.sum",
+    "status": "completed",
+    "outputCheck": {
+      "total": 42,
+      "count": 2
+    },
+    "correlationId": "6cb6be9f-76b6-42a0-bc9d-eded979ea723",
+    "requestHmacSha256": "b2c74b3b4daadbaa1f108428696b54a11c67f8a40eb6ad9e1fe6e04942e8a4a4",
+    "executionSha256": "7b416725e6f54dab07920d76907a36d828fc5e10cf18740e848c52c471a60f0d",
+    "correlatedTraceDigestEqual": true,
+    "traceState": "released",
+    "traceScope": "single_explicit_reference_host_invocation",
+    "callScope": "single_explicit_mcp_tool_call",
+    "callRetention": "response_only",
+    "rawPromptStored": false,
+    "tokenStored": false,
+    "rawInputsStored": false,
+    "providerAuthenticatedSignature": false
+  },
+  "negativeSmoke": {
+    "status": "pending_ci_network_verification",
+    "workflowPath": ".github/workflows/pp0009-live-acceptance.yml"
+  },
+  "limitations": [
+    "The MCP tool reply is the observed connected-host output, not an independently signed provider attestation.",
+    "The per-handler ephemeral HMAC key is not public, so saved copies alone cannot reverify the MAC.",
+    "No inference that all ChatGPT turns were intercepted.",
+    "Connected positive sum and public OAuth negatives are distinct tests; no token material is persisted.",
+    "This is not a PP-0009 formal task-closure proof; acceptance and independent review remain separate."
+  ]
+}
