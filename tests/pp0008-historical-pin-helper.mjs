@@ -20,10 +20,15 @@ export function pp0007LedgerSnapshot(ledger){
     const task=prior.tasks.find(x=>x.id==='PP-0009');
     if(ledger.tasks.length!==13||task?.status!=='in_progress'||
        task.owner!=='chatgpt-implementation'||task.blockedReason!==null||
-       task.evidence?.length!==0||task.requiresTrustedReview!==undefined||
-       task.reviewTarget!==undefined)
+       task.evidence?.length!==0||task.requiresTrustedReview!==true||
+       task.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
+       task.reviewTarget?.pullRequest!==59||
+       task.reviewTarget?.baseRef!=='main'||
+       task.reviewTarget?.baseSha!=='c5c2c485efac1633ba296aa72588ad9a1544b169')
       throw Error('PP-0009 unexpected start transition');
-    task.status='pending';task.owner=null;prior.revision=79;
+    task.status='pending';task.owner=null;
+    delete task.requiresTrustedReview;delete task.reviewTarget;
+    prior.revision=79;
     if(sha(JSON.stringify(prior,null,2)+'\n')!==PP0008_CLOSED_BLOB)
       throw Error('PP-0009 start did not preserve exact verified PP-0008 baseline');
     return pp0007LedgerSnapshot(prior);
