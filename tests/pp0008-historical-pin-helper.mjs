@@ -19,11 +19,12 @@ export function pp0007LedgerSnapshot(ledger){
   if(work?.status!=='in_progress'||work.owner!=='chatgpt-implementation'||
      work.requiresTrustedReview!==true||
      work.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
-     work.reviewTarget?.pullRequest!==54||
      work.reviewTarget?.baseRef!=='main'||
-     work.reviewTarget?.baseSha!=='45d49e7fd9f0c5ec136f0869c66e7c4c64de6e7b'||
      work.blockedReason!==null)throw Error('Unexpected successor task transition');
   if(ledger.revision===78){
+    if(work.reviewTarget?.pullRequest!==55||
+       work.reviewTarget?.baseSha!=='17d5887b6be61cda5de3508807cf404f1cd391f3')
+      throw Error('Evidence closeout reviewTarget must pin approved PR #55 base');
     const proofs=[
       ['artifact','native-connected-live-acceptance-2026-10-27.json','24f343651d7cce587d36c40289a04fcb9d3de45d57846e76fb5716e7a457b9e1'],
       ['test','live-oauth-mcp-smoke-2026-10-27.json','1f8fb9de7aa5b12c2ab87416ed23a758000ad6097a71469c6caa0d471583a0db'],
@@ -40,11 +41,18 @@ export function pp0007LedgerSnapshot(ledger){
       throw Error('Unrecognized PP-0008 evidence transition');
     const baseline=structuredClone(ledger);
     baseline.revision=77;
-    baseline.tasks.find(t=>t.id==='PP-0008').evidence=[];
+    const oldTask=baseline.tasks.find(t=>t.id==='PP-0008');
+    oldTask.evidence=[];
+    oldTask.reviewTarget={repository:'Papa3445/Pro-Papa',pullRequest:54,
+      baseRef:'main',baseSha:'45d49e7fd9f0c5ec136f0869c66e7c4c64de6e7b'};
     if(sha(JSON.stringify(baseline,null,2)+'\n')!==PP0008_BASELINE_BLOB)
       throw Error('PP-0008 merged baseline ledger mutated');
     work.evidence=[];
-  }else if(work.evidence.length!==0)throw Error('Unexpected PP-0008 evidence');
+    work.reviewTarget={repository:'Papa3445/Pro-Papa',pullRequest:54,
+      baseRef:'main',baseSha:'45d49e7fd9f0c5ec136f0869c66e7c4c64de6e7b'};
+  }else if(work.evidence.length!==0||work.reviewTarget?.pullRequest!==54||
+           work.reviewTarget?.baseSha!=='45d49e7fd9f0c5ec136f0869c66e7c4c64de6e7b')
+    throw Error('Unexpected PP-0008 baseline evidence or review target');
   if(clone.tasks.filter(t=>t.status==='in_progress').length!==1||
      clone.tasks.find(t=>t.id==='PP-0007')?.status!=='verified'||
      clone.tasks.find(t=>t.id==='PP-0007')?.evidence?.length!==85||
