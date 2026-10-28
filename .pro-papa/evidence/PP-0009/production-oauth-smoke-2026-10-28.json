@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "taskId": "PP-0009",
   "kind": "production_implementation_acceptance_observation",
-  "evidenceStatus": "positive_call_verified_negative_auth_pending",
+  "evidenceStatus": "connected_positive_and_public_negative_passed",
   "recordedAtUtc": "2026-10-28T23:10:41.516Z",
   "deployment": {
     "sourceCommit": "f8d430245d10249eb85cf315ec43abdfeed642c7",
@@ -48,14 +48,57 @@
     "providerAuthenticatedSignature": false
   },
   "negativeSmoke": {
-    "status": "pending_ci_network_verification",
-    "workflowPath": ".github/workflows/pp0009-live-acceptance.yml"
+    "status": "passed",
+    "source": "actual read-only GitHub Actions runner internet requests; no bearer secret supplied",
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40785711859",
+    "runId": 40785711859,
+    "jobId": 123158248016,
+    "conclusion": "success",
+    "protectedBaseSourceSha": "f8d430245d10249eb85cf315ec43abdfeed642c7",
+    "sourceWorkflow": ".github/workflows/pp0009-live-acceptance.yml",
+    "sourceScript": "bin/pp0007-production-smoke.mjs",
+    "checks": [
+      {
+        "name": "public OAuth resource metadata",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "name": "missing bearer token",
+        "status": 200,
+        "rpcIsError": true,
+        "structuredSuccessReleased": false,
+        "passed": true
+      },
+      {
+        "name": "malformed bearer token",
+        "status": 200,
+        "rpcIsError": true,
+        "structuredSuccessReleased": false,
+        "passed": true
+      },
+      {
+        "name": "public tools/list",
+        "status": 200,
+        "artifactValidationAvailable": false,
+        "passed": true
+      }
+    ],
+    "credentialsSent": false,
+    "observationsRedacted": true,
+    "notes": [
+      "HTTP 200 is a JSON-RPC authentication challenge, not an authenticated tool success.",
+      "The old first test setup failed before any remote probe due shallow git checkout; corrected CI run used fetch-depth 0 and proved the actual negative checks.",
+      "Proof cannot establish signed-JWT positive flow by itself; that was a separate connected MCP observation."
+    ]
   },
   "limitations": [
     "The MCP tool reply is the observed connected-host output, not an independently signed provider attestation.",
     "The per-handler ephemeral HMAC key is not public, so saved copies alone cannot reverify the MAC.",
     "No inference that all ChatGPT turns were intercepted.",
     "Connected positive sum and public OAuth negatives are distinct tests; no token material is persisted.",
-    "This is not a PP-0009 formal task-closure proof; acceptance and independent review remain separate."
-  ]
+    "This is not a PP-0009 formal task-closure proof; acceptance and independent review remain separate.",
+    "No task status change or formal evidence registration in canonical ledger is claimed; PP-0009 remains in_progress."
+  ],
+  "finalizedAtUtc": "2026-10-28T23:13:18.947Z"
 }
