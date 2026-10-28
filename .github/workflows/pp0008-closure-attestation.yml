@@ -1,0 +1,41 @@
+name: PP-0008 one-time real authenticated closure preflight
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.pro-papa/tasks.json'
+      - '.github/workflows/pp0008-closure-attestation.yml'
+permissions:
+  contents: read
+jobs:
+  actual-closure:
+    if: github.event.pull_request.number == 58 && github.event.pull_request.base.sha == 'b24a2d76abcf9f6cc2a7c272126f253b803fa170' && github.event.pull_request.head.repo.full_name == 'Papa3445/Pro-Papa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b24a2d76abcf9f6cc2a7c272126f253b803fa170
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Invoke actual protected-rev78 authenticated review and close paths
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node bin/pro-papa.mjs review-status --id PP-0008 > review-status.json
+          node bin/pro-papa.mjs close --id PP-0008 > close-report.json
+          node bin/pro-papa.mjs validate
+          node -e "const s=require('./.pro-papa/tasks.json');const t=s.tasks.find(x=>x.id==='PP-0008');if(s.revision!==79||t.status!=='verified'||t.evidence.length!==4||s.tasks.find(x=>x.id==='PP-0007').evidence.length!==85)process.exit(1);"
+          cat review-status.json close-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pp0008-authenticated-cli-closure
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .pro-papa/tasks.json
+            review-status.json
+            close-report.json
