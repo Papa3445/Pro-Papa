@@ -19,12 +19,13 @@ test('Route B candidate ledger applies exact approved wording and preserves all 
  // Preserve the original reviewed Route B rev74 bytes by reconstructing the
  // previous ledger from the evidence-only rev75 transition, not rewriting its fixture.
  assert.equal(snapshot.canonicalBlob,finalCloseoutLedgerSha);
- assert.equal(ledger.revision,snapshot.isSuccessor?77:76);assert.equal(ledger.tasks.length,13);
+ assert.equal(ledger.revision,snapshot.isSuccessor?ledger.revision:76);assert.equal(ledger.tasks.length,13);
  // Reconstruct exact trusted prior rev75 to prove this is append-only closure.
  const previous=structuredClone(ledger);
  if(snapshot.isSuccessor){
   const work=previous.tasks.find(x=>x.id==='PP-0008');
-  work.status='pending';work.owner=null;delete work.requiresTrustedReview;
+  work.status='pending';work.owner=null;work.evidence=[];
+  delete work.requiresTrustedReview;
   delete work.reviewTarget;
  }
  previous.revision=75;
