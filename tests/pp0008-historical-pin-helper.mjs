@@ -7,11 +7,27 @@ import {readFileSync} from 'node:fs';
 const CLOSURE_BLOB='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const PP0008_BASELINE_BLOB='597863d867e8d92265f16bd079d15481f0de1ba8';
 const PP0008_EVIDENCE_BLOB='7918b1ba47566380c72e3f3d25d549d54ae502f3';
+const PP0008_CLOSED_BLOB='38f2ead075ef78da59a4256ad2074eabe062cda5';
 const sha=x=>{
   const b=Buffer.from(x);
   return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 };
 export function pp0007LedgerSnapshot(ledger){
+  // PP-0009: normalize exactly one ready-task start, WITHOUT re-pinning
+  // rev79 or mutating historical PP-0007 / PP-0008 evidence.
+  if(ledger.revision===80){
+    const prior=structuredClone(ledger);
+    const task=prior.tasks.find(x=>x.id==='PP-0009');
+    if(ledger.tasks.length!==13||task?.status!=='in_progress'||
+       task.owner!=='chatgpt-implementation'||task.blockedReason!==null||
+       task.evidence?.length!==0||task.requiresTrustedReview!==undefined||
+       task.reviewTarget!==undefined)
+      throw Error('PP-0009 unexpected start transition');
+    task.status='pending';task.owner=null;prior.revision=79;
+    if(sha(JSON.stringify(prior,null,2)+'\n')!==PP0008_CLOSED_BLOB)
+      throw Error('PP-0009 start did not preserve exact verified PP-0008 baseline');
+    return pp0007LedgerSnapshot(prior);
+  }
   const current=sha(JSON.stringify(ledger,null,2)+'\n');
   if(current===CLOSURE_BLOB)return {isSuccessor:false,canonicalBlob:current};
   if(![77,78,79].includes(ledger.revision)||ledger.tasks.length!==13)throw Error('Unknown ledger mutation');
