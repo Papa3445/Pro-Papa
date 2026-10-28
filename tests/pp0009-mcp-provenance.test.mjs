@@ -40,6 +40,26 @@ test('PP-0009 private host-key request MAC binds one real call and fails on tamp
   const good=signer.issue(args(message));
   assert.equal(signer.verify(good,args(message)),true);
   assert.equal(signer.verify(good,args({...message,id:8})),false);
+  // Previously unbound: both extension fields are accepted by JSON-RPC
+  // adapters, so neither may be substituted under the same signed call.
+  const extended={...message,traceparent:
+    '00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01',
+    context:{tenant:'alpha',nested:{attempt:1}}};
+  const extensionRecord=signer.issue(args(extended));
+  assert.equal(signer.verify(extensionRecord,args(extended)),true);
+  assert.equal(signer.verify(extensionRecord,args({...extended,traceparent:
+    '00-cccccccccccccccccccccccccccccccc-dddddddddddddddd-01'})),false);
+  assert.equal(signer.verify(extensionRecord,args({...extended,context:{
+    tenant:'alpha',nested:{attempt:2}}})),false);
+  assert.equal(signer.verify(extensionRecord,args(message)),false);
+  assert.equal(signer.verify(good,args({...message,traceparent:extended.traceparent})),false);
+  // Canonical JSON binds semantic fields, not irrelevant property ordering.
+  const reordered={context:{nested:{attempt:1},tenant:'alpha'},
+    params:extended.params,method:'tools/call',id:7,
+    traceparent:extended.traceparent,jsonrpc:'2.0'};
+  assert.equal(signer.verify(extensionRecord,args(reordered)),true);
+  assert.throws(()=>signer.issue(args({...message,extension:{n:Infinity}})),
+    /Invalid JSON-RPC envelope/);
   assert.equal(signer.verify(good,args(envelope(7,'different private objective'))),false);
   assert.equal(signer.verify(good,args(message,'denied',null)),false);
   assert.equal(signer.verify({...good,id:'00000000-0000-4000-8000-000000000000'},args(message)),false);
@@ -65,12 +85,14 @@ test('PP-0009 web MCP emits independent response-only correlation, not on handsh
     method:'POST',headers:h,body:JSON.stringify(msg)});
   const ping=await (await app(request({jsonrpc:'2.0',method:'ping',id:1}))).json();
   assert.equal(ping.result._meta,undefined);
-  const msg=envelope(9);
+  const msg={...envelope(9),traceparent:
+    '00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01'};
   const response=await app(request(msg));
   assert.equal(response.status,200);
   const result=(await response.json()).result;
   const first=requireCall(result);
   assert.equal(result.structuredContent.execution.output.total,5);
+  assert.equal(JSON.stringify(result).includes(msg.traceparent),false);
   const again=(await (await app(request(msg))).json()).result;
   const second=requireCall(again);
   assert.notEqual(first.id,second.id);
@@ -99,7 +121,8 @@ test('PP-0009 loopback MCP binds explicit local tool result to same provenance s
     });
     req.on('error',reject);req.end(JSON.stringify(payload));
   });
-  const result=await call(envelope(11));
+  const result=await call({...envelope(11),
+    traceparent:'00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01'});
   assert.equal(result.status,200);
   const record=requireCall(result.body.result);
   assert.equal(record.status,'completed');
