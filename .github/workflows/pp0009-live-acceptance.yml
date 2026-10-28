@@ -1,0 +1,49 @@
+name: PP-0009 one-time production read-only OAuth denial and capability smoke
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/pp0009-live-acceptance.yml'
+      - '.pro-papa/evidence/PP-0009/**'
+permissions:
+  contents: read
+jobs:
+  production-denial:
+    if: github.event.pull_request.head.repo.full_name == 'Papa3445/Pro-Papa' && github.event.pull_request.head.ref == 'evidence/pp0009-production-smoke' && github.event.pull_request.base.sha == 'f8d430245d10249eb85cf315ec43abdfeed642c7'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm protected deployed source in PR lineage
+        run: git merge-base --is-ancestor f8d430245d10249eb85cf315ec43abdfeed642c7 HEAD
+      - name: Real bounded production anonymous and malformed bearer negatives
+        run: node bin/pp0007-production-smoke.mjs --live
+      - name: Runtime tools-list hides disabled artifact validation
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const url='https://pro-papa-mcp.netlify.app/mcp';
+          const res=await fetch(url,{method:'POST',redirect:'error',
+            signal:AbortSignal.timeout(8000),headers:{
+              'Content-Type':'application/json',
+              Accept:'application/json, text/event-stream',
+              'MCP-Protocol-Version':'2025-11-25'
+            },body:JSON.stringify({jsonrpc:'2.0',id:909,method:'tools/list',params:{}})});
+          assert.equal(res.status,200);
+          assert.match(res.headers.get('content-type')||'',/^application\/json/);
+          const body=await res.json();
+          assert.equal(body.jsonrpc,'2.0');
+          assert.equal(body.id,909);
+          assert.equal(body.result?.tools?.length,1);
+          const caps=body.result.tools[0].inputSchema.properties.capability.enum;
+          assert.ok(caps.includes('math.sum'));
+          assert.equal(caps.includes('artifact.validate'),false);
+          console.log(JSON.stringify({status:'passed',
+            check:'production runtime artifact.validate excluded from public MCP tool schema',
+            artifactValidationAvailable:false,credentialsSent:false}));
+          NODE
