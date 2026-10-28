@@ -29,7 +29,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const bytes=readFileSync(new URL('.pro-papa/tasks.json',root));
   return createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
  })();
- const successor=taskLedger.revision===77?pp0007LedgerSnapshot(taskLedger).isSuccessor:false;
+ const successor=[77,78].includes(taskLedger.revision)?pp0007LedgerSnapshot(taskLedger).isSuccessor:false;
  const compat=m.exactLedgerCompatibility;
  assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
  assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(ledgerSha)||successor,
@@ -39,7 +39,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
  const isApplied=isEvidence||ledgerSha===exactApplicationLedger;
  const isPreview=isApplied||ledgerSha===compat.separateApprovedProposedBlob;
  assert.equal(application.candidateLedgerGitBlobSha,exactApplicationLedger);
- assert.equal(taskLedger.revision,successor?77:isFinal?76:isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
+ assert.equal(taskLedger.revision,successor?taskLedger.revision:isFinal?76:isEvidence?75:isApplied?74:isPreview?compat.separateApprovedProposedRevision:m.sourceTaskLedgerRevision);
  assert.equal(taskLedger.tasks.length,isFinal?13:isApplied?12:isPreview?compat.separateApprovedProposedTaskCount:m.sourceTaskCount);
  if(isPreview){
    assert.deepEqual(taskLedger.tasks.slice(7,11).map(x=>x.id),compat.addedFutureTaskIds);

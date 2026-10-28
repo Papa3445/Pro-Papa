@@ -57,7 +57,10 @@ test('007-C: pinned historical Netlify cache loss versus exact remediation candi
    PRO_PAPA_MCP_RESOURCE:RESOURCE};
  let jwksLookups=0;
  try{
-   globalThis.Netlify={env:{get:key=>values[key]}};
+   // The preview environment may supply an empty flag; keep this unrelated
+   // warm-cache regression under an explicitly disabled artifact capability.
+   globalThis.Netlify={env:{get:key=>
+     key==='PRO_PAPA_MCP_ARTIFACT_VALIDATION'?'false':values[key]}};
    globalThis.fetch=async(url,opts)=>{
      assert.equal(url,ISSUER+'.well-known/jwks.json');
      assert.equal(opts.redirect,'error');

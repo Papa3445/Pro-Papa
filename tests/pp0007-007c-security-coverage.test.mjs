@@ -8,7 +8,9 @@ const manifest=JSON.parse(readFileSync(new URL('../fixtures/pp0007-007c-security
 const pp0008SuccessorBlobs=Object.freeze({
   'netlify/functions/mcp.mjs':'0ef7bb4244705fcc6cace0a55c20b679d83770c0',
   'src/mcp-web.mjs':'c596870eaa3e8311c99ee9d7154ae199530a4ca9',
-  'src/reference-host.mjs':'88df62ac32acd62cf0a6ff38ce188153474ddd2c'
+  'src/reference-host.mjs':'88df62ac32acd62cf0a6ff38ce188153474ddd2c',
+  // PP-0008 preview-only test fixture correction; immutable historical pin stays intact.
+  'tests/mcp-web.test.mjs':'78066d454c8ba2f92bf6e7db37dbbe7745568eed'
 });
 const expectedIds=['metadata-200','get-mcp-405','no-bearer-tools-call-denied',
   'invalid-bearer-tools-call-denied','cross-origin-403'];
@@ -28,8 +30,8 @@ test('007-C pins each applicable live-probe/OAuth source blob to audited main',(
     assert.equal(blob,pp0008SuccessorBlobs[pin.path],
       'Unreviewed PP-0008 mutation to PP-0007 security-critical source: '+pin.path);
     const contentText=content.toString('utf8');
-    // Only the scoped PP-0007 warm-instance remediation and PP-0008
-    // explicit read-only capability may evolve these particular live files.
+    // Only exact, narrow PP-0007/PP-0008 successors are recognized here:
+    // implementation capabilities and test-only preview environment isolation.
     // This does not repin or rewrite the historical provider evidence.
     if(pin.path==='netlify/functions/mcp.mjs'){
       const candidate=manifest.reviewedCandidateSourceCompatibility;
@@ -51,6 +53,13 @@ test('007-C pins each applicable live-probe/OAuth source blob to audited main',(
       assert.match(contentText,/traceMode === 'enforced'/);
       assert.match(contentText,/releaseExecutionTrace/);
       assert.match(contentText,/allowedRepositories/);
+    }else if(pin.path==='tests/mcp-web.test.mjs'){
+      // The successor fixture always supplies a literal disabled flag, even
+      // when a Netlify preview process inherits an empty artifact setting.
+      assert.match(contentText,/fixtureNetlify=values/);
+      assert.match(contentText,/PRO_PAPA_MCP_ARTIFACT_VALIDATION/);
+      assert.match(contentText,/\?'false':values\[key\]/);
+      assert.match(contentText,/globalThis\.Netlify=fixtureNetlify\(values\)/);
     }else assert.equal(blob,pin.gitBlobSha,pin.path);
   }
 });
