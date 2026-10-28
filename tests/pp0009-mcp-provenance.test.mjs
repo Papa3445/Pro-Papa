@@ -78,9 +78,12 @@ test('PP-0009 web MCP emits independent response-only correlation, not on handsh
   const unauthorized=await app(request(msg,{...headers,Authorization:'Bearer invalid'}));
   assert.equal(unauthorized.status,401);
   assert.equal(await unauthorized.text(),'');
-  const bad=(await (await app(request(envelope(10,'private but malformed'),
-    headers))).json()).result;
-  requireCall(bad);
+  const invalid=envelope(10,'private but malformed');
+  invalid.params.arguments.capability='unknown.action';
+  const bad=await (await app(request(invalid))).json();
+  assert.equal(bad.error.code,-32602);
+  assert.equal(bad.result,undefined);
+  assert.equal(JSON.stringify(bad).includes('callProvenance'),false);
 });
 
 test('PP-0009 loopback MCP binds explicit local tool result to same provenance schema',async t=>{
