@@ -23,9 +23,13 @@ The returned record includes:
   `provider_unavailable`, `capacity_denied`, etc.).
 - `executionSha256`: digest from the actual *released and validated* reference
   host trace, or `null` if no valid trace was released.
-- `requestHmacSha256`: HMAC of the **full received request envelope**,
-  correlation ID, capability, status and trace digest, keyed by an ephemeral,
-  random **server-side secret that is never transmitted or logged**.
+- `requestHmacSha256`: HMAC of the **entire parsed JSON-RPC request**
+  (including accepted top-level extension fields), correlation ID, capability,
+  status and trace digest. The request JSON is serialized recursively with
+  sorted object keys and explicit finite-number validation; JSON whitespace,
+  key insertion order, and alternative textual escape spellings are **not**
+  preserved. A non-JSON or non-finite extension fails closed. The per-instance
+  random **server-side HMAC key is never transmitted or logged**.
 - `scope: single_explicit_mcp_tool_call`,
   `retention: response_only`, `providerAuthenticated: false`.
 
@@ -34,7 +38,9 @@ The returned record includes:
 Within one handler instance, `createMcpCallProvenance().verify` checks record
 shape, method, exact original call, capability, result status, execution digest
 and a constant-time HMAC comparison. The adapter verifies the record before
-release; tampered status, ID, payload, capability or digest is rejected. Only
+release; tampered status, ID, request parameters, any accepted JSON extension
+field, capability or digest is rejected. This binds the parsed request value,
+**not** raw HTTP bytes, headers, OAuth bearer information, or JSON whitespace. Only
 trusted host code holds the key. Random IDs avoid time-window inference and
 unsafe replay equivalence; repeated identical requests receive distinct IDs.
 
