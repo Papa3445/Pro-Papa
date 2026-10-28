@@ -188,8 +188,17 @@ export function createReadOnlyMcpWebHandler({
       }
       const args=checkedArgs(message.params,artifactValidationEnabled);
       if(!args)return json(200,error(id,-32602,'Invalid tool arguments'));
-      if(active>=8)return json(200,result(id,{isError:true,
-        content:[{type:'text',text:'Execution unavailable: bridge at capacity'}]}));
+      if(active>=8){
+        const binding={message,capability:args.capability,
+          status:'capacity_denied',executionSha256:null};
+        const callProvenance=provenance.issue(binding);
+        if(!provenance.verify(callProvenance,binding))
+          return rejected(500,-32603,'Internal server error');
+        return json(200,result(id,{isError:true,
+          content:[{type:'text',text:JSON.stringify({status:'capacity_denied',
+            reason:'Execution unavailable: bridge at capacity',callProvenance})}],
+          _meta:{'pro-papa/call-provenance':callProvenance}}));
+      }
       active++;
       let outcome;
       try{outcome=await host.execute(args);}
