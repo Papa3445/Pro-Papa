@@ -53,7 +53,8 @@ export function pp0007LedgerSnapshot(ledger){
       typeof e.note!=='string'||!e.note.trim()||
       !Number.isFinite(Date.parse(e.recordedAt))))
       throw Error('Unrecognized PP-0008 evidence transition');
-    const baseline=structuredClone(ledger);
+    // Use the already reverted verified→in_progress clone, not rev79 input.
+    const baseline=structuredClone(clone);
     baseline.revision=77;
     const oldTask=baseline.tasks.find(t=>t.id==='PP-0008');
     oldTask.evidence=[];
