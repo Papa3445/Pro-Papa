@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 
 const CLOSURE_BLOB='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
+const PP0008_BASELINE_BLOB='597863d867e8d92265f16bd079d15481f0de1ba8';
 const sha=x=>{
   const b=Buffer.from(x);
   return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
@@ -12,7 +13,7 @@ const sha=x=>{
 export function pp0007LedgerSnapshot(ledger){
   const current=sha(JSON.stringify(ledger,null,2)+'\n');
   if(current===CLOSURE_BLOB)return {isSuccessor:false,canonicalBlob:current};
-  if(ledger.revision!==77||ledger.tasks.length!==13)throw Error('Unknown ledger mutation');
+  if(![77,78].includes(ledger.revision)||ledger.tasks.length!==13)throw Error('Unknown ledger mutation');
   const clone=structuredClone(ledger);
   const work=clone.tasks.find(t=>t.id==='PP-0008');
   if(work?.status!=='in_progress'||work.owner!=='chatgpt-implementation'||
@@ -21,8 +22,29 @@ export function pp0007LedgerSnapshot(ledger){
      work.reviewTarget?.pullRequest!==54||
      work.reviewTarget?.baseRef!=='main'||
      work.reviewTarget?.baseSha!=='45d49e7fd9f0c5ec136f0869c66e7c4c64de6e7b'||
-     work.evidence.length!==0||
      work.blockedReason!==null)throw Error('Unexpected successor task transition');
+  if(ledger.revision===78){
+    const proofs=[
+      ['artifact','native-connected-live-acceptance-2026-10-27.json','24f343651d7cce587d36c40289a04fcb9d3de45d57846e76fb5716e7a457b9e1'],
+      ['test','live-oauth-mcp-smoke-2026-10-27.json','1f8fb9de7aa5b12c2ab87416ed23a758000ad6097a71469c6caa0d471583a0db'],
+      ['validation','byte-identity-and-production-restoration-2026-10-27.json','962fb24f0ed50213d5495827260d75a273a298162263a8e1972774701aa9a8d9'],
+      ['review','independent-implementation-review-2026-10-27.json','0a2598824e86debce93338d38300aee6b38fdd83a598e608cf09d8fa7028c379']
+    ];
+    if(work.evidence.length!==proofs.length||work.evidence.some((e,i)=>
+      e.kind!==proofs[i][0]||
+      e.path!=='.pro-papa/evidence/PP-0008/'+proofs[i][1]||
+      e.sha256!==proofs[i][2]||e.result!=='pass'||
+      e.actor!==(e.kind==='review'?'papa4568':'chatgpt-implementation')||
+      typeof e.note!=='string'||!e.note.trim()||
+      !Number.isFinite(Date.parse(e.recordedAt))))
+      throw Error('Unrecognized PP-0008 evidence transition');
+    const baseline=structuredClone(ledger);
+    baseline.revision=77;
+    baseline.tasks.find(t=>t.id==='PP-0008').evidence=[];
+    if(sha(JSON.stringify(baseline,null,2)+'\n')!==PP0008_BASELINE_BLOB)
+      throw Error('PP-0008 merged baseline ledger mutated');
+    work.evidence=[];
+  }else if(work.evidence.length!==0)throw Error('Unexpected PP-0008 evidence');
   if(clone.tasks.filter(t=>t.status==='in_progress').length!==1||
      clone.tasks.find(t=>t.id==='PP-0007')?.status!=='verified'||
      clone.tasks.find(t=>t.id==='PP-0007')?.evidence?.length!==85||
