@@ -4,6 +4,7 @@ import {createServer} from 'node:http';
 import {timingSafeEqual} from 'node:crypto';
 import {createReferenceHost} from './reference-host.mjs';
 import {verifyReleasedExecution} from './execution-trace.mjs';
+import {createMcpCallProvenance} from './mcp-call-provenance.mjs';
 
 const PROTOCOLS=new Set(['2025-06-18','2025-11-25']);
 const VERSION='2025-11-25',NAME='pro-papa-readonly';
@@ -61,6 +62,7 @@ export function createReadOnlyMcpServer({
     sourceRepository,token:githubToken,fetchImpl,traceMode:'enforced',
     artifactValidationEnabled
   });
+  const provenance=createMcpCallProvenance();
   let active=0;
   const server=createServer(async(req,res)=>{
     try{
@@ -145,9 +147,18 @@ export function createReadOnlyMcpServer({
         audit:result.audit??{status:'not_requested'},execution:null,
         trace:{state:'not_released',providerAuthenticated:false}
       };
-      // Do not echo prompts, credentials or arbitrary tool arguments.
-      respond(res,200,rpc(id,{isError:!valid,content:[{type:'text',text:JSON.stringify(output)}],
-        ...(valid?{structuredContent:output}:{})}));
+      const binding={message:msg,capability:params.arguments.capability,status:output.status,
+        executionSha256:valid?output.trace.executionSha256:null};
+      const callProvenance=provenance.issue(binding);
+      if(!provenance.verify(callProvenance,binding)){
+        respond(res,500,fault(null,-32603,'Internal server error'));return;
+      }
+      // Response-only evidence; do not echo prompts, credentials or raw arguments.
+      const released={...output,callProvenance};
+      respond(res,200,rpc(id,{isError:!valid,
+        content:[{type:'text',text:JSON.stringify(released)}],
+        _meta:{'pro-papa/call-provenance':callProvenance},
+        ...(valid?{structuredContent:released}:{})}));
     }catch{
       if(!res.writableEnded)respond(res,500,fault(null,-32603,'Internal server error'));
     }
