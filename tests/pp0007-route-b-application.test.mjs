@@ -25,6 +25,7 @@ test('Route B candidate ledger applies exact approved wording and preserves all 
  if(snapshot.isSuccessor){
   const work=previous.tasks.find(x=>x.id==='PP-0008');
   work.status='pending';work.owner=null;work.evidence=[];
+  delete work.verifiedAt;
   delete work.requiresTrustedReview;
   delete work.reviewTarget;
  }
@@ -87,14 +88,16 @@ test('Route B successor preserves original full benchmark and cannot start',()=>
  assert.equal(successor.objective,proposal.taskBefore.objective);
  assert.deepEqual(successor.acceptance.slice(0,4),proposal.taskBefore.acceptance);
  assert.deepEqual(successor.acceptance.slice(4),proposal.deferredOriginalObligations.proposalForDistinctFutureTask.candidateAcceptance);
- assert.equal(ledger.tasks.filter(x=>x.status==='in_progress').length,snapshot.isSuccessor?1:0);
+ assert.equal(ledger.tasks.filter(x=>x.status==='in_progress').length,
+   snapshot.isSuccessor&&ledger.revision!==79?1:0);
  const deferred=ledger.tasks.find(x=>x.id==='PP-0013');
  assert.equal(deferred.status,'pending');assert.equal(deferred.profile,'software');
  assert.deepEqual(deferred.dependsOn,['PP-0007']);
  assert.equal(deferred.evidence.length,0);
  assert.deepEqual(ledger.tasks.slice(7,11).map(x=>x.id),['PP-0008','PP-0009','PP-0010','PP-0011']);
  assert.ok(ledger.tasks.slice(7,11).every(x=>
-   (x.status==='pending'||snapshot.isSuccessor&&x.id==='PP-0008'&&x.status==='in_progress')&&
+   (x.status==='pending'||snapshot.isSuccessor&&x.id==='PP-0008'&&
+      x.status===(ledger.revision===79?'verified':'in_progress'))&&
    JSON.stringify(x.dependsOn)==='["PP-0007"]'));
 });
 test('Route B candidate original trial, historical blocked verdict and approval boundaries unchanged',()=>{
