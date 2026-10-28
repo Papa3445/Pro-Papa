@@ -6,6 +6,7 @@ import {readFileSync} from 'node:fs';
 
 const CLOSURE_BLOB='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const PP0008_BASELINE_BLOB='597863d867e8d92265f16bd079d15481f0de1ba8';
+const PP0008_EVIDENCE_BLOB='7918b1ba47566380c72e3f3d25d549d54ae502f3';
 const sha=x=>{
   const b=Buffer.from(x);
   return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
@@ -13,15 +14,28 @@ const sha=x=>{
 export function pp0007LedgerSnapshot(ledger){
   const current=sha(JSON.stringify(ledger,null,2)+'\n');
   if(current===CLOSURE_BLOB)return {isSuccessor:false,canonicalBlob:current};
-  if(![77,78].includes(ledger.revision)||ledger.tasks.length!==13)throw Error('Unknown ledger mutation');
+  if(![77,78,79].includes(ledger.revision)||ledger.tasks.length!==13)throw Error('Unknown ledger mutation');
   const clone=structuredClone(ledger);
   const work=clone.tasks.find(t=>t.id==='PP-0008');
+  if(ledger.revision===79){
+    // A reviewed candidate verified transition is allowed only when undoing
+    // that ONE status/time mutation reproduces the exact merged rev78 ledger.
+    if(work?.status!=='verified'||typeof work.verifiedAt!=='string'||
+       !Number.isFinite(Date.parse(work.verifiedAt)))
+      throw Error('Unverified PP-0008 closeout transition');
+    work.status='in_progress';
+    delete work.verifiedAt;
+    clone.revision=78;
+    if(sha(JSON.stringify(clone,null,2)+'\n')!==PP0008_EVIDENCE_BLOB)
+      throw Error('PP-0008 exact merged evidence baseline changed');
+    clone.revision=79;
+  }
   if(work?.status!=='in_progress'||work.owner!=='chatgpt-implementation'||
      work.requiresTrustedReview!==true||
      work.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
      work.reviewTarget?.baseRef!=='main'||
      work.blockedReason!==null)throw Error('Unexpected successor task transition');
-  if(ledger.revision===78){
+  if(ledger.revision>=78){
     if(work.reviewTarget?.pullRequest!==55||
        work.reviewTarget?.baseSha!=='17d5887b6be61cda5de3508807cf404f1cd391f3')
       throw Error('Evidence closeout reviewTarget must pin approved PR #55 base');
@@ -39,7 +53,8 @@ export function pp0007LedgerSnapshot(ledger){
       typeof e.note!=='string'||!e.note.trim()||
       !Number.isFinite(Date.parse(e.recordedAt))))
       throw Error('Unrecognized PP-0008 evidence transition');
-    const baseline=structuredClone(ledger);
+    // Use the already reverted verified→in_progress clone, not rev79 input.
+    const baseline=structuredClone(clone);
     baseline.revision=77;
     const oldTask=baseline.tasks.find(t=>t.id==='PP-0008');
     oldTask.evidence=[];
