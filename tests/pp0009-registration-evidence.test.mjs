@@ -2,17 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0007LedgerSnapshot,pp0009RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
 
 const root=new URL('../',import.meta.url);
 const read=x=>readFileSync(new URL(x,root));
-const j=JSON.parse(read('.pro-papa/tasks.json'));
+const j=pp0009RegistrationSnapshot(JSON.parse(read('.pro-papa/tasks.json')));
 const work=j.tasks.find(x=>x.id==='PP-0009');
 const sha256=b=>createHash('sha256').update(b).digest('hex');
 const blob=b=>createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 
 test('PP-0009 rev84 is byte-for-byte actual CLI-produced active registration, not closure',()=>{
-  const ledger=read('.pro-papa/tasks.json');
+  const ledger=Buffer.from(JSON.stringify(j,null,2)+'\n');
   assert.equal(blob(ledger),'a7524aed0d6ee7567eb669d5c3833ad04add0b7b');
   assert.equal(sha256(ledger),'936cd4e7272c27c0e682737579f2ad06d96e53db4e41414176814b8390481428');
   assert.equal(j.revision,84);
