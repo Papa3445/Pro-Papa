@@ -1,0 +1,76 @@
+name: PP-0009 one-time authenticated closure readiness (no task mutation)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/pp0009-closure-readiness.yml'
+permissions:
+  contents: read
+jobs:
+  actual-closure-preflight:
+    if: github.event.pull_request.head.repo.full_name == 'Papa3445/Pro-Papa' && github.event.pull_request.head.ref == 'feature/pp0009-authenticated-closure-preflight' && github.event.pull_request.base.sha == 'd44b586d1f2b7583c1670260e4fa851450086e4f'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Actual authenticated review and file-backed closure verification, without close
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PRO_PAPA_EXPECTED_BASE: 'd44b586d1f2b7583c1670260e4fa851450086e4f'
+        run: |
+          node bin/pro-papa.mjs review-status --id PP-0009 > review-status.json
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import assert from 'node:assert/strict';
+          import {loadProject,verifyClosure} from './src/core.mjs';
+          const root=process.cwd();
+          const before=readFileSync('.pro-papa/tasks.json');
+          const digest=createHash('sha256').update(before).digest('hex');
+          assert.equal(digest,'936cd4e7272c27c0e682737579f2ad06d96e53db4e41414176814b8390481428');
+          const {state,profiles}=await loadProject(root);
+          const task=state.tasks.find(x=>x.id==='PP-0009');
+          assert.equal(state.revision,84);
+          assert.equal(task.status,'in_progress');
+          assert.equal(task.verifiedAt,undefined);
+          assert.equal(task.evidence.length,4);
+          const proof=await verifyClosure(root,task,profiles.profiles[task.profile]);
+          assert.deepEqual(proof.required,['artifact','test','validation','review']);
+          assert.equal(proof.trustedReview?.verdict,'PASS');
+          assert.equal(proof.trustedReview?.candidateSha,'b21d44eb77ad6acc1f3a9f72737d9e80286c12f3');
+          assert.equal(proof.trustedReview?.reviewId,5690821914);
+          assert.ok(proof.trustedReview.approvedReviewers.some(x=>x.login==='papa4568'));
+          assert.equal(state.tasks.find(x=>x.id==='PP-0007').evidence.length,85);
+          assert.equal(state.tasks.find(x=>x.id==='PP-0008').status,'verified');
+          assert.ok(state.tasks.filter(x=>Number(x.id.slice(3))>=10).every(x=>x.status==='pending'));
+          assert.deepEqual(readFileSync('.pro-papa/tasks.json'),before);
+          const report={schemaVersion:1,taskId:'PP-0009',verification:'readiness_preflight_only',
+            result:'PASS',sourceMainSha:process.env.PRO_PAPA_EXPECTED_BASE,
+            ledgerRevision:state.revision,ledgerSha256:digest,
+            verificationMethod:'actual verifyClosure() with ephemeral authenticated GitHub token',
+            requiredEvidenceKinds:proof.required,verifiedEvidenceFiles:proof.verifiedFiles,
+            providerReview:{verdict:proof.trustedReview.verdict,pullRequest:proof.trustedReview.pullRequest,
+              candidateSha:proof.trustedReview.candidateSha,baseSha:proof.trustedReview.baseSha,
+              reviewId:proof.trustedReview.reviewId,reviewer:proof.trustedReview.reviewer.login},
+            taskStatusAfter:'in_progress',ledgerUnchanged:true,
+            dependentTasksRemainPending:true,pp0007HistoricalEvidenceRecords:85,
+            limitation:'No closeTask() or CLI close invoked; not a verified task or provider-signed execution record'};
+          writeFileSync('closure-readiness.json',JSON.stringify(report,null,2)+'\n');
+          console.log(JSON.stringify({result:'PASS',taskStatus:'in_progress',
+            closureGate:'authenticated verifyClosure',revision:84,
+            reviewId:report.providerReview.reviewId,historicalEvidence:85,ledgerUnchanged:true}));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pp0009-authenticated-closure-readiness
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            closure-readiness.json
+            review-status.json
