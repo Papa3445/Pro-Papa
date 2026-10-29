@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0009",
+  "kind": "production_implementation_acceptance_observation",
+  "evidenceStatus": "connected_positive_and_public_negative_passed",
+  "recordedAtUtc": "2026-10-28T23:10:41.516Z",
+  "deployment": {
+    "sourceCommit": "f8d430245d10249eb85cf315ec43abdfeed642c7",
+    "deploymentId": "6ae27fe9f631c1114fb84d4e",
+    "deploymentState": "ready",
+    "context": "production",
+    "publishedAt": "2026-10-28T23:06:38.819Z"
+  },
+  "postMergeCI": {
+    "runId": 40784936752,
+    "jobId": 123155635050,
+    "tests": 308,
+    "passed": 308,
+    "failed": 0,
+    "projectValidator": "valid:true",
+    "taskCount": 13
+  },
+  "runtimeConfig": {
+    "variable": "PRO_PAPA_MCP_ARTIFACT_VALIDATION",
+    "productionValue": "false",
+    "readMethod": "authenticated Netlify site environment-variable read"
+  },
+  "connectedPositiveCall": {
+    "transport": "existing connected Pro-Papa MCP tool (user-authorized read-only call)",
+    "method": "tools/call",
+    "capability": "math.sum",
+    "status": "completed",
+    "outputCheck": {
+      "total": 42,
+      "count": 2
+    },
+    "correlationId": "6cb6be9f-76b6-42a0-bc9d-eded979ea723",
+    "requestHmacSha256": "b2c74b3b4daadbaa1f108428696b54a11c67f8a40eb6ad9e1fe6e04942e8a4a4",
+    "executionSha256": "7b416725e6f54dab07920d76907a36d828fc5e10cf18740e848c52c471a60f0d",
+    "correlatedTraceDigestEqual": true,
+    "traceState": "released",
+    "traceScope": "single_explicit_reference_host_invocation",
+    "callScope": "single_explicit_mcp_tool_call",
+    "callRetention": "response_only",
+    "rawPromptStored": false,
+    "tokenStored": false,
+    "rawInputsStored": false,
+    "providerAuthenticatedSignature": false
+  },
+  "negativeSmoke": {
+    "status": "passed",
+    "source": "actual read-only GitHub Actions runner internet requests; no bearer secret supplied",
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/40785711859",
+    "runId": 40785711859,
+    "jobId": 123158248016,
+    "conclusion": "success",
+    "protectedBaseSourceSha": "f8d430245d10249eb85cf315ec43abdfeed642c7",
+    "sourceWorkflow": ".github/workflows/pp0009-live-acceptance.yml",
+    "sourceScript": "bin/pp0007-production-smoke.mjs",
+    "checks": [
+      {
+        "name": "public OAuth resource metadata",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "name": "missing bearer token",
+        "status": 200,
+        "rpcIsError": true,
+        "structuredSuccessReleased": false,
+        "passed": true
+      },
+      {
+        "name": "malformed bearer token",
+        "status": 200,
+        "rpcIsError": true,
+        "structuredSuccessReleased": false,
+        "passed": true
+      },
+      {
+        "name": "public tools/list",
+        "status": 200,
+        "artifactValidationAvailable": false,
+        "passed": true
+      }
+    ],
+    "credentialsSent": false,
+    "observationsRedacted": true,
+    "notes": [
+      "HTTP 200 is a JSON-RPC authentication challenge, not an authenticated tool success.",
+      "The old first test setup failed before any remote probe due shallow git checkout; corrected CI run used fetch-depth 0 and proved the actual negative checks.",
+      "Proof cannot establish signed-JWT positive flow by itself; that was a separate connected MCP observation."
+    ]
+  },
+  "limitations": [
+    "The MCP tool reply is the observed connected-host output, not an independently signed provider attestation.",
+    "The per-handler ephemeral HMAC key is not public, so saved copies alone cannot reverify the MAC.",
+    "No inference that all ChatGPT turns were intercepted.",
+    "Connected positive sum and public OAuth negatives are distinct tests; no token material is persisted.",
+    "This is not a PP-0009 formal task-closure proof; acceptance and independent review remain separate.",
+    "No task status change or formal evidence registration in canonical ledger is claimed; PP-0009 remains in_progress."
+  ],
+  "finalizedAtUtc": "2026-10-28T23:13:18.947Z"
+}
