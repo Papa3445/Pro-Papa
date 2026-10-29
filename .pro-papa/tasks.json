@@ -1547,7 +1547,44 @@
       "status": "in_progress",
       "owner": "chatgpt-implementation",
       "blockedReason": null,
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "artifact",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Real connected MCP positive and GitHub Actions production denial smoke; reviewed PR 60",
+          "path": ".pro-papa/evidence/PP-0009/production-oauth-smoke-2026-10-28.json",
+          "sha256": "a31e7f5de4fb394353e074fdfcb0c7c92cabdafe8e5ae562a384c4eb17105f2e",
+          "recordedAt": "2026-10-29T00:16:41.675Z"
+        },
+        {
+          "kind": "test",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Actual exact-head and postmerge 308/308 tests; real unauthenticated negative probes",
+          "path": ".pro-papa/evidence/PP-0009/ci-and-adversarial-results-2026-10-28.json",
+          "sha256": "58e568fb318d267914db73c964b76ac55a68ffe18ebda6fa653d3a121aac8264",
+          "recordedAt": "2026-10-29T00:16:41.816Z"
+        },
+        {
+          "kind": "validation",
+          "result": "pass",
+          "actor": "chatgpt-implementation",
+          "note": "Verified deploy SHA, no sensitive content, released digest, and historical preservation",
+          "path": ".pro-papa/evidence/PP-0009/production-validation-and-retention-2026-10-28.json",
+          "sha256": "b3ac4cdc6d93a139360936daddc48105accfd02206db64511bf9fa5f6bfc393e",
+          "recordedAt": "2026-10-29T00:16:41.855Z"
+        },
+        {
+          "kind": "review",
+          "result": "pass",
+          "actor": "papa4568",
+          "note": "Actual authenticated independent GitHub PR 59 and PR 60 APPROVED reviews, provider checked",
+          "path": ".pro-papa/evidence/PP-0009/independent-github-reviews-2026-10-28.json",
+          "sha256": "50a0eb5b7060e138f5d1a79ac8fd7ba586e72e58f25daceefcbf3c8645e79046",
+          "recordedAt": "2026-10-29T00:16:41.892Z"
+        }
+      ],
       "requiresTrustedReview": true,
       "reviewTarget": {
         "repository": "Papa3445/Pro-Papa",
@@ -1639,5 +1676,5 @@
       "evidence": []
     }
   ],
-  "revision": 80
+  "revision": 84
 }
