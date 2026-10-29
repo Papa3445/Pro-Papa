@@ -8,11 +8,36 @@ const CLOSURE_BLOB='c5bdf86ff43c6b6dcfe54563d187d86218ae3571';
 const PP0008_BASELINE_BLOB='597863d867e8d92265f16bd079d15481f0de1ba8';
 const PP0008_EVIDENCE_BLOB='7918b1ba47566380c72e3f3d25d549d54ae502f3';
 const PP0008_CLOSED_BLOB='38f2ead075ef78da59a4256ad2074eabe062cda5';
+const PP0009_ACTIVE_BLOB='9994453d3789ca87c3e29e0a2c8f43571f6f3043';
 const sha=x=>{
   const b=Buffer.from(x);
   return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 };
 export function pp0007LedgerSnapshot(ledger){
+  if(ledger.revision===84){
+    // Undo only four actual CLI-recorded source-backed proofs. Pin the exact
+    // protected rev80 ledger rather than permitting arbitrary task mutations.
+    const prior=structuredClone(ledger);
+    const task=prior.tasks.find(x=>x.id==='PP-0009');
+    const specs=[
+      ['artifact','.pro-papa/evidence/PP-0009/production-oauth-smoke-2026-10-28.json','a31e7f5de4fb394353e074fdfcb0c7c92cabdafe8e5ae562a384c4eb17105f2e','chatgpt-implementation'],
+      ['test','.pro-papa/evidence/PP-0009/ci-and-adversarial-results-2026-10-28.json','58e568fb318d267914db73c964b76ac55a68ffe18ebda6fa653d3a121aac8264','chatgpt-implementation'],
+      ['validation','.pro-papa/evidence/PP-0009/production-validation-and-retention-2026-10-28.json','b3ac4cdc6d93a139360936daddc48105accfd02206db64511bf9fa5f6bfc393e','chatgpt-implementation'],
+      ['review','.pro-papa/evidence/PP-0009/independent-github-reviews-2026-10-28.json','50a0eb5b7060e138f5d1a79ac8fd7ba586e72e58f25daceefcbf3c8645e79046','papa4568']
+    ];
+    if(ledger.tasks.length!==13||task?.status!=='in_progress'||
+       task.evidence?.length!==4||task.evidence.some((e,i)=>
+         e.kind!==specs[i][0]||e.path!==specs[i][1]||
+         e.sha256!==specs[i][2]||e.actor!==specs[i][3]||
+         e.result!=='pass'||typeof e.note!=='string'||!e.note.trim()||
+         !Number.isFinite(Date.parse(e.recordedAt))))
+      throw Error('Unknown PP-0009 evidence registration');
+    task.evidence=[];
+    prior.revision=80;
+    if(sha(JSON.stringify(prior,null,2)+'\n')!==PP0009_ACTIVE_BLOB)
+      throw Error('PP-0009 proof registration altered historical protected ledger');
+    return pp0007LedgerSnapshot(prior);
+  }
   // PP-0009: normalize exactly one ready-task start, WITHOUT re-pinning
   // rev79 or mutating historical PP-0007 / PP-0008 evidence.
   if(ledger.revision===80){

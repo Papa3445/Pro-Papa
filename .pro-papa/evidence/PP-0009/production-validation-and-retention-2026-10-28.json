@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0009",
+  "evidenceKind": "validation",
+  "result": "pass",
+  "observation": "Provider-backed release readbacks and selected software-output validation (not a broad safety or provider-signature guarantee)",
+  "reviewedImplementation": {
+    "pr": 59,
+    "head": "b21d44eb77ad6acc1f3a9f72737d9e80286c12f3",
+    "baseSha": "c5c2c485efac1633ba296aa72588ad9a1544b169",
+    "mergeSha": "f8d430245d10249eb85cf315ec43abdfeed642c7"
+  },
+  "production": [
+    {
+      "deployId": "6ae27fe9f631c1114fb84d4e",
+      "commit": "f8d430245d10249eb85cf315ec43abdfeed642c7",
+      "state": "ready",
+      "role": "original PP-0009 code publication and actual smoke"
+    },
+    {
+      "deployId": "6ae28edeb6168e40983d64d9",
+      "commit": "a63eef80628de79df7ddbe6f84f2158b5e90603a",
+      "state": "ready",
+      "role": "evidence-only integration re-publication"
+    }
+  ],
+  "productionFeatureFlag": {
+    "name": "PRO_PAPA_MCP_ARTIFACT_VALIDATION",
+    "value": "false",
+    "source": "authenticated Netlify production env read and independently checked public tools/list excludes capability"
+  },
+  "sampledMcpResult": {
+    "status": "completed",
+    "capability": "math.sum",
+    "total": 42,
+    "callScope": "single_explicit_mcp_tool_call",
+    "retention": "response_only",
+    "traceState": "released",
+    "traceDigest": "7b416725e6f54dab07920d76907a36d828fc5e10cf18740e848c52c471a60f0d",
+    "callDigestSame": true
+  },
+  "privacyChecks": {
+    "evidenceFile": ".pro-papa/evidence/PP-0009/production-oauth-smoke-2026-10-28.json",
+    "evidenceGitBlob": "15f0b9db0efe7db92c1384ec495bfb8708d5c90a",
+    "rawPrompt": false,
+    "rawInputs": false,
+    "authHeader": false,
+    "jwt": false,
+    "artifactBytes": false
+  },
+  "historicalPreservation": {
+    "ledgerRevision": 80,
+    "ledgerBlob": "9994453d3789ca87c3e29e0a2c8f43571f6f3043",
+    "pp0007EvidenceRecords": 85,
+    "pp0008Status": "verified",
+    "dependentStatus": "pending",
+    "taskStatus": "in_progress"
+  },
+  "limits": [
+    "HMAC is ephemeral and cannot later be independently recomputed",
+    "No durable correlation log or whole-turn interception",
+    "Evidence claims only currently documented bounded acceptance",
+    "No task verified transition or local-token-backed closure yet"
+  ]
+}
