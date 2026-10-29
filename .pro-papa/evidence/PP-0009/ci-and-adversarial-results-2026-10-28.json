@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0009",
+  "evidenceKind": "test",
+  "result": "pass",
+  "scope": "Actual software tests and separate real production negative probes, not a provider-signed ChatGPT turn proof",
+  "implementation": {
+    "reviewedHead": "b21d44eb77ad6acc1f3a9f72737d9e80286c12f3",
+    "mergedMainCommit": "f8d430245d10249eb85cf315ec43abdfeed642c7",
+    "tests": 308,
+    "exactHeadRuns": [
+      {
+        "id": 40782015503,
+        "jobId": 123145790935,
+        "pass": 308,
+        "fail": 0
+      },
+      {
+        "id": 40782022963,
+        "jobId": 123145817385,
+        "pass": 308,
+        "fail": 0
+      }
+    ],
+    "postMergeRun": {
+      "id": 40784936752,
+      "jobId": 123155635050,
+      "pass": 308,
+      "fail": 0
+    },
+    "adversarialChecks": [
+      "full parsed request extension-field tampering rejected",
+      "nested metadata tampering rejected",
+      "reordered JSON object keys semantically equivalent",
+      "non-finite numeric extension rejected",
+      "HMAC/id/status/digest/capability forgery rejected",
+      "repeated independent request IDs",
+      "denied auth and connectivity-only have no substantive provenance",
+      "read-only web and loopback HTTP result integrity"
+    ]
+  },
+  "productionNegative": {
+    "url": "https://github.com/Papa3445/Pro-Papa/actions/runs/40785711859",
+    "runId": 40785711859,
+    "jobId": 123158248016,
+    "conclusion": "success",
+    "checks": [
+      "OAuth metadata valid",
+      "missing bearer denied",
+      "malformed bearer denied",
+      "artifact.validate omitted from runtime tools schema"
+    ],
+    "noCredentials": true
+  },
+  "evidenceOnlyIntegration": {
+    "head": "a3a65cf76ae90cd5bf2f2944a4fe0c24e43ccff6",
+    "mergeCommit": "a63eef80628de79df7ddbe6f84f2158b5e90603a",
+    "exactHeadRuns": [
+      40785858752,
+      40785865818
+    ],
+    "postMergeRun": 40792253670,
+    "pass": 308,
+    "fail": 0
+  },
+  "limitations": [
+    "Tests validate selected tool calls only",
+    "No claim of independent signature for ephemeral HMAC",
+    "No stored private request body or token",
+    "Production positive and public negatives are separate authenticated/unauthenticated observations"
+  ]
+}
