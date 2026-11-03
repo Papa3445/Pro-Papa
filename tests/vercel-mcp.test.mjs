@@ -83,14 +83,29 @@ test('Vercel Node fetch adapter preserves OAuth signature gate and MCP execution
   const bearer=signingInput+'.'+sign('RSA-SHA256',Buffer.from(signingInput),privateKey)
     .toString('base64url');
   const originalFetch=globalThis.fetch;
+  const previousGithubToken=process.env.GITHUB_TOKEN;
+  process.env.GITHUB_TOKEN='test-ambient-token-must-never-leak';
   let lookedUp=0;
+  let githubLookups=0;
   try{
-    globalThis.fetch=async url=>{
-      lookedUp++;
-      assert.equal(url,ISSUER+'.well-known/jwks.json');
-      return new Response(JSON.stringify({keys:[jwk]}),{
-        status:200,headers:{'Content-Type':'application/json'}
-      });
+    globalThis.fetch=async (url,options={})=>{
+      if(url===ISSUER+'.well-known/jwks.json'){
+        lookedUp++;
+        return new Response(JSON.stringify({keys:[jwk]}),{
+          status:200,headers:{'Content-Type':'application/json'}
+        });
+      }
+      if(url==='https://api.github.com/repos/Papa3445/Pro-Papa'){
+        githubLookups++;
+        assert.equal(options.method,'GET');
+        assert.equal(options.headers?.Authorization,undefined,
+          'staging research must never inherit ambient GITHUB_TOKEN');
+        return new Response(JSON.stringify({
+          id:31415,full_name:'Papa3445/Pro-Papa',html_url:'https://github.com/Papa3445/Pro-Papa',
+          private:false,stargazers_count:2,open_issues_count:1,description:'Fixture'
+        }),{status:200,headers:{'Content-Type':'application/json'}});
+      }
+      throw new Error('Unexpected network request in Vercel adapter fixture');
     };
     await withEnv(CONFIG,async()=>{
       const denied=await vercelMcp.fetch(call(RESOURCE+'/api/mcp','invalid'));
@@ -106,6 +121,27 @@ test('Vercel Node fetch adapter preserves OAuth signature gate and MCP execution
       const reply=await vercelMcp.fetch(call(RESOURCE+'/api/mcp',bearer));
       assert.equal((await reply.json()).result.structuredContent.execution.output.total,10);
       assert.equal(lookedUp,1,'warm JWKS reused for unchanged configuration');
+
+      // A nonsecret public-repo read must not pick up an ambient provider credential.
+      const research=await vercelMcp.fetch(new Request(RESOURCE+'/api/mcp',{
+        method:'POST',headers:{...HEADERS,Authorization:'Bearer '+bearer},
+        body:JSON.stringify({jsonrpc:'2.0',id:9,method:'tools/call',params:{
+          name:'pro_papa_execute_readonly',arguments:{
+            objective:'Public repository metadata without credentials',
+            capability:'research',inputs:{repository:'Papa3445/Pro-Papa'}
+          }
+        }})
+      }));
+      assert.equal(research.status,200);
+      const resultResearch=(await research.json()).result;
+      assert.equal(resultResearch.isError,false);
+      assert.equal(resultResearch.structuredContent.execution.output.repository,'Papa3445/Pro-Papa');
+      assert.equal(githubLookups,1);
+      assert.equal(lookedUp,1);
     });
-  }finally{globalThis.fetch=originalFetch;}
+  }finally{
+    globalThis.fetch=originalFetch;
+    if(previousGithubToken===undefined)delete process.env.GITHUB_TOKEN;
+    else process.env.GITHUB_TOKEN=previousGithubToken;
+  }
 });
