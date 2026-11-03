@@ -2,9 +2,27 @@
 
 This is an **unreleased ChatGPT connector migration candidate**. An isolated Vercel Hobby project and build now exist, but the new MCP has **not** been authenticated end-to-end or selected as the active ChatGPT connection; Netlify remains unchanged. The [no-Netlify development plan](NO-NETLIFY-DEVELOPMENT-PLAN.md) is tracked in separate draft PR #63; the canonical framework ledger remains .pro-papa/tasks.json.
 
+## Authorized Vercel Authentication change and public staging smoke — 2026-11-02
+
+The owner **explicitly authorized** disabling Vercel Authentication **only** for the dedicated `pro-papa-mcp-staging` project. A scoped Vercel project PATCH updated `ssoProtection:null`; provider readback verified `ssoProtection.enabled=false`. No other project, Auth0 tenant setting, Netlify deployment, paid plan, source-branch merge or ChatGPT connector was changed. The MCP's Auth0 JWT validation is still enforced in server code for `tools/call`.
+
+GitHub workflow [Vercel staging public OAuth and negative MCP smoke, run 41573245408](https://github.com/Papa3445/Pro-Papa/actions/runs/41573245408) is a **real, credential-free HTTPS check**, triggered from review-branch SHA `1bcb14ae81dfe7cecc3e5c9fc105b50a8d10270a`. It independently verifies:
+
+1. Auth0 OIDC discovery HTTP 200 with the **exact** `https://dev-tzvdy337r0wqo8r5.us.auth0.com/` issuer and a reachable public JWKS HTTP 200 containing an RSA signing key.
+2. `GET https://pro-papa-mcp-staging.vercel.app/.well-known/oauth-protected-resource` returns HTTP 200 with exact resource, Auth0 server and `pro_papa.read`.
+3. `GET /mcp` returns HTTP 405; stateless JSON-RPC `initialize` and `tools/list` return expected structures.
+4. Two `tools/call` attempts without a bearer or with a malformed bearer return **denials**, without tool output.
+5. A foreign `Origin` returns HTTP 403.
+
+**Result: 9/9 passed.** No token, user input, client secret or authenticated account credential was sent. The workflow and its runner output are independent of Vercel's deployment `READY` indicator. Source SHA `c2f21f91d239fcf7ed0edfaa574706c2ec2fbf80` is the deployed *server*; the later review-branch commit contains public test code only. This is not a source-code redeployment.
+
+**Still unverified:** real correctly scoped signed Auth0 JWT acceptance, ChatGPT OAuth client registration/consent and reconnection, tenant-wide Resource Parameter Compatibility Profile and DCR configuration, distributed production-grade rate limiting, exact spending total, and independent release approval. Keep the staging project separate and the live Netlify MCP connection unchanged.
+
+**Next external action:** ask the owner to inspect Auth0 Dashboard → Settings → Advanced → **Resource Parameter Compatibility Profile** and **Dynamic Client Registration** settings. Auth0 documents that MCP clients send the RFC 8707 `resource` parameter; without compatibility support, an audience mismatch can occur. These are **tenant-wide** settings affecting other applications; do not modify on the user's behalf without a distinct authorization. Official evidence: https://support.auth0.com/center/s/article/mcp-audience-error-with-auth0 .
+
 ## Current staging configuration (Auth0 US-5 handoff)
 
-The owner supplied screenshots showing **tenant `dev-tzvdy337r0wqo8r5`**, **region US-5**, **environment Development**. Auth0's documented public-cloud hostname format uses `<tenant>.us.auth0.com` for US subregions. The *candidate* canonical issuer is `https://dev-tzvdy337r0wqo8r5.us.auth0.com/`. The OIDC discovery endpoint / a real signed token's `iss` has **not** been successfully fetched yet, so do not claim live verification. Official references: https://support.auth0.com/center/s/article/Change-the-Tenant-Domain-Name and https://support.auth0.com/center/s/article/Subscribe-to-Atom-RSS-Feed-for-Status-Page-with-Multiple-Tenants-in-Different-Regions .
+The owner supplied screenshots showing **tenant `dev-tzvdy337r0wqo8r5`**, **region US-5**, **environment Development**. Auth0's documented public-cloud hostname format uses `<tenant>.us.auth0.com` for US subregions. The *candidate* canonical issuer is `https://dev-tzvdy337r0wqo8r5.us.auth0.com/`. The real OIDC discovery endpoint was subsequently verified by credential-free GitHub Actions (see the newer evidence above), but **no signed access token's `iss` has been inspected**. Official references: https://support.auth0.com/center/s/article/Change-the-Tenant-Domain-Name and https://support.auth0.com/center/s/article/Subscribe-to-Atom-RSS-Feed-for-Status-Page-with-Multiple-Tenants-in-Different-Regions .
 
 Vercel provider readback confirmed the dedicated `pro-papa-mcp-staging` Hobby project controls the **verified** `pro-papa-mcp-staging.vercel.app` domain. The following environment-variable **names** are saved as encrypted settings for the dedicated staging project (production, preview and development targets):
 
@@ -38,7 +56,7 @@ Auth0 API setup guidance: https://auth0.com/docs/quickstart/backend/golang/inter
 - The first attempt to deploy the pinned GitHub PR #64 source by `gitSource` failed with `git_info_fail` because the project has no linked Git integration. It generated **no ready service**.
 - A second deployment directly uploaded the code and recursive local-module dependency graph from GitHub commit `c2f21f91d239fcf7ed0edfaa574706c2ec2fbf80`, plus the exact static OAuth protected-resource metadata. The provider reports `READY`, deployment ID `dpl_y6WTePYdcAynSsDw1ozGPnUjQsQA`, target `production` **inside the separately named staging project**, and stable canonical domain alias `https://pro-papa-mcp-staging.vercel.app`. No Netlify deployment, main merge or ChatGPT connector switch happened.
 - The provider build log reports a completed Lambda build. Provider file listing shows an output `api/mcp` Lambda and includes source `public/.well-known/oauth-protected-resource`; **HTTP GET of the static metadata and POST to MCP have NOT been confirmed**. Do not infer correct static routing merely from source files or `READY` state.
-- Vercel project currently has **Vercel Authentication** protection enabled (`all_except_custom_domains`). The deployment-inspection tools cannot fetch the public URL and reported not-found/not-authorized. Do not remove protection globally or create an open public endpoint without an explicit owner-approved security decision; authenticated API access still needs an independent HTTP/OAuth smoke test.
+- Historically, the staging project had Vercel Authentication enabled and the deployment-inspection tools could not fetch the URL. With explicit user authorization Vercel Authentication was disabled **for this staging project only**. Independent GitHub Actions then verified real public HTTPS metadata and negative MCP behavior. Authenticated JWT and client-connection checks remain pending.
 - Billing status beyond the Hobby plan has not been proved: the charges report returned `404 costs_not_found`. Do not claim a precise $0 charge total; the Hobby account and free tier are confirmed.
 - Existing exact-head PR #64 GitHub Actions checks passed for the deployed source SHA; no independent production approval or runtime proof has been supplied.
 
@@ -71,6 +89,6 @@ Auth0 API setup guidance: https://auth0.com/docs/quickstart/backend/golang/inter
 
 ## What can be verified without hosting
 
-Run npm test (includes tests/vercel-mcp.test.mjs), node bin/pro-papa.mjs validate --root ., and review vercel.json. These checks are provider simulation and code checks, **not** a live Vercel deployment, billing verification or Auth0 integration.
+Run npm test (includes tests/vercel-mcp.test.mjs), node bin/pro-papa.mjs validate --root ., and review vercel.json. These checks are provider simulation and code checks **in isolation**; the distinct live public staging smoke evidence appears above. Neither check is proof of authorized Auth0 token issuance or a ChatGPT connector cutover.
 
 Relevant docs: https://vercel.com/docs/functions/runtimes/node-js ; https://vercel.com/docs/plans/hobby ; https://vercel.com/docs/routing/rewrites ; https://www.rfc-editor.org/rfc/rfc9728.html .
