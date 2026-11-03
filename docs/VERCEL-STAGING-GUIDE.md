@@ -30,6 +30,25 @@ The owner's Auth0 Tenant Settings → Advanced screenshots show **Resource Param
 
 Do **not** change Default Audience or legacy Netlify API settings. No tenant-wide Auth0 flag was toggled during these observations. The deployed staging build still has 9 credential-free public checks passing; the next *unverified* gate is a real user-approved OAuth exchange and scoped tool execution. Preserve the old ChatGPT plugin connection until the new one passes and the owner approves cutover.
 
+## ChatGPT plugin creation: Auth0 user-delegated access blocker (2026-11-02)
+
+The owner created a distinct `Pro-Papa Vercel Staging` ChatGPT custom MCP plugin using a **user-defined public OAuth client** with the new Auth0 Single Page Web Application `Pro-Papa ChatGPT Staging` and a matching ChatGPT callback URL. The plugin was created but authorization returned:
+
+> OAuth failed: `invalid_request` — Client is not authorized to access resource server `https://pro-papa-mcp-staging.vercel.app`.
+
+**Meaning:** Auth0 did not authorize this specific application's **user-delegated** API access. This error occurs at the authorization server before a valid bearer token can reach the deployed MCP server; it is **not** evidence of a Vercel build, JWT verification or callback-routing failure. No tenant-wide Auth0 switches or Netlify changes are needed to fix it.
+
+**Exact owner action:**
+
+1. In Auth0 Dashboard, open **Applications → Applications → Pro-Papa ChatGPT Staging → API Access**.
+2. Find **Pro-Papa MCP Staging** (`https://pro-papa-mcp-staging.vercel.app`), choose **Edit**.
+3. Under **User-Delegated Access**, choose **Authorized** with the specific permission **`pro_papa.read`** only, then **Save**. Leave **Client Access / machine-to-machine** unauthorized. An equivalent route is **Applications → APIs → Pro-Papa MCP Staging → Application Access → Edit**. If a grant cannot be configured, inspect this API's Settings → Application Access Policy for user-delegated access; prefer **Allow via client-grant** plus a scoped per-app grant, not a broad allow-all or disabled authorization.
+4. Retry the new ChatGPT plugin's OAuth sign-in and verify a real signed access token with correct issuer, audience and scope is used for a `tools/call` request. Do not treat a successful OAuth redirect alone as a full MCP smoke test.
+
+Auth0 docs: https://auth0.com/blog/developers-guide-api-access-policies-auth0/ ; https://support.auth0.com/center/s/article/Error-Client-is-not-authorized-to-access-API .
+
+No Auth0 Management API mutation, client grant, new Vercel build, original-plugin replacement or Netlify change was performed as part of this diagnosis. The client grant and positive authenticated tool execution remain **pending owner action and observed evidence**.
+
 ## ChatGPT registered-client UI observed (owner screenshots)
 
 In ChatGPT Plugins → Add custom MCP server → Advanced OAuth settings, the live connector builder showed:
