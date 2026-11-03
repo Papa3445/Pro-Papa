@@ -70,6 +70,16 @@ Paid overages, self-hosting power costs, free trials and required paid domains d
 - The owner must confirm that Hobby's personal/noncommercial restriction fits the intended use; provider onboarding must then verify the real account is on the strict $0 Hobby plan before any staging deployment.
 - Both draft PRs are isolated from protected main and use [skip netlify]. PP-0009's existing PR #62 remains untouched.
 
+## Vercel connection and free staging project — 2026-11-02
+
+- User confirmed **personal/non-commercial** intended use, so Hobby's use restriction is consistent with the stated goal.
+- Vercel team connection was authorized and read back; the provider reported plan **hobby**. This confirms the **plan tier**, not an unlimited guarantee or exact future consumption.
+- Created the **empty, non-live Vercel staging project** `pro-papa-mcp-staging` via the authenticated Vercel team. Provider readback confirmed `latestDeployment: null`, `live: false`, `domains: []`, and no linked Git project. No paid upgrade, hosted function invocation, billing change, repo link, or Netlify request/deployment was made.
+- Staging host is **not assigned yet**, so do not guess a hostname or set `PRO_PAPA_MCP_RESOURCE` to a fabricated value. The exact stable HTTPS host and matching Auth0 API audience/resource must be configured and verified before staging.
+- The remaining external dependency is the existing **Auth0 issuer and the ability to add/approve the new staging resource/audience**. Neither is a secret to paste into source code; obtain it from the actual identity provider and set the values in Vercel's protected environment settings. Never copy tokens or client secrets into a public GitHub commit.
+- Explicit deployment remains **unperformed**. Reuse draft [PR #64](https://github.com/Papa3445/Pro-Papa/pull/64), confirm any required Vercel route and free-quota guard, and test authentic JWT/ChatGPT MCP discovery and rate-limit parity on a new staging URL before release.
+- Production Netlify endpoint and original ChatGPT connection remain unchanged. This work does not imply framework task closure or permission to merge into production.
+
 ## D. Optional future deployment and cutover (not authorized yet)
 
 After the user has approved a separate provider/account and actual runtime compatibility is proven:
