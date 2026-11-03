@@ -96,6 +96,14 @@ Paid overages, self-hosting power costs, free trials and required paid domains d
 - Cost charges API returned `404 costs_not_found`, so free plan verified but not a specific spending report. No Netlify calls/deploys, main branch merges, or existing connector switches were made.
 - Next gate: inspect Auth0's **Resource Parameter Compatibility Profile** (tenant-wide behavior), verify staging client grants and exact scope, resolve protected staging endpoint access with owner authorization, and run end-to-end OAuth/API HTTP checks. Do not weaken rate-limit or token validation to bypass this. See [PR #64 staging guide](https://github.com/Papa3445/Pro-Papa/pull/64).
 
+## Staging HTTP validation — 2026-11-02
+
+- Owner approved disabling **Vercel Authentication on the staging project only**. Vercel project readback confirmed `ssoProtection.enabled=false`. The existing MCP `tools/call` Auth0 JWT validation was not modified.
+- Real credential-free GitHub Actions [run 41573245408](https://github.com/Papa3445/Pro-Papa/actions/runs/41573245408) passed **9/9** HTTPS checks on `https://pro-papa-mcp-staging.vercel.app`: Auth0 OIDC issuer discovery and public JWKS HTTP 200; exact RFC 9728 resource metadata; MCP GET 405; initialize; tools/list; missing-token and malformed-token call denial; foreign-Origin 403.
+- The live probe and unit tests are committed in [draft PR #64](https://github.com/Papa3445/Pro-Papa/pull/64) with `[skip netlify]` commit messages. This proves public routing and negative authorization at the **already deployed** staging server, but not a valid user's signed JWT or ChatGPT OAuth end-to-end. No new Vercel deployment was needed for these tests and Netlify remained untouched.
+- **Next decision / owner action:** inspect Auth0 Dashboard → Settings → Advanced for Resource Parameter Compatibility Profile and Dynamic Client Registration settings. MCP uses the RFC 8707 `resource` parameter, requiring compatible Auth0 audience selection. These options change **tenant-wide** behavior; seek explicit user direction before modifying. https://support.auth0.com/center/s/article/mcp-audience-error-with-auth0 .
+- Keep the live connector pointed at Netlify until a legitimate Auth0 test identity can obtain an access token with audience `https://pro-papa-mcp-staging.vercel.app` and scope `pro_papa.read`, a real call succeeds, rate limits/cost conditions and independent release review pass, and the user approves switching the connection.
+
 ## D. Optional future deployment and cutover (not authorized yet)
 
 After the user has approved a separate provider/account and actual runtime compatibility is proven:
