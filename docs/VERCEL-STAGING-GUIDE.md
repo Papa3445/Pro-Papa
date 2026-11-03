@@ -1,6 +1,21 @@
 # Vercel Hobby MCP: offline implementation and staged release gate
 
-This is an **unreleased ChatGPT connector migration candidate**. An isolated Vercel Hobby project and build now exist, but the new MCP has **not** been authenticated end-to-end or selected as the active ChatGPT connection; Netlify remains unchanged. The [no-Netlify development plan](NO-NETLIFY-DEVELOPMENT-PLAN.md) is tracked in separate draft PR #63; the canonical framework ledger remains .pro-papa/tasks.json.
+This is an **unreleased source merge / production cutover candidate**. The isolated Vercel Hobby project hosts a functioning Auth0-connected ChatGPT staging MCP plugin. The owner has not approved retiring the older Netlify connection, and the PR remains unmerged. The [no-Netlify development plan](NO-NETLIFY-DEVELOPMENT-PLAN.md) is tracked in separate draft PR #63; the canonical framework ledger remains .pro-papa/tasks.json.
+
+## Active staging WAF rate limiting — verified 2026-11-03
+
+The owner expressly approved **staging-only** Vercel WAF rate limiting. The account and project were reverified on the **Hobby** plan; no upgrade or billing change was made. After `GET active` initially returned 404 (no custom configuration), a narrowly scoped `rules.insert` created Vercel firewall version **1**, ID `waf_A0nbRDUqSbhL`, with one **active, valid** custom rule:
+
+- Rule ID: `rule_pro_papa_staging_mcp_30_req_min_per_ip_rgoUIi`
+- If **request path is any of** `/mcp` or `/api/mcp` (one shared rule)
+- Then **rate_limit**, **fixed_window**, **30 requests / 60 seconds**, keyed by **IP**, exceeded action **rate_limit / HTTP 429**.
+- Scoped exclusively to project `prj_QOcJEubys5o8pdlyC30I0E7uuzK0` (`pro-papa-mcp-staging`), team `team_vEgIRliWXQMyHAWaZp59je14`. No other Vercel project was modified.
+
+Provider `get_firewall_config(configVersion="active")` readback confirmed **firewallEnabled=true**, the above condition/action, `active=true`, `valid=true`, and **zero pending changes**. The actual credential-free external GitHub Actions [44-request HTTPS smoke](https://github.com/Papa3445/Pro-Papa/actions/runs/41714465828) passed: 15 ordinary HTTP 405 responses and 7 HTTP 429 responses **on each route**, totaling **30 ordinary + 14 limited** across the shared IP allowance. A real Auth0-connected `Pro-Papa Vercel Staging` MCP `math.sum(2,3,5)` call still returned 10 with `completed` / released trace **after** activating WAF.
+
+**Scope and limitations:** This is live WAF enforcement, not just an offline simulation. Counters can be regional, so a source reaching different WAF regions may exceed the nominal limit globally. The rule is provider-side state: source-code merges and function deployments do not reproduce it automatically. The Hobby free tier documents one rule per project and first 1 million allowed rate-limit requests included; exceeding free allocations can pause the project. See https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting and https://vercel.com/docs/plans/hobby .
+
+This evidence addresses the independent review's **unverified distributed edge rate-limit** blocker within the stated per-region design; independent review of the exact current configuration is still required. **Deployment reproducibility, complete runtime artifact attestation, safe rollback and independent release approval remain open.** No Netlify call, Auth0 setting, main-branch merge, ChatGPT connection change, Vercel deployment or paid-tier upgrade occurred in this WAF change.
 
 ## Authorized Vercel Authentication change and public staging smoke — 2026-11-02
 
