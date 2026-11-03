@@ -27,7 +27,7 @@ function configured(){
     const handler=createReadOnlyMcpWebHandler({
       oauthValidator,hostname,allowedOrigins:[],
       allowRepositories:['Papa3445/Pro-Papa'],
-      githubResearch:true,githubToken:undefined,artifactValidationEnabled
+      githubResearch:true,githubToken:null,artifactValidationEnabled
     });
     warm=Object.freeze({hostname,issuer,resource,artifactValidationEnabled,handler});
   }
