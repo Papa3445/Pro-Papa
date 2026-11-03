@@ -1,0 +1,31 @@
+name: Vercel staging public OAuth and negative MCP smoke
+
+on:
+  push:
+    branches:
+      - feature/vercel-mcp-offline-adapter
+    paths:
+      - bin/vercel-staging-public-smoke.mjs
+      - .github/workflows/vercel-staging-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-staging-public-smoke
+  cancel-in-progress: false
+
+jobs:
+  credential-free-http-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check isolated staging probe source
+        run: node --check bin/vercel-staging-public-smoke.mjs
+      - name: Probe canonical Vercel staging URL without any tokens
+        run: node bin/vercel-staging-public-smoke.mjs
