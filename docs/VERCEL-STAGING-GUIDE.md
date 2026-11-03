@@ -30,6 +30,19 @@ The owner's Auth0 Tenant Settings → Advanced screenshots show **Resource Param
 
 Do **not** change Default Audience or legacy Netlify API settings. No tenant-wide Auth0 flag was toggled during these observations. The deployed staging build still has 9 credential-free public checks passing; the next *unverified* gate is a real user-approved OAuth exchange and scoped tool execution. Preserve the old ChatGPT plugin connection until the new one passes and the owner approves cutover.
 
+## ChatGPT registered-client UI observed (owner screenshots)
+
+In ChatGPT Plugins → Add custom MCP server → Advanced OAuth settings, the live connector builder showed:
+
+- **Registration method: User-Defined OAuth Client**. This is a manual/pre-registered OAuth client, so DCR and CIMD can stay disabled. The DCR/CIMD warnings in this mode are informational and not a blocker.
+- **Token endpoint auth method: `none`** (public OAuth client, no client secret).
+- **Default scope: `pro_papa.read` checked**, base scopes blank; discovered authorization, token, issuer, resource, and OIDC endpoints were consistent with the real issuer/metadata checks.
+- The callback URL field appeared **visually truncated** in a mobile screenshot. It must be copied by the builder's dedicated copy button, not inferred from the visible prefix. OpenAI documents the stable callback `https://chatgpt.com/connector_platform_oauth_redirect` when supported; the UI's actual copied URI remains the authoritative one. https://developers.openai.com/plugins/changelog .
+
+**Next user action:** Create a **separate Auth0 Single Page Web Application** named `Pro-Papa ChatGPT Staging` (OAuth authorization-code with PKCE, public client, token endpoint authentication **None**). Configure **Allowed Callback URLs** using the exact copied ChatGPT callback URI; Auth0 requires exact matching, including path and trailing slash. https://support.auth0.com/center/s/article/Callback-URL-Mismatch-Error-Is-Not-in-the-List-of-Allowed-Callback-URLs ; https://support.auth0.com/center/s/article/Unauthorized-errors-seen-on-SPA-when-calling-oauth-token .
+
+Then copy **only** the new application's client ID into ChatGPT's OAuth client ID field; leave OAuth client secret empty because `none` is selected. Do **not** use Auth0's legacy global client ID/secret. Ensure the application is permitted to use the staging API and `pro_papa.read` scope. Preserve DCR and CIMD tenant-wide settings unchanged. Test a real Auth0 authorization-code + PKCE login, token audience, scope and one signed authenticated tool call before claiming the connector is ready or switching the old Netlify-backed connection. No callback value or secret is stored in this repository.
+
 ## Current staging configuration (Auth0 US-5 handoff)
 
 The owner supplied screenshots showing **tenant `dev-tzvdy337r0wqo8r5`**, **region US-5**, **environment Development**. Auth0's documented public-cloud hostname format uses `<tenant>.us.auth0.com` for US subregions. The *candidate* canonical issuer is `https://dev-tzvdy337r0wqo8r5.us.auth0.com/`. The real OIDC discovery endpoint was subsequently verified by credential-free GitHub Actions (see the newer evidence above), but **no signed access token's `iss` has been inspected**. Official references: https://support.auth0.com/center/s/article/Change-the-Tenant-Domain-Name and https://support.auth0.com/center/s/article/Subscribe-to-Atom-RSS-Feed-for-Status-Page-with-Multiple-Tenants-in-Different-Regions .
