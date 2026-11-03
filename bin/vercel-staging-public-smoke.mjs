@@ -51,6 +51,28 @@ function denied(msg,id){
 }
 async function main(){
   const outcomes=[];
+  // Read only public Auth0 discovery and signing-key metadata. No credentials.
+  const discovery=await fetch(ISSUER+'.well-known/openid-configuration',{
+    redirect:'error',signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}
+  });
+  console.log(JSON.stringify({endpoint:'auth0-oidc-discovery',status:discovery.status}));
+  assert.equal(discovery.status,200,'Auth0 public OIDC discovery must return 200');
+  const auth0=await readJson(discovery,'auth0 discovery');
+  assert.equal(auth0.issuer,ISSUER,'Auth0 issuer must match configured canonical issuer');
+  assert.equal(auth0.jwks_uri,ISSUER+'.well-known/jwks.json','issuer must serve expected signing keys');
+  assert.ok(auth0.authorization_endpoint?.startsWith(ISSUER));
+  assert.ok(auth0.token_endpoint?.startsWith(ISSUER));
+  outcomes.push('auth0-discovery-issuer-200');
+  const jwksResponse=await fetch(auth0.jwks_uri,{
+    redirect:'error',signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}
+  });
+  console.log(JSON.stringify({endpoint:'auth0-public-jwks',status:jwksResponse.status}));
+  assert.equal(jwksResponse.status,200,'Auth0 JWKS must be reachable');
+  const jwks=await readJson(jwksResponse,'auth0 JWKS');
+  assert.ok(Array.isArray(jwks.keys)&&jwks.keys.length>=1&&jwks.keys.length<=20);
+  assert.ok(jwks.keys.some(k=>k.kty==='RSA'&&k.kid&&k.n&&k.e));
+  outcomes.push('auth0-jwks-reachable');
+
   const metadata=await hit('/.well-known/oauth-protected-resource',{headers:{Accept:'application/json'}});
   assert.equal(metadata.status,200,'static OAuth metadata must be HTTP 200');
   const doc=await readJson(metadata,'metadata');
