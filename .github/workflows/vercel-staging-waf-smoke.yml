@@ -1,0 +1,58 @@
+name: Vercel staging WAF 30/min per IP smoke (on demand)
+
+on:
+  push:
+    branches:
+      - feature/vercel-mcp-offline-adapter
+    paths:
+      - .github/workflows/vercel-staging-waf-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-staging-waf-smoke
+  cancel-in-progress: false
+
+jobs:
+  verify-429:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test one bounded 44-request burst; no credentials or mutations
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const base='https://pro-papa-mcp-staging.vercel.app';
+          const paths=['/mcp','/api/mcp'];
+          const records=[];
+          for(let i=0;i<44;i++){
+            const path=paths[i%2];
+            const res=await fetch(base+path,{
+              method:'GET',redirect:'manual',signal:AbortSignal.timeout(7000),
+              headers:{Accept:'application/json'}
+            });
+            records.push({path,status:res.status});
+            if(![405,429].includes(res.status)){
+              throw Error('Unexpected staging HTTP status for '+path+': '+res.status);
+            }
+            await res.body?.cancel();
+          }
+          const summary=Object.fromEntries(paths.map(p=>[p,{
+            normal:records.filter(r=>r.path===p&&r.status===405).length,
+            limited:records.filter(r=>r.path===p&&r.status===429).length
+          }]));
+          console.log(JSON.stringify({statusCounts:summary,requests:records.length,
+            usesBearerTokens:false,endpoint:base}));
+          assert.ok(records.some(r=>r.status===405),'expected ordinary MCP GET before threshold');
+          for(const path of paths){
+            assert.ok(summary[path].limited>0,
+              'expected WAF 429 for both canonical and internal MCP paths');
+          }
+          console.log('PASS: verified active staging WAF returns 429 for both MCP routes');
+          NODE
