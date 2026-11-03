@@ -80,6 +80,13 @@ Paid overages, self-hosting power costs, free trials and required paid domains d
 - Explicit deployment remains **unperformed**. Reuse draft [PR #64](https://github.com/Papa3445/Pro-Papa/pull/64), confirm any required Vercel route and free-quota guard, and test authentic JWT/ChatGPT MCP discovery and rate-limit parity on a new staging URL before release.
 - Production Netlify endpoint and original ChatGPT connection remain unchanged. This work does not imply framework task closure or permission to merge into production.
 
+## Auth0 tenant identifier handoff — 2026-11-02
+
+- Owner supplied Auth0 tenant **identifier** `dev-tzvdy337r0wqo8r5`, but did not supply a verified full issuer domain including region and required trailing slash. This is *not* sufficient to build the expected `https://...auth0.com/` issuer URL. No region has been inferred or guessed.
+- Verification of potential Auth0 discovery endpoints could not establish a trustworthy issuer. The **one needed owner action** is to copy the exact full **Domain** from Auth0 Dashboard → Settings → General, such as `dev-tzvdy337r0wqo8r5.us.auth0.com` if that is what the dashboard actually displays. Do not request or store client secrets or access tokens.
+- Vercel staging project `pro-papa-mcp-staging` remains **not deployed**. Its readback shows one safe staging-only protected variable set: `PRO_PAPA_MCP_ARTIFACT_VALIDATION=false` for preview/development. No guessed `PRO_PAPA_AUTH0_ISSUER`, `PRO_PAPA_MCP_RESOURCE`, or hostname was configured. Do not treat this setting as evidence of live capability or a completed staging deployment.
+- The exact staging hostname and Auth0 resource/audience have to be configured and verified separately before an authenticated MCP deployment; preserve fail-closed behavior and do not change the running Netlify server.
+
 ## D. Optional future deployment and cutover (not authorized yet)
 
 After the user has approved a separate provider/account and actual runtime compatibility is proven:
