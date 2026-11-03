@@ -51,7 +51,13 @@ Current advertised Free plan: **1 million requests/month, 10 active CPU hours, 2
 
 Source: https://deno.com/deploy/pricing .
 
-Vercel Hobby is $0 for personal/non-commercial use only; it is not an unrestricted equivalent: https://vercel.com/legal/terms . Paid overages, self-hosting power costs, free trials and required paid domains do **not** meet a strict $0 requirement.
+### Vercel Hobby (conditional faster Node.js path)
+
+Vercel's documented Hobby plan is **$0/month**, with **1 million function invocations/month** and **4 active CPU hours** among its limits. Its Functions support a complete Node.js runtime and Web Standard fetch handlers, which may be a smaller adaptation from this project's Netlify/Node code than Cloudflare Workers. The **Hobby license restricts production deployments to personal, non-commercial use**; do not assume the project qualifies without the owner's confirmation. On Hobby, crossing the free quota can pause the service; stay on Hobby with no upgrade or billable features. A connected Vercel app can support future deployments, but connecting and deploying require user authorization and a real OAuth/MCP smoke test.
+
+Sources: https://vercel.com/docs/plans/hobby ; https://vercel.com/docs/functions/runtimes/node-js ; https://vercel.com/docs/plans ; https://vercel.com/legal/terms .
+
+Paid overages, self-hosting power costs, free trials and required paid domains do **not** meet a strict $0 requirement.
 
 **Selection gate:** choose only a compatible and secure HTTPS endpoint whose account is explicitly on the free plan, with an understood hard quota and no billable services enabled. If neither candidate passes, keep the existing code and report the blocker rather than incur charges.
 
