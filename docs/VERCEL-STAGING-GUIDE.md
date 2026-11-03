@@ -2,6 +2,12 @@
 
 This is an **unreleased source merge / production cutover candidate**. The isolated Vercel Hobby project hosts a functioning Auth0-connected ChatGPT staging MCP plugin. The owner has not approved retiring the older Netlify connection, and the PR remains unmerged. The [no-Netlify development plan](NO-NETLIFY-DEVELOPMENT-PLAN.md) is tracked in separate draft PR #63; the canonical framework ledger remains .pro-papa/tasks.json.
 
+## Deployment source attestation and next release gates — updated 2026-11-03
+
+The [reproducible staging source and rollback runbook](VERCEL-STAGING-RELEASE-RUNBOOK.md) records provider-backed SHA-1 content-UID matches for **17/17** uploaded source files at pinned deployed Git commit `c2f21f91...`, plus the complete generated OAuth metadata file (**18/18** source entries accounted for). The original provider source readback was truncated for larger files; UID matches establish source-content consistency, **not compiled Lambda byte attestation**. The runbook also includes a checked, allowlisted, deterministic source exporter with SHA-256 manifest and offline tests. GitHub CI checks Node.js **22 and 26** (Vercel runtime 26.x). No new deployment has occurred.
+
+**Still outstanding:** a separately approved staged deployment at a pinned PR commit; provider validation of the candidate's complete source-file manifest; an actual safe rollback to the previous READY build and health verification; independent updated security review and separate merge approval. The prior WAF and Auth0 steps need not be repeated without new evidence of a defect. The original ChatGPT/Netlify connection remains unchanged.
+
 ## Active staging WAF rate limiting — verified 2026-11-03
 
 The owner expressly approved **staging-only** Vercel WAF rate limiting. The account and project were reverified on the **Hobby** plan; no upgrade or billing change was made. After `GET active` initially returned 404 (no custom configuration), a narrowly scoped `rules.insert` created Vercel firewall version **1**, ID `waf_A0nbRDUqSbhL`, with one **active, valid** custom rule:
