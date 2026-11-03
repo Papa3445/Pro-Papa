@@ -26,6 +26,7 @@ jobs:
           import assert from 'node:assert/strict';
           const preview='https://pro-papa-mcp-staging-4m1rw4ysi-fpspro0421-1213.vercel.app';
           const stable='https://pro-papa-mcp-staging.vercel.app';
+          const staged='https://pro-papa-mcp-staging-o97t9c7d2-fpspro0421-1213.vercel.app';
           async function get(url) {
             const response=await fetch(url,{
               method:'GET',redirect:'manual',signal:AbortSignal.timeout(15000),
@@ -49,11 +50,21 @@ jobs:
           assert.equal(previewMcp.status,404);
           assert.equal(previewInternal.status,404);
 
+          const stagedSource=await get(staged+'/.well-known/oauth-protected-resource');
+          assert.equal(stagedSource.status,200,'staged production target OAuth metadata must exist');
+          assert.deepEqual(JSON.parse(stagedSource.body),metadata);
+          const stagedMcp=await get(staged+'/mcp');
+          const stagedInternal=await get(staged+'/api/mcp');
+          assert.equal(stagedMcp.status,404,'unaliased production target enforces canonical host');
+          assert.equal(stagedInternal.status,404);
+
           const stableMcp=await get(stable+'/mcp');
           assert.equal(stableMcp.status,405,'existing staging endpoint must remain functional');
           console.log(JSON.stringify({previewHost:preview,
             previewMetadata:source.status,previewMcp:previewMcp.status,
             previewInternal:previewInternal.status,
+            stagedHost:staged,stagedMetadata:stagedSource.status,
+            stagedMcp:stagedMcp.status,stagedInternal:stagedInternal.status,
             stableMcp:stableMcp.status,anonymous:true,bearerToken:false}));
-          console.log('PASS: isolated preview source available and stable MCP unchanged');
+          console.log('PASS: preview and staged production target metadata available; canonical MCP unchanged');
           NODE
