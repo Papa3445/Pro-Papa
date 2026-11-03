@@ -61,6 +61,15 @@ Paid overages, self-hosting power costs, free trials and required paid domains d
 
 **Selection gate:** choose only a compatible and secure HTTPS endpoint whose account is explicitly on the free plan, with an understood hard quota and no billable services enabled. If neither candidate passes, keep the existing code and report the blocker rather than incur charges.
 
+## Verified implementation progress — 2026-11-02
+
+- Draft [PR #63](https://github.com/Papa3445/Pro-Papa/pull/63): planning and revised universal operator instructions; no Project-settings change has been made.
+- Separate draft [PR #64](https://github.com/Papa3445/Pro-Papa/pull/64): Vercel Node.js MCP entrypoint, a fail-closed static OAuth metadata generator, an /mcp rewrite, and offline RSA/JWKS regression tests. Exact-head [GitHub Actions run 41566337740](https://github.com/Papa3445/Pro-Papa/actions/runs/41566337740) passed **313 tests, 0 failures**. This is source and CI verification, **not** live hosting.
+- Vercel documentation reserves the /.well-known path against rewrites. The adapter therefore generates the RFC 9728 metadata as a public static file; **serving that file at the reserved path is not verified** until a legitimate staging deployment. See [the staging gate](VERCEL-STAGING-GUIDE.md) in PR #64.
+- Vercel was installed as a ChatGPT plugin, but its deployment/account tools were **not exposed as callable operations in this conversation**. No Vercel plan/usage check, project creation, deployment, real OAuth smoke test, or ChatGPT connector switch was performed.
+- The owner must confirm that Hobby's personal/noncommercial restriction fits the intended use; provider onboarding must then verify the real account is on the strict $0 Hobby plan before any staging deployment.
+- Both draft PRs are isolated from protected main and use [skip netlify]. PP-0009's existing PR #62 remains untouched.
+
 ## D. Optional future deployment and cutover (not authorized yet)
 
 After the user has approved a separate provider/account and actual runtime compatibility is proven:
