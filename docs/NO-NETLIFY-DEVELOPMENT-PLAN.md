@@ -88,6 +88,14 @@ Paid overages, self-hosting power costs, free trials and required paid domains d
 - The Auth0 **Default Audience** shown in the screenshot is blank. Keep it blank; it is not the same as registering a specific custom API. The one missing external setup is **a separate Auth0 API** named `Pro-Papa MCP Staging` whose identifier is exactly `https://pro-papa-mcp-staging.vercel.app` (RS256), with `pro_papa.read` permission and authorized test identity/client. Do not modify the existing Netlify API/audience.
 - Continue only after successful real issuer/JWKS checks, Auth0 API registration, independent staging security validation (including abuse/rate limiting), and explicit production cutover decision. See the [pinned Vercel staging guide](https://github.com/Papa3445/Pro-Papa/blob/c2f21f91d239fcf7ed0edfaa574706c2ec2fbf80/docs/VERCEL-STAGING-GUIDE.md). No Netlify credits were consumed.
 
+## Vercel staging deployment result — 2026-11-02
+
+- User confirmed Auth0 API staging permission `pro_papa.read` was added. **Not yet independently verified** with Auth0 token claims or an authorized client.
+- The Vercel staging project now has a **READY** isolated deployment (`dpl_y6WTePYdcAynSsDw1ozGPnUjQsQA`) built from GitHub PR #64 source commit `c2f21f91d239fcf7ed0edfaa574706c2ec2fbf80` using provider API inline source upload. An earlier Git-source attempt failed `git_info_fail` because no Git repository is linked; no Git linkage was added. Build output contains an MCP Lambda. Published canonical alias: `https://pro-papa-mcp-staging.vercel.app`.
+- Provider reports plan **Hobby** and project-level Vercel Authentication protection enabled. Provider page-fetch/share-access tooling could not read the deployment, so do **not** claim the protected-resource metadata, authenticated `/mcp` route, Auth0 JWKS retrieval, or ChatGPT integration has passed live smoke testing.
+- Cost charges API returned `404 costs_not_found`, so free plan verified but not a specific spending report. No Netlify calls/deploys, main branch merges, or existing connector switches were made.
+- Next gate: inspect Auth0's **Resource Parameter Compatibility Profile** (tenant-wide behavior), verify staging client grants and exact scope, resolve protected staging endpoint access with owner authorization, and run end-to-end OAuth/API HTTP checks. Do not weaken rate-limit or token validation to bypass this. See [PR #64 staging guide](https://github.com/Papa3445/Pro-Papa/pull/64).
+
 ## D. Optional future deployment and cutover (not authorized yet)
 
 After the user has approved a separate provider/account and actual runtime compatibility is proven:
