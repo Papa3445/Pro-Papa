@@ -1,0 +1,149 @@
+name: PP-0010 authorized native host acceptance
+on:
+  push:
+    branches:
+      - evidence/pp0010-native-host-acceptance-20261104
+permissions:
+  contents: read
+jobs:
+  pp0010-native-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native PDF producer and independent PDF text reader
+        run: python3 -m pip install --disable-pip-version-check --no-input reportlab==4.4.9 pypdf==5.9.0
+      - name: Generate two fresh non-sensitive PDFs with ReportLab
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from reportlab.pdfgen import canvas
+          from reportlab.lib.pagesizes import letter
+          root = Path(os.environ['RUNNER_TEMP']) / 'pp0010-native-acceptance'
+          root.mkdir(mode=0o700, exist_ok=False)
+          for name, marker in [('candidate.pdf', 'PP0010_NATIVE_ACCEPT_20261104'),
+                               ('denied.pdf', 'PP0010_NEGATIVE_DOCUMENT_20261104')]:
+              c = canvas.Canvas(str(root/name), pagesize=letter, pageCompression=0,
+                                invariant=1, pdfVersion=(1,4))
+              c.setTitle('PP-0010 Isolated Native Host Acceptance')
+              c.setFont('Helvetica',13)
+              c.drawString(66,730,'PP-0010 Native Host Acceptance')
+              c.setFont('Helvetica',11)
+              c.drawString(66,688,marker)
+              c.drawString(66,660,'Isolated non-production PDF generated with ReportLab')
+              c.save()
+          print('NATIVE_PDF_PRODUCER: generated two unique source PDFs in runner temporary directory')
+          PY
+      - name: Run merged gate with genuine publication and independent denial
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {createHash} from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          import {existsSync,readFileSync,writeFileSync,rmSync,mkdirSync} from 'node:fs';
+          import {join} from 'node:path';
+          import {createPdfReleaseWorkflow} from './src/pdf-release-workflow.mjs';
+          const expected='3ad46356bb68fb576874ef54f8a182de402561de';
+          const git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim();
+          assert.equal(git('rev-parse','HEAD^'),expected,'runner evidence commit must directly descend from merged SHA');
+          assert.equal(git('rev-parse','HEAD'),process.env.GITHUB_SHA,'runner checkout commit mismatch');
+          assert.equal(git('rev-parse','HEAD:src/pdf-release-workflow.mjs'),'56e135b1c13bcb234c7f5bb847985c4b2ec1f6ac');
+          assert.equal(git('diff','--name-only','HEAD^','HEAD'),'.github/workflows/pp0010-native-host-acceptance.yml',
+            'harness must not change source code or task status');
+          const root=join(process.env.RUNNER_TEMP,'pp0010-native-acceptance');
+          const source=join(root,'candidate.pdf');
+          const dest=join(root,'published.pdf');
+          const deniedSource=join(root,'denied.pdf');
+          const deniedDest=join(root,'denied-published.pdf');
+          const marker='PP0010_NATIVE_ACCEPT_20261104';
+          const sha=b=>createHash('sha256').update(b).digest('hex');
+          let positive=null,negative=null;
+          try {
+            const original=readFileSync(source);
+            assert.ok(original.length>100 && original.length<=32768);
+            assert.equal(existsSync(dest),false,'preexisting destination forbidden');
+            let publishes=0,reads=0;
+            const gate=createPdfReleaseWorkflow({
+              enabled:true,requiredText:[marker,'Native Host Acceptance'],
+              produce:async()=>readFileSync(source),
+              publish:async bytes=>{publishes++;writeFileSync(dest,bytes,{flag:'wx',mode:0o600});},
+              readPublished:async()=>{reads++;return readFileSync(dest);}
+            });
+            const result=await gate.run();
+            assert.equal(result.status,'released',JSON.stringify(result));
+            assert.equal(result.hostReadbackMatched,true);
+            assert.equal(publishes,1);
+            assert.equal(reads,1);
+            const independentlySaved=readFileSync(dest);
+            assert.equal(sha(independentlySaved),sha(original));
+            assert.equal(result.sha256,sha(independentlySaved));
+            assert.equal(result.byteLength,independentlySaved.length);
+            const py=String.raw`import json,sys
+from pypdf import PdfReader
+r=PdfReader(sys.argv[1])
+print(json.dumps({'pages':len(r.pages),'text':' '.join((p.extract_text() or '') for p in r.pages)}))`;
+            const parsed=JSON.parse(execFileSync('python3',['-c',py,dest],{encoding:'utf8'}));
+            assert.equal(parsed.pages,result.pageCount);
+            assert.ok(parsed.text.includes(marker),'independent PDF reader missing required text');
+            assert.ok(parsed.text.includes('Native Host Acceptance'));
+            positive={status:result.status,sha256:result.sha256,byteLength:result.byteLength,
+              pageCount:result.pageCount,requiredChecks:result.requiredChecks,
+              publisherCalls:publishes,trustedReadbackCalls:reads,hostReadbackMatched:true,
+              independentSavedFileHashMatched:true,independentPypdfTextMatched:true,
+              destination:'isolated-runner-temp-only'};
+            let deniedPublishes=0;
+            const denied=createPdfReleaseWorkflow({
+              enabled:true,requiredText:['PP0010_ABSENT_REQUIRED_TEXT'],
+              produce:async()=>readFileSync(deniedSource),
+              publish:async b=>{deniedPublishes++;writeFileSync(deniedDest,b,{flag:'wx',mode:0o600});},
+              readPublished:async()=>readFileSync(deniedDest)
+            });
+            const refused=await denied.run();
+            assert.equal(refused.status,'not_released',JSON.stringify(refused));
+            assert.equal(refused.reason,'validation_failed');
+            assert.equal(deniedPublishes,0);
+            assert.equal(existsSync(deniedDest),false);
+            negative={status:refused.status,reason:refused.reason,publisherCalls:deniedPublishes,
+              destinationExists:false,nativeProducedPdf:true};
+          } finally {
+            rmSync(root,{recursive:true,force:true});
+          }
+          const report={schemaVersion:1,taskId:'PP-0010',result:'PASS',
+            source:{mergedMain:expected,runnerHead:git('rev-parse','HEAD'),
+              gateBlobSha:'56e135b1c13bcb234c7f5bb847985c4b2ec1f6ac',
+              onlyEvidenceWorkflowAdded:true},
+            environment:{kind:'isolated-github-actions-ubuntu-runner',
+              producer:'python-reportlab-4.4.9',validator:'real-merged-Node-host',
+              publisher:'node-fs-exclusive-create',readback:'node-fs-reopen',
+              independentPdfText:'python-pypdf-5.9.0',temporaryFilesRemoved:true},
+            positive,negative,
+            limitations:['Host-local readback is not provider-authenticated persistence',
+              'Supports only bounded classic-xref text-oriented PDFs; no visual or safety judgment',
+              'No deployed service, production routing, Netlify or ChatGPT-turn interception tested']};
+          mkdirSync('artifacts/pp0010',{recursive:true});
+          writeFileSync('artifacts/pp0010/native-host-acceptance.json',
+            JSON.stringify(report,null,2)+'\n',{mode:0o600});
+          console.log('PP0010_NATIVE_HOST_RESULT '+JSON.stringify(report));
+          JS
+      - name: Upload sanitized report only; never upload test PDF
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pp0010-native-host-report
+          path: artifacts/pp0010/native-host-acceptance.json
+          if-no-files-found: warn
+          retention-days: 14
