@@ -17,3 +17,5 @@ The test uses a real in-process reference host and a self-contained PDF byte fix
 This wrapper is not invoked by the deployed API, Netlify function, MCP transport, Vercel staging endpoint, or ChatGPT Project turns. Default enablement is false; no credentials, production settings, deployment, routing or billing are changed.
 
 Before verifying PP-0010, obtain a separately authorized real external/native producer and publisher demonstration, exact-head successful CI, the required software-profile evidence, and genuinely independent authenticated GitHub review. Isolated host tests do not prove a production deployment.
+
+One-shot behavior: each enabled gate instance permits one attempted validation/publication cycle. Concurrent calls and retries return already_attempted, including after uncertain external side effects. A trusted operator must explicitly create fresh authority for a new attempt after reconciliation.

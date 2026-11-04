@@ -149,3 +149,24 @@ test('PP-0010 rejects invalid trusted policy before any work', () => {
   ]) assert.throws(()=>createPdfReleaseWorkflow(config(invalid)),
     /Invalid trusted PDF release configuration/);
 });
+
+test('PP-0010 single-use workflow blocks replay and concurrent publication',async()=>{
+  let startProducer, published=0;
+  const producer = () => new Promise(resolve=>{ startProducer=resolve; });
+  const workflow = createPdfReleaseWorkflow(config({
+    produce:producer,
+    publish:async bytes=>{published++;return {sha256:sha(bytes),byteLength:bytes.length};},
+  }));
+  const first=workflow.run();
+  const second=await workflow.run();
+  assert.deepEqual(second,{status:'not_released',reason:'already_attempted'});
+  startProducer(Buffer.from(valid));
+  assert.equal((await first).status,'released');
+  assert.equal(published,1);
+  assert.equal((await workflow.run()).reason,'already_attempted');
+  const denied=createPdfReleaseWorkflow(config({
+    produce:async()=>{throw Error('one-time producer failure');},
+  }));
+  assert.equal((await denied.run()).reason,'producer_failed');
+  assert.equal((await denied.run()).reason,'already_attempted');
+});

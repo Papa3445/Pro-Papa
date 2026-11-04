@@ -38,11 +38,16 @@ export function createPdfReleaseWorkflow({
   const host = validationHost ?? createReferenceHost({
     artifactValidationEnabled: true, traceMode: 'enforced',
   });
+  // One terminal attempt per configured release authority. Even failures cannot
+  // be blindly retried after an ambiguous publisher side effect.
+  let attempted = false;
   return Object.freeze({
     async run(...overrides) {
       // A request cannot register tools, change checks, or force publication.
       if (overrides.length) return deny('untrusted_override');
       if (!enabled) return deny('disabled');
+      if (attempted) return deny('already_attempted');
+      attempted = true;
       let produced;
       try { produced = await produce(); }
       catch { return deny('producer_failed'); }
