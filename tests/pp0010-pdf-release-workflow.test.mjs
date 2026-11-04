@@ -35,6 +35,7 @@ const config = extra => ({
   enabled: true,
   produce: async () => Buffer.from(valid),
   publish: async bytes => ({sha256: sha(bytes), byteLength: bytes.length}),
+  readPublished: async () => Buffer.from(valid), // Isolated mock for unit checks only
   requiredText: ['PP0010 verified release'],
   ...extra,
 });
@@ -48,14 +49,14 @@ test('PP-0010 authorized host release writes and reads back exact submitted PDF 
       publish: async bytes => {
         published++;
         await writeFile(target, bytes);
-        const saved = await readFile(target);
-        return {sha256: sha(saved), byteLength: saved.length};
+        return {sha256: sha(bytes), byteLength: bytes.length};
       },
+      readPublished: () => readFile(target),
     }));
     const outcome = await gate.run();
     assert.equal(outcome.status, 'released');
     assert.equal(outcome.sha256, sha(valid));
-    assert.equal(outcome.publisherVerified, true);
+    assert.equal(outcome.hostReadbackMatched, true);
     assert.equal(outcome.requiredChecks, 1);
     assert.equal(published, 1);
     assert.deepEqual(await readFile(target), valid);
@@ -145,7 +146,7 @@ test('PP-0010 rejects invalid trusted policy before any work', () => {
     {requiredText:[]},{requiredText:['']},{requiredText:['same','same']},
     {requiredText:['é']},{requiredText:['x'.repeat(81)]},
     {expectedSha256:'not-a-hash'},
-    {publish:null},{produce:null},{validationHost:{}},
+    {publish:null},{readPublished:null},{produce:null},{validationHost:{}},
   ]) assert.throws(()=>createPdfReleaseWorkflow(config(invalid)),
     /Invalid trusted PDF release configuration/);
 });
@@ -169,4 +170,54 @@ test('PP-0010 single-use workflow blocks replay and concurrent publication',asyn
   }));
   assert.equal((await denied.run()).reason,'producer_failed');
   assert.equal((await denied.run()).reason,'already_attempted');
+});
+
+
+test('PP-0010 forged matching publisher acknowledgment without persistence cannot release',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'pp0010-missing-'));
+  const absent=join(dir,'not-written.pdf');
+  try {
+    let calls=0;
+    const gate=createPdfReleaseWorkflow(config({
+      publish:async (_bytes,metadata)=>{calls++;return {...metadata};},
+      readPublished:()=>readFile(absent),
+    }));
+    assert.deepEqual(await gate.run(),{status:'needs_reconciliation',
+      reason:'publication_unconfirmed'});
+    assert.equal(calls,1);
+    assert.equal((await gate.run()).reason,'already_attempted');
+  }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('PP-0010 persisted wrong bytes and false publisher acknowledgment do not release',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'pp0010-wrong-'));
+  const target=join(dir,'wrong.pdf');
+  try{
+    const gate=createPdfReleaseWorkflow(config({
+      publish:async(_bytes,metadata)=>{
+        await writeFile(target,pdf('Tampered after publish'));
+        return {...metadata};
+      },
+      readPublished:()=>readFile(target),
+    }));
+    assert.equal((await gate.run()).status,'needs_reconciliation');
+  }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('PP-0010 same-PDF stale successful validation under a different policy fails closed',async()=>{
+  let published=0;
+  const original=createReferenceHost({traceMode:'enforced',artifactValidationEnabled:true});
+  const old=await original.execute({
+    objective:'Original easy PDF validation',capability:'artifact.validate',
+    inputs:{authorization:'validate_supplied_bytes_only',format:'application/pdf',
+      dataBase64:valid.toString('base64'),mustContain:['PP0010']},
+  });
+  assert.equal(old.status,'completed');
+  const stale=createPdfReleaseWorkflow(config({
+    requiredText:['NOT IN THE SAME PDF'],
+    validationHost:{execute:async()=>old},
+    publish:async()=>{published++;},
+  }));
+  assert.equal((await stale.run()).reason,'validation_failed');
+  assert.equal(published,0);
 });
