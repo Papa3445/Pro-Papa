@@ -1,0 +1,70 @@
+name: Verify pinned Vercel staging preview (read-only)
+
+on:
+  push:
+    branches:
+      - feature/vercel-mcp-offline-adapter
+    paths:
+      - .github/workflows/vercel-staging-preview-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify isolated candidate metadata and stable service without credentials
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const preview='https://pro-papa-mcp-staging-4m1rw4ysi-fpspro0421-1213.vercel.app';
+          const stable='https://pro-papa-mcp-staging.vercel.app';
+          const staged='https://pro-papa-mcp-staging-o97t9c7d2-fpspro0421-1213.vercel.app';
+          async function get(url) {
+            const response=await fetch(url,{
+              method:'GET',redirect:'manual',signal:AbortSignal.timeout(15000),
+              headers:{Accept:'application/json'}
+            });
+            const body=await response.text();
+            return {status:response.status,contentType:response.headers.get('content-type'),body};
+          }
+          const source=await get(preview+'/.well-known/oauth-protected-resource');
+          assert.equal(source.status,200,'preview OAuth metadata must exist');
+          assert.ok(source.contentType?.includes('application/json'));
+          const metadata=JSON.parse(source.body);
+          assert.equal(metadata.resource,stable);
+          assert.deepEqual(metadata.authorization_servers,
+            ['https://dev-tzvdy337r0wqo8r5.us.auth0.com/']);
+          assert.deepEqual(metadata.scopes_supported,['pro_papa.read']);
+
+          // Preview hosts are intentionally not accepted as canonical MCP hosts.
+          const previewMcp=await get(preview+'/mcp');
+          const previewInternal=await get(preview+'/api/mcp');
+          assert.equal(previewMcp.status,404);
+          assert.equal(previewInternal.status,404);
+
+          const stagedSource=await get(staged+'/.well-known/oauth-protected-resource');
+          assert.equal(stagedSource.status,200,'staged production target OAuth metadata must exist');
+          assert.deepEqual(JSON.parse(stagedSource.body),metadata);
+          const stagedMcp=await get(staged+'/mcp');
+          const stagedInternal=await get(staged+'/api/mcp');
+          assert.equal(stagedMcp.status,404,'unaliased production target enforces canonical host');
+          assert.equal(stagedInternal.status,404);
+
+          const stableMcp=await get(stable+'/mcp');
+          assert.equal(stableMcp.status,405,'existing staging endpoint must remain functional');
+          console.log(JSON.stringify({previewHost:preview,
+            previewMetadata:source.status,previewMcp:previewMcp.status,
+            previewInternal:previewInternal.status,
+            stagedHost:staged,stagedMetadata:stagedSource.status,
+            stagedMcp:stagedMcp.status,stagedInternal:stagedInternal.status,
+            stableMcp:stableMcp.status,anonymous:true,bearerToken:false}));
+          console.log('PASS: preview and staged production target metadata available; canonical MCP unchanged');
+          NODE
