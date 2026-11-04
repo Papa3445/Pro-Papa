@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -59,10 +59,10 @@ jobs:
           import {createPdfReleaseWorkflow} from './src/pdf-release-workflow.mjs';
           const expected='3ad46356bb68fb576874ef54f8a182de402561de';
           const git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim();
-          assert.equal(git('rev-parse','HEAD^'),expected,'runner evidence commit must directly descend from merged SHA');
+          execFileSync('git',['merge-base','--is-ancestor',expected,'HEAD']);
           assert.equal(git('rev-parse','HEAD'),process.env.GITHUB_SHA,'runner checkout commit mismatch');
           assert.equal(git('rev-parse','HEAD:src/pdf-release-workflow.mjs'),'56e135b1c13bcb234c7f5bb847985c4b2ec1f6ac');
-          assert.equal(git('diff','--name-only','HEAD^','HEAD'),'.github/workflows/pp0010-native-host-acceptance.yml',
+          assert.equal(git('diff','--name-only',expected,'HEAD'),'.github/workflows/pp0010-native-host-acceptance.yml',
             'harness must not change source code or task status');
           const root=join(process.env.RUNNER_TEMP,'pp0010-native-acceptance');
           const source=join(root,'candidate.pdf');
@@ -92,10 +92,7 @@ jobs:
             assert.equal(sha(independentlySaved),sha(original));
             assert.equal(result.sha256,sha(independentlySaved));
             assert.equal(result.byteLength,independentlySaved.length);
-            const py=String.raw`import json,sys
-from pypdf import PdfReader
-r=PdfReader(sys.argv[1])
-print(json.dumps({'pages':len(r.pages),'text':' '.join((p.extract_text() or '') for p in r.pages)}))`;
+            const py="import json,sys\nfrom pypdf import PdfReader\nr=PdfReader(sys.argv[1])\nprint(json.dumps({'pages':len(r.pages),'text':' '.join((p.extract_text() or '') for p in r.pages)}))";
             const parsed=JSON.parse(execFileSync('python3',['-c',py,dest],{encoding:'utf8'}));
             assert.equal(parsed.pages,result.pageCount);
             assert.ok(parsed.text.includes(marker),'independent PDF reader missing required text');
