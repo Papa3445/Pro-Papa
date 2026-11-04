@@ -13,7 +13,26 @@ const sha=x=>{
   const b=Buffer.from(x);
   return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 };
+// Normalize only the owner-authorized CLI closure back to exact registered rev84.
+// The closure regression separately pins the original runner's full ledger bytes.
+export function pp0009RegistrationSnapshot(ledger){
+  if(ledger.revision!==85)return ledger;
+  const prior=structuredClone(ledger);
+  const task=prior.tasks.find(x=>x.id==='PP-0009');
+  if(prior.tasks.length!==13||task?.status!=='verified'||
+     typeof task.verifiedAt!=='string'||
+     !Number.isFinite(Date.parse(task.verifiedAt))||
+     new Date(task.verifiedAt).toISOString()!==task.verifiedAt)
+    throw Error('Unknown PP-0009 closure transition');
+  task.status='in_progress';
+  delete task.verifiedAt;
+  prior.revision=84;
+  if(sha(JSON.stringify(prior,null,2)+'\n')!=='a7524aed0d6ee7567eb669d5c3833ad04add0b7b')
+    throw Error('PP-0009 closure altered historical protected ledger');
+  return prior;
+}
 export function pp0007LedgerSnapshot(ledger){
+  if(ledger.revision===85)return pp0007LedgerSnapshot(pp0009RegistrationSnapshot(ledger));
   if(ledger.revision===84){
     // Undo only four actual CLI-recorded source-backed proofs. Pin the exact
     // protected rev80 ledger rather than permitting arbitrary task mutations.
