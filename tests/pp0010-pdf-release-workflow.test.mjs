@@ -132,10 +132,13 @@ test('PP-0010 forged audit, missing validator and replayed valid trace fail clos
   assert.equal(published,0);
 });
 
-test('PP-0010 publication failure is ambiguous, never falsely reported as denied', async () => {
-  for (const publish of [async()=>{throw Error('failed after write');},
-    async()=>({sha256:'0'.repeat(64),byteLength:valid.length})]) {
-    const result = await createPdfReleaseWorkflow(config({publish})).run();
+test('PP-0010 publication or destination-readback failure requires reconciliation', async () => {
+  for (const overrides of [
+    {publish: async()=>{throw Error('failed after write');}},
+    {publish: async()=>({sha256:'0'.repeat(64),byteLength:valid.length}),
+      readPublished: async()=>{throw Error('destination unavailable');}},
+  ]) {
+    const result = await createPdfReleaseWorkflow(config(overrides)).run();
     assert.deepEqual(result,{status:'needs_reconciliation',
       reason:'publication_unconfirmed'});
   }
