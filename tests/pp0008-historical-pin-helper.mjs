@@ -13,6 +13,31 @@ const sha=x=>{
   const b=Buffer.from(x);
   return createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 };
+// PP-0010: normalize only the exact CLI-generated rev91 successor. The full
+// Git-blob pin fails closed on ANY unreviewed task or proof mutation.
+const PP0010_CLOSED_BLOB='b2a886e3c26ad35775a38c634a61390b7f2b2a9a';
+const PP0009_CLOSED_BLOB='d0c9c9a728d2618d5fa197802405fab3e81e6287';
+export function pp0010RegistrationSnapshot(ledger){
+  if(ledger.revision!==91)return ledger;
+  if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0010_CLOSED_BLOB)
+    throw Error('Unknown PP-0010 closure transition');
+  const prior=structuredClone(ledger);
+  const task=prior.tasks.find(x=>x.id==='PP-0010');
+  if(prior.tasks.length!==13||task?.status!=='verified'||
+     task.owner!=='chatgpt-implementation'||task.requiresTrustedReview!==true||
+     task.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
+     task.reviewTarget?.pullRequest!==66||task.reviewTarget?.baseRef!=='main'||
+     task.reviewTarget?.baseSha!=='3ad46356bb68fb576874ef54f8a182de402561de'||
+     task.evidence?.length!==4||
+     task.verifiedAt!=='2026-11-05T04:03:52.364Z')
+    throw Error('Unknown PP-0010 closure fields');
+  task.status='pending';task.owner=null;task.evidence=[];
+  delete task.requiresTrustedReview;delete task.reviewTarget;delete task.verifiedAt;
+  prior.revision=85;
+  if(sha(JSON.stringify(prior,null,2)+'\n')!==PP0009_CLOSED_BLOB)
+    throw Error('PP-0010 closure altered historical protected ledger');
+  return prior;
+}
 // Normalize only the owner-authorized CLI closure back to exact registered rev84.
 // The closure regression separately pins the original runner's full ledger bytes.
 export function pp0009RegistrationSnapshot(ledger){
@@ -32,6 +57,7 @@ export function pp0009RegistrationSnapshot(ledger){
   return prior;
 }
 export function pp0007LedgerSnapshot(ledger){
+  if(ledger.revision===91)return pp0007LedgerSnapshot(pp0010RegistrationSnapshot(ledger));
   if(ledger.revision===85)return pp0007LedgerSnapshot(pp0009RegistrationSnapshot(ledger));
   if(ledger.revision===84){
     // Undo only four actual CLI-recorded source-backed proofs. Pin the exact
