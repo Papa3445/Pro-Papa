@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0010",
+  "evidenceKind": "test",
+  "result": "PASS",
+  "sourceCommit": "3ad46356bb68fb576874ef54f8a182de402561de",
+  "realHost": {
+    "runId": 41926580132,
+    "jobId": 126912428787,
+    "workflowHead": "34440103e80e3e8b7425f56ce2fd7967933177b4",
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/41926580132",
+    "status": "completed",
+    "conclusion": "success",
+    "positive": "released",
+    "negative": "not_released",
+    "negativePublisherCalls": 0
+  },
+  "checks": [
+    {
+      "commit": "3ad46356bb68fb576874ef54f8a182de402561de",
+      "runId": 41909474962,
+      "context": "check",
+      "appId": 15368,
+      "conclusion": "success"
+    },
+    {
+      "commit": "34440103e80e3e8b7425f56ce2fd7967933177b4",
+      "runId": 41926580136,
+      "context": "check",
+      "appId": 15368,
+      "conclusion": "success"
+    },
+    {
+      "commit": "34440103e80e3e8b7425f56ce2fd7967933177b4",
+      "runId": 41926580132,
+      "context": "pp0010-native-host",
+      "appId": 15368,
+      "conclusion": "success"
+    }
+  ],
+  "negativeSecurityCases": [
+    "unauthorized override denied",
+    "validator unavailable denied",
+    "digest mismatch denied",
+    "forged audit denied",
+    "publisher acknowledgments alone do not prove release",
+    "same-PDF different required-text policy replay denied"
+  ],
+  "limitations": [
+    "Passing code and host tests do not establish production readiness",
+    "The authentic host outcome is separately recorded in the artifact file"
+  ]
+}

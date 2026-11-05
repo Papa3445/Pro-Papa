@@ -1,0 +1,126 @@
+name: PP-0010 official CLI closure candidate (one shot)
+on:
+  push:
+    branches:
+      - feature/pp0010-cli-closure-20261104
+    paths:
+      - .github/workflows/pp0010-cli-closure-once.yml
+permissions:
+  contents: write
+  pull-requests: read
+jobs:
+  official-cli-close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pin exact merged source and authentic sanitized evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {readFileSync,writeFileSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          const original='3ad46356bb68fb576874ef54f8a182de402561de';
+          const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+          assert.equal(git('rev-parse','HEAD^'),original);
+          const allowed=[
+          '.github/workflows/pp0010-cli-closure-once.yml',
+          '.pro-papa/evidence/PP-0010/native-host-acceptance-2026-11-04.json',
+          '.pro-papa/evidence/PP-0010/native-host-tests-2026-11-04.json',
+          '.pro-papa/evidence/PP-0010/native-host-validation-2026-11-04.json',
+          '.pro-papa/evidence/PP-0010/independent-host-review-2026-11-04.json',
+          ].sort();
+          assert.deepEqual(git('diff','--name-only',original,'HEAD').split('\n').sort(),allowed);
+          assert.equal(git('rev-parse','HEAD:src/pdf-release-workflow.mjs'),'56e135b1c13bcb234c7f5bb847985c4b2ec1f6ac');
+          const report=readFileSync('.pro-papa/evidence/PP-0010/native-host-acceptance-2026-11-04.json');
+          assert.equal(createHash('sha256').update(report).digest('hex'),'39d44f59403b52f05b1ffe98b7aa1fa93fbfff04aad886157ac64abcd02b89dd');
+          const state=JSON.parse(readFileSync('.pro-papa/tasks.json','utf8'));
+          assert.equal(state.revision,85);
+          const task=state.tasks.find(x=>x.id==='PP-0010');
+          assert.equal(task.status,'pending');assert.equal(task.owner,null);
+          assert.deepEqual(task.evidence,[]);
+          assert.equal(state.tasks.find(x=>x.id==='PP-0009').status,'verified');
+          task.requiresTrustedReview=true;
+          task.reviewTarget={
+           repository:'Papa3445/Pro-Papa',pullRequest:66,baseRef:'main',baseSha:original
+          };
+          writeFileSync('.pro-papa/tasks.json',JSON.stringify(state,null,2)+'\n');
+          console.log('PP0010_PRE_CLI_PINS_PASS');
+          JS
+          node bin/pro-papa.mjs validate
+          node --test tests/pp0010-pdf-release-workflow.test.mjs
+      - name: Run official CLI evidence registration, authenticated review, and closure
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/pp0010-closure
+          node bin/pro-papa.mjs start --id PP-0010 --actor chatgpt-implementation > artifacts/pp0010-closure/start.json
+          node bin/pro-papa.mjs proof --id PP-0010 --kind artifact --file .pro-papa/evidence/PP-0010/native-host-acceptance-2026-11-04.json --actor chatgpt-implementation --note "Original independently hashed GitHub Actions native PDF report" > artifacts/pp0010-closure/artifact-proof.json
+          node bin/pro-papa.mjs proof --id PP-0010 --kind test --file .pro-papa/evidence/PP-0010/native-host-tests-2026-11-04.json --actor chatgpt-implementation --note "Authentic exact-source host positive and denial tests with trusted CI" > artifacts/pp0010-closure/test-proof.json
+          node bin/pro-papa.mjs proof --id PP-0010 --kind validation --file .pro-papa/evidence/PP-0010/native-host-validation-2026-11-04.json --actor chatgpt-implementation --note "Actual saved-byte hash and independent PDF extraction checks" > artifacts/pp0010-closure/validation-proof.json
+          node bin/pro-papa.mjs proof --id PP-0010 --kind review --file .pro-papa/evidence/PP-0010/independent-host-review-2026-11-04.json --actor papa4568 --note "Provider-authenticated APPROVE #5777534267 on exact PR66 evidence head" > artifacts/pp0010-closure/review-proof.json
+          node bin/pro-papa.mjs review-status --id PP-0010 > artifacts/pp0010-closure/authenticated-review-status.json
+          node bin/pro-papa.mjs close --id PP-0010 > .pro-papa/evidence/PP-0010/cli-closure-result-2026-11-04.json
+          node bin/pro-papa.mjs validate > artifacts/pp0010-closure/project-validation.json
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {readFileSync,copyFileSync} from 'node:fs';
+          const p=x=>JSON.parse(readFileSync(x,'utf8'));
+          const state=p('.pro-papa/tasks.json');
+          assert.equal(state.revision,91);
+          const task=state.tasks.find(x=>x.id==='PP-0010');
+          assert.equal(task.status,'verified');
+          assert.ok(task.verifiedAt);
+          assert.equal(task.evidence.length,4);
+          assert.deepEqual(task.evidence.map(x=>x.kind),['artifact','test','validation','review']);
+          assert.equal(task.reviewTarget.pullRequest,66);
+          assert.equal(task.reviewTarget.baseSha,'3ad46356bb68fb576874ef54f8a182de402561de');
+          const result=p('.pro-papa/evidence/PP-0010/cli-closure-result-2026-11-04.json');
+          assert.deepEqual(result.required,['artifact','test','validation','review']);
+          assert.equal(result.trustedReview.verdict,'PASS');
+          assert.equal(result.trustedReview.reviewId,5777534267);
+          assert.equal(result.trustedReview.candidateSha,'34440103e80e3e8b7425f56ce2fd7967933177b4');
+          assert.equal(state.tasks.find(x=>x.id==='PP-0009').status,'verified');
+          assert.equal(p('artifacts/pp0010-closure/project-validation.json').valid,true);
+          copyFileSync('.pro-papa/tasks.json','artifacts/pp0010-closure/cli-generated-tasks.json');
+          copyFileSync('.pro-papa/evidence/PP-0010/cli-closure-result-2026-11-04.json','artifacts/pp0010-closure/cli-closure-result.json');
+          console.log('PP0010_OFFICIAL_CLI_CLOSURE_PASS '+JSON.stringify({
+          revision:state.revision,status:task.status,verifiedAt:task.verifiedAt,
+          reviewId:result.trustedReview.reviewId,proofCount:task.evidence.length}));
+          JS
+      - name: Retain CLI-generated ledger and verification result even if push is blocked
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pp0010-official-cli-closure-candidate
+          path: artifacts/pp0010-closure/
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Commit exact official CLI outputs on evidence-only branch; remove one-time workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse --abbrev-ref HEAD)" = "HEAD" || { echo "Expected detached checkout"; exit 1; }
+          test -f artifacts/pp0010-closure/cli-generated-tasks.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .pro-papa/tasks.json .pro-papa/evidence/PP-0010/cli-closure-result-2026-11-04.json
+          git rm .github/workflows/pp0010-cli-closure-once.yml
+          git diff --cached --name-only
+          git commit -m "[skip netlify] PP-0010: official CLI-verified evidence closure candidate (review required)"
+          gh auth setup-git
+          git push origin HEAD:refs/heads/feature/pp0010-cli-closure-20261104
+          echo "PP0010_CLOSURE_CANDIDATE_PUSHED $(git rev-parse HEAD)"

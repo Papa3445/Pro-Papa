@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0010",
+  "evidenceKind": "validation",
+  "result": "PASS",
+  "sourceCommit": "3ad46356bb68fb576874ef54f8a182de402561de",
+  "artifact": {
+    "runId": 41926580132,
+    "artifactId": 13370211094,
+    "name": "pp0010-native-host-report",
+    "zipSha256": "31e27ef7e4e8a28c9a93103c5f6e24ff80fb5ddcefd88179b18fb2d180f3032a",
+    "jsonSha256": "39d44f59403b52f05b1ffe98b7aa1fa93fbfff04aad886157ac64abcd02b89dd",
+    "source": "GitHub Actions artifact independently downloaded and ZIP digest matched provider record"
+  },
+  "savedPdf": {
+    "status": "released",
+    "sha256": "86869a8249fc77a179b63067c660c5d6d3213d57f455784ae7ecaf88d4f683f6",
+    "byteLength": 1532,
+    "pageCount": 1,
+    "hostLocalReadbackMatched": true,
+    "independentAfterGateHashMatched": true,
+    "independentPypdfRequiredTextMatched": true
+  },
+  "deniedPdf": {
+    "status": "not_released",
+    "reason": "validation_failed",
+    "publisherCalls": 0,
+    "publishedFileExists": false
+  },
+  "limitations": [
+    "Host-local readback is not provider-authenticated persistence",
+    "Supports only bounded classic-xref text-oriented PDFs; no visual or safety judgment",
+    "No deployed service, production routing, Netlify or ChatGPT-turn interception tested"
+  ]
+}
