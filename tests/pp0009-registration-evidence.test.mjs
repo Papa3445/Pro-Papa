@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {pp0007LedgerSnapshot,pp0009RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0007LedgerSnapshot,pp0009RegistrationSnapshot,pp0010RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
 
 const root=new URL('../',import.meta.url);
 const read=x=>readFileSync(new URL(x,root));
-const j=pp0009RegistrationSnapshot(JSON.parse(read('.pro-papa/tasks.json')));
+const j=pp0009RegistrationSnapshot(pp0010RegistrationSnapshot(JSON.parse(read('.pro-papa/tasks.json'))));
 const work=j.tasks.find(x=>x.id==='PP-0009');
 const sha256=b=>createHash('sha256').update(b).digest('hex');
 const blob=b=>createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');

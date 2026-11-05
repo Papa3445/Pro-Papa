@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0010",
+  "result": "PASS",
+  "source": {
+    "mergedMain": "3ad46356bb68fb576874ef54f8a182de402561de",
+    "runnerHead": "34440103e80e3e8b7425f56ce2fd7967933177b4",
+    "gateBlobSha": "56e135b1c13bcb234c7f5bb847985c4b2ec1f6ac",
+    "onlyEvidenceWorkflowAdded": true
+  },
+  "environment": {
+    "kind": "isolated-github-actions-ubuntu-runner",
+    "producer": "python-reportlab-4.4.9",
+    "validator": "real-merged-Node-host",
+    "publisher": "node-fs-exclusive-create",
+    "readback": "node-fs-reopen",
+    "independentPdfText": "python-pypdf-5.9.0",
+    "temporaryFilesRemoved": true
+  },
+  "positive": {
+    "status": "released",
+    "sha256": "86869a8249fc77a179b63067c660c5d6d3213d57f455784ae7ecaf88d4f683f6",
+    "byteLength": 1532,
+    "pageCount": 1,
+    "requiredChecks": 2,
+    "publisherCalls": 1,
+    "trustedReadbackCalls": 1,
+    "hostReadbackMatched": true,
+    "independentSavedFileHashMatched": true,
+    "independentPypdfTextMatched": true,
+    "destination": "isolated-runner-temp-only"
+  },
+  "negative": {
+    "status": "not_released",
+    "reason": "validation_failed",
+    "publisherCalls": 0,
+    "destinationExists": false,
+    "nativeProducedPdf": true
+  },
+  "limitations": [
+    "Host-local readback is not provider-authenticated persistence",
+    "Supports only bounded classic-xref text-oriented PDFs; no visual or safety judgment",
+    "No deployed service, production routing, Netlify or ChatGPT-turn interception tested"
+  ]
+}

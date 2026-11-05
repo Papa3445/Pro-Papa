@@ -1,0 +1,38 @@
+{
+  "required": [
+    "artifact",
+    "test",
+    "validation",
+    "review"
+  ],
+  "verifiedFiles": [
+    ".pro-papa/evidence/PP-0010/native-host-acceptance-2026-11-04.json",
+    ".pro-papa/evidence/PP-0010/native-host-tests-2026-11-04.json",
+    ".pro-papa/evidence/PP-0010/native-host-validation-2026-11-04.json",
+    ".pro-papa/evidence/PP-0010/independent-host-review-2026-11-04.json"
+  ],
+  "trustedReview": {
+    "provider": "github",
+    "repository": "Papa3445/Pro-Papa",
+    "pullRequest": 66,
+    "candidateSha": "34440103e80e3e8b7425f56ce2fd7967933177b4",
+    "baseRef": "main",
+    "baseSha": "3ad46356bb68fb576874ef54f8a182de402561de",
+    "verdict": "PASS",
+    "reason": "Latest independent GitHub review approved exact current head",
+    "reviewer": {
+      "login": "papa4568",
+      "id": 196889071
+    },
+    "reviewId": 5777534267,
+    "submittedAt": "2026-11-04T23:36:21Z",
+    "approvedReviewers": [
+      {
+        "login": "papa4568",
+        "id": 196889071,
+        "reviewId": 5777534267,
+        "submittedAt": "2026-11-04T23:36:21Z"
+      }
+    ]
+  }
+}

@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {pp0007LedgerSnapshot,pp0009RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0007LedgerSnapshot,pp0009RegistrationSnapshot,pp0010RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
 
 const root=new URL('../',import.meta.url);
-const bytes=readFileSync(new URL('.pro-papa/tasks.json',root));
-const ledger=JSON.parse(bytes);
+// Reconstruct the exact historical rev85 predecessor, never treat rev91 as rev85.
+const ledger=pp0010RegistrationSnapshot(JSON.parse(readFileSync(new URL('.pro-papa/tasks.json',root))));
+const bytes=Buffer.from(JSON.stringify(ledger,null,2)+'\n');
 const sha=(algorithm,b)=>createHash(algorithm).update(b).digest('hex');
 
 test('PP-0009 candidate is the exact authenticated CLI closure artifact, preserving registered proofs',()=>{
