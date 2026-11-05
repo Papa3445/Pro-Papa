@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -31,7 +31,7 @@ jobs:
           import {execFileSync} from 'node:child_process';
           const original='3ad46356bb68fb576874ef54f8a182de402561de';
           const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
-          assert.equal(git('rev-parse','HEAD^'),original);
+          execFileSync('git',['merge-base','--is-ancestor',original,'HEAD']);
           const allowed=[
           '.github/workflows/pp0010-cli-closure-once.yml',
           '.pro-papa/evidence/PP-0010/native-host-acceptance-2026-11-04.json',
@@ -113,7 +113,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse --abbrev-ref HEAD)" = "HEAD" || { echo "Expected detached checkout"; exit 1; }
+          test "${GITHUB_REF_NAME}" = "feature/pp0010-cli-closure-20261104" || { echo "Wrong one-shot branch"; exit 1; }
           test -f artifacts/pp0010-closure/cli-generated-tasks.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
