@@ -1,5 +1,7 @@
 // PP-0011: bounded, read-only numeric analysis of requester-supplied data.
-// No filesystem, network, external account access or retained raw observations.
+// No filesystem, network or account access. The input array is not echoed, but
+// summary statistics (especially small samples) can reveal individual values.
+// This is NOT a privacy-preserving aggregation: use nonsensitive inputs only.
 const fail=()=>{throw Error('Invalid bounded data-profile inputs');};
 export function profileNumericData(input) {
   try {
@@ -34,6 +36,6 @@ export function profileNumericData(input) {
     if(![sum,mean,median].every(Number.isFinite))fail();
     return {numericCount:count,missingCount:missing,sum,mean,median,
       min:sorted[0],max:sorted[count-1],
-      limitations:'Caller-supplied values only; nulls omitted; no source verification, statistical inference, external writes or raw data retained'};
+      limitations:'Not privacy-preserving: summaries can reveal individual values, especially for small samples. Use nonsensitive data only. Caller-supplied values; nulls omitted; no source verification, statistical inference or external writes'};
   }catch{fail();}
 }

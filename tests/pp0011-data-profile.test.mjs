@@ -14,7 +14,7 @@ const call=(flags,input)=>spawnSync(process.execPath,[cli,...flags],{
   env:{...process.env,GITHUB_TOKEN:'',PRO_PAPA_AUDIT_REPO:''},
 });
 
-test('PP-0011 numeric profile computes bounded real results but never returns raw inputs',()=>{
+test('PP-0011 numeric profile computes bounded results without echoing the input array',()=>{
   const result=profileNumericData({values:[2,null,3,5]});
   assert.equal(result.numericCount,3);
   assert.equal(result.missingCount,1);
@@ -24,7 +24,31 @@ test('PP-0011 numeric profile computes bounded real results but never returns ra
   assert.equal(result.min,2);
   assert.equal(result.max,5);
   assert.equal(Object.hasOwn(result,'values'),false);
+  assert.match(result.limitations,/Not privacy-preserving/);
+  assert.match(result.limitations,/small samples/);
+  assert.match(result.limitations,/nonsensitive data only/);
   assert.equal(profileNumericData({values:[5,1,2,3]}).median,2.5);
+});
+test('PP-0011 explicitly demonstrates disclosure from small-sample summary statistics',async()=>{
+  const single=profileNumericData({values:[42]});
+  assert.deepEqual([single.min,single.max,single.mean,single.median],[42,42,42,42]);
+  const pair=profileNumericData({values:[17,99]});
+  assert.deepEqual([pair.min,pair.max],[17,99]);
+  const three=profileNumericData({values:[2,7,13]});
+  assert.deepEqual([three.min,three.median,three.max],[2,7,13]);
+  for(const output of [single,pair,three]){
+    assert.equal(Object.hasOwn(output,'values'),false);
+    assert.match(output.limitations,/Not privacy-preserving/);
+    assert.match(output.limitations,/individual values/);
+    assert.match(output.limitations,/nonsensitive data only/);
+  }
+  // The actual host exposes the same warning; caller opt-in does not confer
+  // data anonymity and these results are not confidential aggregates.
+  const host=createReferenceHost({dataProfileEnabled:true});
+  const hostResult=await host.execute(request([42]));
+  assert.equal(hostResult.status,'completed');
+  assert.equal(hostResult.execution.output.min,42);
+  assert.match(hostResult.execution.output.limitations,/Not privacy-preserving/);
 });
 test('PP-0011 invalid numbers, sparse arrays, extra fields and accessors fail closed',()=>{
   const sparse=[1,,2];

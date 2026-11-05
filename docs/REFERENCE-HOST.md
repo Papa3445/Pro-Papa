@@ -77,7 +77,16 @@ Inputs contain exactly `values`: a dense array of 1–100 finite numbers or `nul
 with at least one numeric value and absolute magnitude no greater than 1 billion.
 Negative zero, NaN, Infinity, text/boolean cells, sparse arrays, accessor fields,
 oversize input and unknown fields fail closed. Output contains numeric/missing counts,
-sum, arithmetic mean, median, min, max and limitations—never the original observations.
+sum, arithmetic mean, median, min, max and limitations, without echoing the original input array.
+
+**Privacy warning:** This is **not privacy-preserving aggregation or anonymization**.
+Summary statistics may reveal individual observations: `[42]` yields `min=max=mean=median=42`,
+`[17,99]` reveals both observations via minimum and maximum, and a three-number sample
+can be reconstructed from minimum, median and maximum. Do **not** submit sensitive,
+confidential or personally identifying measurements unless a separately approved
+privacy protection is provided. The calculation's read-only/no-file-write behavior
+is not a confidentiality guarantee; output, tracing or downstream logs may retain
+summary values that expose input observations.
 No filesystem, network, provider writes or account configuration is performed.
 
 The PP-0011 smoke test invokes actual local deterministic `data.profile`, `memo.draft`,
