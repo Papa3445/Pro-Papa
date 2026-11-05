@@ -12,6 +12,30 @@ const pp0008SuccessorBlobs=Object.freeze({
   // PP-0008 preview-only test fixture correction; immutable historical pin stays intact.
   'tests/mcp-web.test.mjs':'78066d454c8ba2f92bf6e7db37dbbe7745568eed'
 });
+// An exact PP-0011 source pin is allowed only after independent review of this
+// PR. Restore the original PP-0008 source byte-for-byte to catch accidental
+// changes to the prior security, audit, OAuth or release logic.
+const pp0011ReferenceHostBlob='d58e955afefca39dc627734576a7172bd08dec1f';
+function historicReferenceHostBlob(content) {
+  let previous=content.toString('utf8');
+  const revert=[
+    ["import { profileNumericData } from './data-profile.mjs';\n",""],
+    ["  artifactValidationEnabled = false, dataProfileEnabled = false,\n",
+     "  artifactValidationEnabled = false,\n"],
+    ["      typeof artifactValidationEnabled !== 'boolean' ||\n      typeof dataProfileEnabled !== 'boolean') fail();",
+     "      typeof artifactValidationEnabled !== 'boolean') fail();"],
+    ["  if (dataProfileEnabled) grants.push('data.profile');\n",""],
+    ["    'data.profile': async ({ inputs }) => ({\n      ok: true, output: profileNumericData(inputs),\n      provenance: {provider:'local-node',operation:'data.profile'},\n    }),\n",""],
+  ];
+  for(const [added,original] of revert){
+    const index=previous.indexOf(added);
+    assert.ok(index>=0 && previous.indexOf(added,index+1)<0,
+      'Expected exactly one PP-0011-only change to reference host');
+    previous=previous.slice(0,index)+original+previous.slice(index+added.length);
+  }
+  const restored=Buffer.from(previous,'utf8');
+  return createHash('sha1').update('blob '+restored.length+'\x00').update(restored).digest('hex');
+}
 const expectedIds=['metadata-200','get-mcp-405','no-bearer-tools-call-denied',
   'invalid-bearer-tools-call-denied','cross-origin-403'];
 
@@ -27,8 +51,14 @@ test('007-C pins each applicable live-probe/OAuth source blob to audited main',(
     const content=readFileSync(new URL('../'+pin.path,import.meta.url));
     const blob=createHash('sha1').update('blob '+content.length+'\x00').update(content).digest('hex');
     if(blob===pin.gitBlobSha)continue; // Historical original source still unchanged.
-    assert.equal(blob,pp0008SuccessorBlobs[pin.path],
-      'Unreviewed PP-0008 mutation to PP-0007 security-critical source: '+pin.path);
+    const permitted=pin.path==='src/reference-host.mjs' ?
+      [pp0008SuccessorBlobs[pin.path],pp0011ReferenceHostBlob] :
+      [pp0008SuccessorBlobs[pin.path]];
+    assert.ok(permitted.includes(blob),
+      'Unreviewed PP-0007/8/11 mutation to security-critical source: '+pin.path);
+    if(pin.path==='src/reference-host.mjs'&&blob===pp0011ReferenceHostBlob)
+      assert.equal(historicReferenceHostBlob(content),pp0008SuccessorBlobs[pin.path],
+        'PP-0011 must preserve exact prior reference-host security logic');
     const contentText=content.toString('utf8');
     // Only exact, narrow PP-0007/PP-0008 successors are recognized here:
     // implementation capabilities and test-only preview environment isolation.
