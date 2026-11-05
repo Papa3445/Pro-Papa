@@ -8,8 +8,9 @@ import { blockedExecutionTrace, verifyReleasedExecution } from '../src/execution
 function parse(args) {
   const allowed = new Set(['--github-read', '--github-repo', '--audit-required', '--enforce-trace',
     '--durable', '--project', '--approve-create-issue-id', '--issue-repository',
-    '--issue-payload-sha256']);
-  const boolean = new Set(['--github-read', '--audit-required', '--durable', '--enforce-trace']);
+    '--issue-payload-sha256','--data-profile']);
+  const boolean = new Set(['--github-read', '--audit-required', '--durable', '--enforce-trace',
+    '--data-profile']);
   const result = {};
   for (let i = 0; i < args.length; i++) {
     const key = args[i];
@@ -60,6 +61,7 @@ export async function main(argv = process.argv.slice(2),
   const reference = createReferenceHost({
     allowedRepositories: repos,
     githubResearch: flags['--github-read'] === true,
+    dataProfileEnabled: flags['--data-profile'] === true,
     approvedIssue: flags['--approve-create-issue-id'] ? {
       requestId: flags['--approve-create-issue-id'],
       repository: flags['--issue-repository'],
