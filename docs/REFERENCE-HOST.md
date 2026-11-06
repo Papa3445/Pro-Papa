@@ -61,3 +61,38 @@ This is a reference **executable path** for external hosts that explicitly invok
 The required **successful** native production smoke was executed using a temporary GitHub Actions workflow in the separate private audit repository (not the public framework repo): [private Actions run 39704656986](https://github.com/Papa3445/Pro-Papa-Audit/actions/runs/39704656986). That workflow checked out reference-host source commit `a3f6e731b26bfb71379da97dd27df391afafe377` and supplied its own repo-scoped write-capable ephemeral `GITHUB_TOKEN` only as a runtime environment secret. The real `--audit-required` host created and read back the minimal [private receipt at pinned commit](https://github.com/Papa3445/Pro-Papa-Audit/blob/84fe6dd9186c4d24ec19d9ca32e90d0126469e01/usage-receipts/2026/10/d4a60c7e-8a60-4387-b554-c91acd711220.json), returned `audit.status:confirmed` and **then** completed `math.sum([9,8,4]) = 21`. The private repo's visibility, metadata-only receipt shape and immutable Git blob were independently verified. The disposable test workflow was deleted from its private branch afterward; none was merged into its main branch.
 
 This complements—not replaces—the negative native smoke where access to the private store was unavailable and the host returned `audit_failed` without invoking math. More detail is in `.pro-papa/evidence/PP-0006/private-audit-host-positive-smoke.json`. A reviewer without authorization for the private audit repo can inspect this public evidence summary but cannot directly read its private receipt.
+
+## PP-0011 increment: opt-in bounded local numeric profiling
+
+The standalone reference host supports `data.profile` as a read-only **development capability**.
+It is disabled by default. Only the trusted operator flag `--data-profile`
+or the trusted JavaScript host option `dataProfileEnabled: true` grants the capability.
+Untrusted request text, JSON input flags and requested permissions cannot grant it.
+
+```sh
+printf '%s\n' '{"objective":"Summarize sample data","capability":"data.profile","inputs":{"values":[2,null,3,5]}}' | node bin/reference-host.mjs --data-profile
+```
+
+Inputs contain exactly `values`: a dense array of 1–100 finite numbers or `null` missing values,
+with at least one numeric value and absolute magnitude no greater than 1 billion.
+Negative zero, NaN, Infinity, text/boolean cells, sparse arrays, accessor fields,
+oversize input and unknown fields fail closed. Output contains numeric/missing counts,
+sum, arithmetic mean, median, min, max and limitations, without echoing the original input array.
+
+**Privacy warning:** This is **not privacy-preserving aggregation or anonymization**.
+Summary statistics may reveal individual observations: `[42]` yields `min=max=mean=median=42`,
+`[17,99]` reveals both observations via minimum and maximum, and a three-number sample
+can be reconstructed from minimum, median and maximum. Do **not** submit sensitive,
+confidential or personally identifying measurements unless a separately approved
+privacy protection is provided. The calculation's read-only/no-file-write behavior
+is not a confidentiality guarantee; output, tracing or downstream logs may retain
+summary values that expose input observations.
+No filesystem, network, provider writes or account configuration is performed.
+
+The PP-0011 smoke test invokes actual local deterministic `data.profile`, `memo.draft`,
+`plan.week` and `code.iso-date` handlers and verifies denied research without a host allowlist
+and denied external effects. These tests are **not** real GitHub sourced research,
+native ChatGPT content generation, qualitative grading, user acceptance, production
+rollout or verified distributed rollback. The PP-0011 milestone requires further
+source-pinned multi-domain outcomes, owner quality acceptance, permission/rollback
+evidence, full CI and genuinely independent review before closure.
