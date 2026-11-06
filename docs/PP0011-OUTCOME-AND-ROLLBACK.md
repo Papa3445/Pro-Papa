@@ -31,18 +31,20 @@ The staging execution is an externally observed single-tool result; it was **not
 | Sourced research | One explicit staging GitHub metadata lookup with reported provenance | Comprehensive sourced investigation, independent source assessment and persistent provider log |
 | Failure recovery | Safe stateless retry after invalid data | Recovery from uncertain externally applied writes or actual rollback |
 | Permissions | Trusted host default-deny and separate opt-in, no authorized external write | Production-scoped permission policy and effects under live traffic |
-| Owner acceptance | No new operator approval collected for these samples | Acceptance of the content, practical success, corrections and missing use cases |
+| Owner acceptance | Actual reference-host outputs have not been operator-graded in this harness; any feedback on separately presented examples is outside this public source | Acceptance of the reference-host content, practical success, corrections and missing use cases |
 | Comparative baseline | None in this increment | Paired direct-assistant results, latency/token overhead, statistical superiority or blinded scoring |
-| Deployment/rollback | No deployment, connection changes or production smoke | Production rollback with actual provider readback and post-rollback health |
+| Deployment/rollback | Fresh-process local host opt-out/re-enablement exercised in regression (no external effects) | Production rollback with actual provider readback, in-flight effects and post-rollback health |
 
 Record absent outcome quality, elapsed time, tokens and human corrections as `null` rather than filling in estimates. Original PP-0011 acceptance also requires an independent review on the exact future integrated evidence head.
 
 ## Safe rollout and rollback boundary
 
-`data.profile` exists only in the standalone reference host and is disabled unless the trusted operator sets `dataProfileEnabled:true` or `--data-profile`. Request-supplied grants do not enable it. Reverting the local operator flag, restarting that host and confirming a new request is denied is the **proposed local opt-out**, not an executed production rollback. Do not represent a Git revert, build stop, or configuration screenshot as proof of successful rollback of deployed services.
+`data.profile` exists only in the standalone reference host and is disabled unless the trusted operator sets `dataProfileEnabled:true` or `--data-profile`. Request-supplied grants do not enable it. The regression `tests/pp0011-local-acceptance.test.mjs` now **executes a local opt-out** in four separate standalone CLI processes: (1) trusted `--data-profile` allows the sample computation; (2) starting a new process without the flag returns `denied` / `host_permission_required` with no released execution; (3) forged request-supplied grant fields cannot restore access; (4) a newly explicitly enabled host allows the sample again. The test uses `--enforce-trace`, suppresses external credentials and requires an empty stderr. This proves only per-process trusted flag opt-out and reenablement, **not** cancellation of in-flight work, distributed service rollback, production route changes or external provider readback. Do not represent a Git revert, build stop, or configuration screenshot as proof of successful rollback of deployed services.
 
 For any future production rollout, separately authorize: the target host and route; live positive and negative cases; exact permission scope; actual source SHA and deployed readback; a tested rollback and health recovery; suitable privacy controls for sensitive observations; and independent user acceptance. PP-0013's credential-sensitive production tests require their own authorization. Do not modify Netlify/Vercel/Auth0 routing, billing, authentication, connectors, or deployment settings for this smoke.
 
 ## Review/closure requirements
 
 Review the actual CLI/harness outputs and exact-head CI, and challenge the false-equivalence risks between local deterministic smoke, staging MCP result, native ChatGPT capabilities and user outcomes. This document does not alter the canonical task ledger, count simulated output as human acceptance, or authorize marking PP-0011 verified. A human quality decision and genuine provider-backed rollback/permission scope remain open.
+
+**Operator-feedback privacy boundary:** Limited subjective acceptance of separately presented chat examples, if recorded, belongs in a private operator-controlled evidence record. It is not automatically acceptance of the reference host's `memo.draft` or `plan.week` output. This public repository contains no conversation text, operator identity, or raw chat artifacts, and PP-0011 remains pending.
