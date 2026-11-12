@@ -19,6 +19,7 @@ const CAPABILITIES = Object.freeze({
   'code.iso-date': Object.freeze({ profile: 'software', effect: 'read' }),
   general: Object.freeze({ profile: 'general', effect: 'read' }),
   research: Object.freeze({ profile: 'research', effect: 'read' }),
+  'research.issue': Object.freeze({ profile: 'research', effect: 'read' }),
   software: Object.freeze({ profile: 'software', effect: 'external' }),
   document: Object.freeze({ profile: 'document', effect: 'external' }),
   data: Object.freeze({ profile: 'data', effect: 'read' }),
