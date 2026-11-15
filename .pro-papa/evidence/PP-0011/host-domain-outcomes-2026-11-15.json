@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0011",
+  "sourceRepository": "Papa3445/Pro-Papa",
+  "integratedProtectedMain": "5d84f80cb36509fa20d50f87551461bba2804a79",
+  "recordedDate": "2026-11-15",
+  "metadataOnly": true,
+  "evidenceKind": "artifact",
+  "result": "pass",
+  "scope": "Only the five demonstrated bounded standalone reference-host capabilities; no general-purpose agent claim.",
+  "hostDomains": [
+    {
+      "domain": "document",
+      "capability": "memo.draft",
+      "proof": "Actual trace-released standalone host invocation, fixed-template draft; not externally fact checked or a native ChatGPT document."
+    },
+    {
+      "domain": "planning",
+      "capability": "plan.week",
+      "proof": "Actual trace-released standalone host invocation, sequential draft; no calendar writes."
+    },
+    {
+      "domain": "data",
+      "capability": "data.profile",
+      "proof": "Actual trace-released numeric summary with privacy warning; not anonymization."
+    },
+    {
+      "domain": "software",
+      "capability": "code.iso-date",
+      "proof": "Actual trace-released tested fixed date parser, not arbitrary user-supplied source execution."
+    }
+  ],
+  "fourDomainEvidence": {
+    "pr": 71,
+    "reviewedHead": "17509c975e833edbc82f6565fa8d840b5e1e77ea",
+    "reviewUrl": "https://github.com/Papa3445/Pro-Papa/pull/71#pullrequestreview-5841508074",
+    "actualHostMarker": "PP0011_ACTUAL_HOST_OPERATOR_SAMPLES",
+    "ciRuns": [
+      42273696242,
+      42273917292
+    ],
+    "privateLimitedOperatorAcceptance": {
+      "repository": "Papa3445/Pro-Papa-Audit",
+      "path": "operator-acceptance/PP-0011/2026-11-08-816a2e7c-7233-4ea2-b995-5a8fce3db64e.json",
+      "gitBlobSha": "0d7705be8260faaf353dfa4ee4220b583a6c518f"
+    }
+  },
+  "research": {
+    "domain": "sourced-research",
+    "capability": "research.issue",
+    "hostType": "standalone-reference-host",
+    "liveReadRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/43260254447",
+    "issueSource": "https://github.com/Papa3445/Pro-Papa/issues/37",
+    "sourceCommit": "8f0613527cd83925da6d9262fc00f97de28126fe",
+    "releasedExecutionSha256": "117891d9b53daad0a9f37397a514a8421458b7f2483c79cc74cbbcbc6826667d",
+    "sourceReconciled": true,
+    "excerptCharacters": 1200,
+    "issueBodyCharactersAtObservation": 5958,
+    "truncated": true,
+    "ownerAcceptance": {
+      "repository": "Papa3445/Pro-Papa-Audit",
+      "path": "operator-acceptance/PP-0011/2026-11-15-f6c4d284-d69d-43c3-9b25-a1e017e21d53.json",
+      "gitBlobSha": "51a9a6a54d574172b8d6347926cd2edb54b71b3c",
+      "scope": "Bounded source lookup and opening-text preview only"
+    }
+  },
+  "limitations": [
+    "Subjective owner acceptance is scoped to the actual demonstrated outputs, not complete research synthesis or unbounded user tasks.",
+    "Private owner metadata is separately held by the operator; do not copy raw conversation or private artifacts into this public evidence.",
+    "No source URL, test, audit receipt or host trace by itself proves semantic correctness of all source claims.",
+    "Native ChatGPT-created artifacts and standalone MCP outputs are not equivalent."
+  ]
+}
