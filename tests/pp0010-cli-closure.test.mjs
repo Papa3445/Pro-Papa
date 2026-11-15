@@ -4,13 +4,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {pp0007LedgerSnapshot,pp0010RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0007LedgerSnapshot,pp0010RegistrationSnapshot,pp0011RegistrationSnapshot} from './pp0008-historical-pin-helper.mjs';
 const root=new URL('../',import.meta.url);
 const read=x=>readFileSync(new URL(x,root));
-const bytes=read('.pro-papa/tasks.json'),ledger=JSON.parse(bytes);
+const currentBytes=read('.pro-papa/tasks.json');
+const ledger=pp0011RegistrationSnapshot(JSON.parse(currentBytes));
+const bytes=Buffer.from(JSON.stringify(ledger,null,2)+'\n');
 const hash=(algorithm,b)=>createHash(algorithm).update(b).digest('hex');
 const blob=b=>createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 test('PP-0010 exact CLI successor preserves all four checked proofs and historic baselines',()=>{
+  assert.equal(blob(currentBytes),'37a35059c4a426ae7f0d23997bae40b961df08aa');
   assert.equal(blob(bytes),'b2a886e3c26ad35775a38c634a61390b7f2b2a9a');
   assert.equal(ledger.revision,91);
   const task=ledger.tasks.find(x=>x.id==='PP-0010');
