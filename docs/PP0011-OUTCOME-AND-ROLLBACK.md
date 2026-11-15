@@ -49,7 +49,7 @@ For any future production rollout, separately authorize: the target host and rou
 
 Review the actual CLI/harness outputs and exact-head CI, and challenge the false-equivalence risks between local deterministic smoke, staging MCP result, native ChatGPT capabilities and user outcomes. This document does not alter the canonical task ledger, count simulated output as human acceptance, or authorize marking PP-0011 verified. Limited human quality decisions on four actual host samples and the bounded issue preview were subsequently recorded privately; broader quality remains unproven. Live production permission verification and actual provider-backed rollback belong to PP-0013.
 
-**Operator-feedback privacy boundary:** Limited subjective acceptance of separately presented chat examples, if recorded, belongs in a private operator-controlled evidence record. It is not automatically acceptance of the reference host's `memo.draft` or `plan.week` output. This public repository contains no conversation text, operator identity, or raw chat artifacts, and PP-0011 remains `in_progress`, not verified.
+**Operator-feedback privacy boundary:** Earlier acceptance of chat/source-module examples was not transferable to the reference host's `memo.draft` or `plan.week` output. A later, **separately recorded** limited acceptance explicitly covers the four actual standalone host samples and the issue #37 opening preview, with only metadata identifiers referenced publicly. This repository contains no raw conversation, operator identity, credentials or private host artifacts. PP-0011 remains `in_progress`, not verified.
 
 ## Reproducible review of *actual* reference-host artifacts
 
