@@ -1,0 +1,19 @@
+name: PP-0011 Live Issue Research (nondeploying)
+on:
+  push:
+    branches:
+      - feature/pp0011-live-issue-smoke-20261112
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live_issue_read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read public issue with real reference-host CLI
+        run: node bin/pp0011-live-issue-smoke.mjs
