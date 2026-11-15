@@ -17,7 +17,43 @@ const sha=x=>{
 // Git-blob pin fails closed on ANY unreviewed task or proof mutation.
 const PP0010_CLOSED_BLOB='b2a886e3c26ad35775a38c634a61390b7f2b2a9a';
 const PP0009_CLOSED_BLOB='d0c9c9a728d2618d5fa197802405fab3e81e6287';
+// PP-0011 evidence intake: exact, currently unmerged rev92 successor only.
+// Verify the complete byte identity before undoing exclusively the PP-0011
+// start/proof registration. Historical PP-0007 through PP-0010 pins stay exact.
+const PP0011_ACTIVE_BLOB='37a35059c4a426ae7f0d23997bae40b961df08aa';
+export function pp0011RegistrationSnapshot(ledger){
+  if(ledger.revision!==92)return ledger;
+  if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0011_ACTIVE_BLOB)
+    throw Error('Unknown PP-0011 evidence intake transition');
+  const prior=structuredClone(ledger);
+  const task=prior.tasks.find(x=>x.id==='PP-0011');
+  const specs=[
+    ['artifact','.pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json','976ce48cadacf074298815a308573c907ace7d899d4390a3d649c3fb5eca850f','chatgpt-implementation'],
+    ['validation','.pro-papa/evidence/PP-0011/host-validation-2026-11-15.json','aed66357cce6b6d86c064fd95a14d41f445a6451b6cb0a34bda907f800fd36c8','chatgpt-implementation'],
+    ['review','.pro-papa/evidence/PP-0011/independent-scope-reviews-2026-11-15.json','05356d4d64edcea051127d8986b303f45b7d86be5a1e81f41b7693f3944d24f9','papa4568'],
+  ];
+  if(prior.tasks.length!==13||task?.status!=='in_progress'||
+    task.owner!=='chatgpt-implementation'||task.blockedReason!==null||
+    task.requiresTrustedReview!==true||
+    task.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
+    task.reviewTarget?.pullRequest!==74||
+    task.reviewTarget?.baseRef!=='main'||
+    task.reviewTarget?.baseSha!=='5d84f80cb36509fa20d50f87551461bba2804a79'||
+    task.evidence?.length!==specs.length||task.evidence.some((p,i)=>
+      p.kind!==specs[i][0]||p.path!==specs[i][1]||
+      p.sha256!==specs[i][2]||p.actor!==specs[i][3]||
+      p.result!=='pass'||typeof p.note!=='string'||!p.note.trim()||
+      !Number.isFinite(Date.parse(p.recordedAt))))
+    throw Error('Unknown PP-0011 evidence fields');
+  task.status='pending';task.owner=null;task.evidence=[];
+  delete task.requiresTrustedReview;delete task.reviewTarget;
+  prior.revision=91;
+  if(sha(JSON.stringify(prior,null,2)+'\n')!==PP0010_CLOSED_BLOB)
+    throw Error('PP-0011 changed historical PP-0010 protected ledger');
+  return prior;
+}
 export function pp0010RegistrationSnapshot(ledger){
+  if(ledger.revision===92)ledger=pp0011RegistrationSnapshot(ledger);
   if(ledger.revision!==91)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0010_CLOSED_BLOB)
     throw Error('Unknown PP-0010 closure transition');
@@ -57,6 +93,7 @@ export function pp0009RegistrationSnapshot(ledger){
   return prior;
 }
 export function pp0007LedgerSnapshot(ledger){
+  if(ledger.revision===92)return pp0007LedgerSnapshot(pp0011RegistrationSnapshot(ledger));
   if(ledger.revision===91)return pp0007LedgerSnapshot(pp0010RegistrationSnapshot(ledger));
   if(ledger.revision===85)return pp0007LedgerSnapshot(pp0009RegistrationSnapshot(ledger));
   if(ledger.revision===84){
