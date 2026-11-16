@@ -56,3 +56,20 @@ test('PP-0011 intake historical normalization rejects task, proof and authorizat
   assert.throws(()=>pp0007LedgerSnapshot(tampered),/Unknown PP-0011 evidence intake/);
  }
 });
+
+test('PP-0011 outcome document matches canonical active status and bounded acceptance',()=>{
+ const doc=read('docs/PP0011-OUTCOME-AND-ROLLBACK.md').toString('utf8');
+ const work=current.tasks.find(x=>x.id==='PP-0011');
+ assert.equal(current.revision,92);
+ assert.equal(work.status,'in_progress');
+ assert.match(doc,/revision 92/);
+ assert.match(doc,/in_progress/);
+ assert.match(doc,/APPROVE #5913367526/);
+ assert.match(doc,/PR #74/);
+ assert.match(doc,/issue #37/);
+ assert.match(doc,/opening-text preview/);
+ assert.match(doc,/PP-0012 owns the original paired benchmark/);
+ assert.match(doc,/PP-0013 owns deferred credential-sensitive production/);
+ assert.doesNotMatch(doc,/PP-0011 (?:remains|stays) pending/i);
+ assert.doesNotMatch(doc,/ledger is (?:at )?revision 91 with PP-0011/i);
+});
