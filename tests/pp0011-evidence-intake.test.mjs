@@ -2,13 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {pp0011RegistrationSnapshot,pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0011RegistrationSnapshot,pp0011ClosureSnapshot,pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
 const base=new URL('../',import.meta.url);
 const read=path=>readFileSync(new URL(path,base));
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const gitBlob=b=>createHash('sha1').update('blob '+b.length+'\x00').update(b).digest('hex');
 const original=read('.pro-papa/tasks.json');
-const current=JSON.parse(original);
+const candidate=JSON.parse(original);
+const current=pp0011ClosureSnapshot(candidate);
+const intakeBytes=Buffer.from(JSON.stringify(current,null,2)+'\n');
 const spec=[
 ['artifact','.pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json','976ce48cadacf074298815a308573c907ace7d899d4390a3d649c3fb5eca850f'],
 ['validation','.pro-papa/evidence/PP-0011/host-validation-2026-11-15.json','aed66357cce6b6d86c064fd95a14d41f445a6451b6cb0a34bda907f800fd36c8'],
@@ -16,7 +18,8 @@ const spec=[
 ];
 test('PP-0011 exact source-pinned intake changes only its own task; historical ledger fully restored',()=>{
  assert.equal(current.revision,92);
- assert.equal(gitBlob(original),'37a35059c4a426ae7f0d23997bae40b961df08aa');
+ assert.equal(gitBlob(original),'3f2a2e6f60f25f07c7171a5e90f92c639796ea0d');
+ assert.equal(gitBlob(intakeBytes),'37a35059c4a426ae7f0d23997bae40b961df08aa');
  const work=current.tasks.find(x=>x.id==='PP-0011');
  assert.equal(work.status,'in_progress');
  assert.equal(work.owner,'chatgpt-implementation');
