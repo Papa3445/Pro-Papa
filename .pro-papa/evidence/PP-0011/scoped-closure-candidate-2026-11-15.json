@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0011",
+  "kind": "reviewable_scoped_closure_candidate",
+  "status": "proposed_branch_only",
+  "metadataOnly": true,
+  "base": {
+    "repository": "Papa3445/Pro-Papa",
+    "protectedMain": "baad35b96a8f48768a6b5682d2c9b145a69e7e43",
+    "revision": 92,
+    "taskStatus": "in_progress",
+    "taskLedgerGitBlob": "37a35059c4a426ae7f0d23997bae40b961df08aa"
+  },
+  "candidate": {
+    "revision": 93,
+    "taskStatus": "verified",
+    "taskVerifiedAt": "2026-11-17T02:35:12.473Z",
+    "taskLedgerGitBlob": "9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff",
+    "onlyCanonicalDelta": "Authenticated GitHub Actions CLI close from exact revision-92 source, updating revision 92 to 93; PP-0011 status in_progress to verified with exact CLI verifiedAt; branch only",
+    "merged": false
+  },
+  "registeredEvidence": [
+    {
+      "kind": "artifact",
+      "path": ".pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json",
+      "sha256": "976ce48cadacf074298815a308573c907ace7d899d4390a3d649c3fb5eca850f"
+    },
+    {
+      "kind": "validation",
+      "path": ".pro-papa/evidence/PP-0011/host-validation-2026-11-15.json",
+      "sha256": "aed66357cce6b6d86c064fd95a14d41f445a6451b6cb0a34bda907f800fd36c8"
+    },
+    {
+      "kind": "review",
+      "path": ".pro-papa/evidence/PP-0011/independent-scope-reviews-2026-11-15.json",
+      "sha256": "05356d4d64edcea051127d8986b303f45b7d86be5a1e81f41b7693f3944d24f9"
+    }
+  ],
+  "independentGitHubSource": {
+    "priorEvidenceIntakePR": 74,
+    "priorReviewedHead": "ca42ab27b5147ed169b7b3fc742fc3ce3b554433",
+    "priorApprovedReviewId": 5913367526,
+    "priorReviewer": "papa4568",
+    "priorReviewBase": "5d84f80cb36509fa20d50f87551461bba2804a79",
+    "correctionPR": 75,
+    "correctionReviewedHead": "29055738dcd3da77cfbd2adedf37e8193fac3adf",
+    "correctionApprovedReviewId": 5913468245,
+    "currentProtectedMainCheckRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/43792092100",
+    "node22Tests": 349,
+    "node26Tests": 349,
+    "closureCandidateIndependentReview": "prior_changes_requested_new_head_review_pending"
+  },
+  "operatorAcceptance": {
+    "fourRealHostSamples": {
+      "privateRepository": "Papa3445/Pro-Papa-Audit",
+      "path": "operator-acceptance/PP-0011/2026-11-08-816a2e7c-7233-4ea2-b995-5a8fce3db64e.json",
+      "blobSha": "0d7705be8260faaf353dfa4ee4220b583a6c518f",
+      "scope": "Synthetic, bounded standalone host outputs: memo.draft, plan.week, data.profile and code.iso-date"
+    },
+    "publicIssuePreview": {
+      "privateRepository": "Papa3445/Pro-Papa-Audit",
+      "path": "operator-acceptance/PP-0011/2026-11-15-f6c4d284-d69d-43c3-9b25-a1e017e21d53.json",
+      "blobSha": "51a9a6a54d574172b8d6347926cd2edb54b71b3c",
+      "scope": "Public issue #37 source identity and first 1,200 characters only; truncated at word boundary unknown"
+    },
+    "decision": "Operator explicitly accepts bounded evidence as sufficient to PREPARE candidate, not to merge, deploy, or mark verified on main"
+  },
+  "executionTruth": {
+    "genuineLocalCliCloseRun": false,
+    "genuineLiveTokenBackedCliCloseRun": true,
+    "githubReviewReadUsingConnectedGitHubProvider": true,
+    "providerAuthenticatedApprovalVerified": true,
+    "limitation": "A real node bin/pro-papa.mjs close --id PP-0011 ran to completion in a nonproduction GitHub Actions runner after restoring the exact protected-main rev92 task ledger. GitHub Actions supplied a short-lived read-only GitHub token, never exposed in this file. The returned state blob and verifiedAt below exactly match the branch-only proposal. This is not a production release, current-head closure PR approval, or authorization to merge."
+  },
+  "excludedClaims": [
+    "No comprehensive research synthesis",
+    "No broad host/ChatGPT equivalence",
+    "No benchmark superiority or measured provider tokens",
+    "No production/staging capability rollout",
+    "No live production permission/JWT assurance",
+    "No actual provider rollback",
+    "No authorization to merge",
+    "No authorization to mark PP-0011 verified on protected main"
+  ],
+  "deferred": {
+    "PP0012": "Seven original cross-domain cases and matched direct assistant baseline",
+    "PP0013": "Credential-sensitive production JWT/JWKS/distributed limits and real rollback"
+  },
+  "permissions": {
+    "netlifyInvoked": false,
+    "deployAuthorized": false,
+    "productionAuthorizationChanges": false,
+    "mainChangedByThisCandidate": false
+  },
+  "cliProof": {
+    "status": "completed",
+    "source": "GitHub Actions nondeploying push workflow using ephemeral host-managed token with contents:read and pull-requests:read",
+    "runId": 44004065672,
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/44004065672",
+    "jobId": 133774955029,
+    "jobUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/44004065672/job/133774955029",
+    "runHead": "b11d0e2e24e0968f73b2c8338585e364000a25b9",
+    "restoredOriginalLedgerGitBlob": "37a35059c4a426ae7f0d23997bae40b961df08aa",
+    "command": "node bin/pro-papa.mjs close --id PP-0011 --root .",
+    "reviewId": 5913367526,
+    "reviewer": "papa4568",
+    "reviewedHead": "ca42ab27b5147ed169b7b3fc742fc3ce3b554433",
+    "pinnedBase": "5d84f80cb36509fa20d50f87551461bba2804a79",
+    "verifiedAt": "2026-11-17T02:35:12.473Z",
+    "ledgerGitBlob": "9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff",
+    "verifiedEvidenceFiles": [
+      ".pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json",
+      ".pro-papa/evidence/PP-0011/host-validation-2026-11-15.json",
+      ".pro-papa/evidence/PP-0011/independent-scope-reviews-2026-11-15.json"
+    ],
+    "providerBacked": true,
+    "noProductionChanges": true,
+    "tokenExposed": false,
+    "tokenPersisted": false,
+    "boundary": "Workflow only modified an ephemeral checkout; repository on protected main is still rev92, status in_progress. Replaced branch-only proposal reproduces exactly real CLI output, not a simulation. Workflow removed from final candidate diff after recording source-pinned run."
+  }
+}

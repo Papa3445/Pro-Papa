@@ -29,7 +29,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
   const bytes=readFileSync(new URL('.pro-papa/tasks.json',root));
   return createHash('sha1').update('blob '+bytes.length+'\x00').update(bytes).digest('hex');
  })();
- const successor=[77,78,79,80,84,85,91,92].includes(taskLedger.revision)?pp0007LedgerSnapshot(taskLedger).isSuccessor:false;
+ const successor=[77,78,79,80,84,85,91,92,93].includes(taskLedger.revision)?pp0007LedgerSnapshot(taskLedger).isSuccessor:false;
  const compat=m.exactLedgerCompatibility;
  assert.deepEqual(compat.addedFutureTaskIds,['PP-0008','PP-0009','PP-0010','PP-0011']);
  assert.ok([compat.historicalMainBlob,compat.separateApprovedProposedBlob,exactApplicationLedger,evidenceLedger,finalCloseoutLedger].includes(ledgerSha)||successor,
@@ -48,7 +48,7 @@ test('007-F reuses unchanged source task ledger, acceptance and original seven-c
       (taskLedger.revision>=79?'verified':'in_progress'):
       successor&&x.id==='PP-0009'&&taskLedger.revision>=80?(taskLedger.revision>=85?'verified':'in_progress'):
       successor&&x.id==='PP-0010'&&taskLedger.revision>=91?'verified':
-      successor&&x.id==='PP-0011'&&taskLedger.revision>=92?'in_progress':'pending');
+      successor&&x.id==='PP-0011'&&taskLedger.revision>=92?(taskLedger.revision>=93?'verified':'in_progress'):'pending');
      assert.deepEqual(x.dependsOn,['PP-0007']);
    }
  }
