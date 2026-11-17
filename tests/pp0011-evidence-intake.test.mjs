@@ -18,7 +18,7 @@ const spec=[
 ];
 test('PP-0011 exact source-pinned intake changes only its own task; historical ledger fully restored',()=>{
  assert.equal(current.revision,92);
- assert.equal(gitBlob(original),'3f2a2e6f60f25f07c7171a5e90f92c639796ea0d');
+ assert.equal(gitBlob(original),'9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff');
  assert.equal(gitBlob(intakeBytes),'37a35059c4a426ae7f0d23997bae40b961df08aa');
  const work=current.tasks.find(x=>x.id==='PP-0011');
  assert.equal(work.status,'in_progress');

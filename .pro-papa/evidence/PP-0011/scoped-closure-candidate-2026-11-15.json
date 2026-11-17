@@ -14,9 +14,9 @@
   "candidate": {
     "revision": 93,
     "taskStatus": "verified",
-    "taskVerifiedAt": "2026-11-16T03:25:42.014Z",
-    "taskLedgerGitBlob": "3f2a2e6f60f25f07c7171a5e90f92c639796ea0d",
-    "onlyCanonicalDelta": "revision 92 to 93; PP-0011 status in_progress to verified and verifiedAt added",
+    "taskVerifiedAt": "2026-11-17T02:35:12.473Z",
+    "taskLedgerGitBlob": "9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff",
+    "onlyCanonicalDelta": "Authenticated GitHub Actions CLI close from exact revision-92 source, updating revision 92 to 93; PP-0011 status in_progress to verified with exact CLI verifiedAt; branch only",
     "merged": false
   },
   "registeredEvidence": [
@@ -48,7 +48,7 @@
     "currentProtectedMainCheckRun": "https://github.com/Papa3445/Pro-Papa/actions/runs/43792092100",
     "node22Tests": 349,
     "node26Tests": 349,
-    "closureCandidateIndependentReview": "pending_on_new_PR"
+    "closureCandidateIndependentReview": "prior_changes_requested_new_head_review_pending"
   },
   "operatorAcceptance": {
     "fourRealHostSamples": {
@@ -67,10 +67,10 @@
   },
   "executionTruth": {
     "genuineLocalCliCloseRun": false,
-    "genuineLiveTokenBackedCliCloseRun": false,
+    "genuineLiveTokenBackedCliCloseRun": true,
     "githubReviewReadUsingConnectedGitHubProvider": true,
     "providerAuthenticatedApprovalVerified": true,
-    "limitation": "The branch-only proposed status is generated from exact source-ledger state and mechanically checked by targeted tests; this record must not be presented as output from node bin/pro-papa.mjs close. A live token-backed CLI close invocation has not occurred."
+    "limitation": "A real node bin/pro-papa.mjs close --id PP-0011 ran to completion in a nonproduction GitHub Actions runner after restoring the exact protected-main rev92 task ledger. GitHub Actions supplied a short-lived read-only GitHub token, never exposed in this file. The returned state blob and verifiedAt below exactly match the branch-only proposal. This is not a production release, current-head closure PR approval, or authorization to merge."
   },
   "excludedClaims": [
     "No comprehensive research synthesis",
@@ -91,5 +91,32 @@
     "deployAuthorized": false,
     "productionAuthorizationChanges": false,
     "mainChangedByThisCandidate": false
+  },
+  "cliProof": {
+    "status": "completed",
+    "source": "GitHub Actions nondeploying push workflow using ephemeral host-managed token with contents:read and pull-requests:read",
+    "runId": 44004065672,
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/44004065672",
+    "jobId": 133774955029,
+    "jobUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/44004065672/job/133774955029",
+    "runHead": "b11d0e2e24e0968f73b2c8338585e364000a25b9",
+    "restoredOriginalLedgerGitBlob": "37a35059c4a426ae7f0d23997bae40b961df08aa",
+    "command": "node bin/pro-papa.mjs close --id PP-0011 --root .",
+    "reviewId": 5913367526,
+    "reviewer": "papa4568",
+    "reviewedHead": "ca42ab27b5147ed169b7b3fc742fc3ce3b554433",
+    "pinnedBase": "5d84f80cb36509fa20d50f87551461bba2804a79",
+    "verifiedAt": "2026-11-17T02:35:12.473Z",
+    "ledgerGitBlob": "9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff",
+    "verifiedEvidenceFiles": [
+      ".pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json",
+      ".pro-papa/evidence/PP-0011/host-validation-2026-11-15.json",
+      ".pro-papa/evidence/PP-0011/independent-scope-reviews-2026-11-15.json"
+    ],
+    "providerBacked": true,
+    "noProductionChanges": true,
+    "tokenExposed": false,
+    "tokenPersisted": false,
+    "boundary": "Workflow only modified an ephemeral checkout; repository on protected main is still rev92, status in_progress. Replaced branch-only proposal reproduces exactly real CLI output, not a simulation. Workflow removed from final candidate diff after recording source-pinned run."
   }
 }

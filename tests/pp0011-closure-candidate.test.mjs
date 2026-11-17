@@ -1,4 +1,4 @@
-// PP-0011: exact branch-only proposed closure, not proof of token-backed CLI execution.
+// PP-0011: exact branch-only closure proposal matching a real token-backed CLI run.
 // Keep original rev92 and historic PP-0007 through PP-0010 byte identities intact.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,12 +19,12 @@ const work=state.tasks.find(x=>x.id==='PP-0011');
 const previous=before.tasks.find(x=>x.id==='PP-0011');
 
 test('PP-0011 proposal is exact rev93 single-task transition with genuine preserved rev92',()=>{
- assert.equal(blob(raw),'3f2a2e6f60f25f07c7171a5e90f92c639796ea0d');
+ assert.equal(blob(raw),'9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff');
  assert.equal(state.revision,93);
  assert.equal(before.revision,92);
  assert.equal(blob(Buffer.from(JSON.stringify(before,null,2)+'\n')),'37a35059c4a426ae7f0d23997bae40b961df08aa');
  assert.equal(work.status,'verified');
- assert.equal(work.verifiedAt,'2026-11-16T03:25:42.014Z');
+ assert.equal(work.verifiedAt,'2026-11-17T02:35:12.473Z');
  assert.equal(previous.status,'in_progress');
  assert.equal(previous.verifiedAt,undefined);
  assert.equal(state.tasks.length,13);
@@ -63,7 +63,7 @@ test('PP-0011 recorded evidence remains actual source-hash matched, not proof by
  assert.notEqual(work.evidence.at(-1).actor,work.owner);
  assert.equal(report.independentGitHubSource.priorEvidenceIntakePR,74);
  assert.equal(report.independentGitHubSource.priorApprovedReviewId,5913367526);
- assert.equal(report.independentGitHubSource.closureCandidateIndependentReview,'pending_on_new_PR');
+ assert.equal(report.independentGitHubSource.closureCandidateIndependentReview,'prior_changes_requested_new_head_review_pending');
 });
 
 test('PP-0011 proposed closure preserves historical approved pins and excludes inflated claims',()=>{
@@ -75,10 +75,18 @@ test('PP-0011 proposed closure preserves historical approved pins and excludes i
    revision:92,taskStatus:'in_progress',
    taskLedgerGitBlob:'37a35059c4a426ae7f0d23997bae40b961df08aa'});
  assert.equal(report.candidate.revision,93);
- assert.equal(report.candidate.taskLedgerGitBlob,'3f2a2e6f60f25f07c7171a5e90f92c639796ea0d');
+ assert.equal(report.candidate.taskLedgerGitBlob,'9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff');
  assert.equal(report.candidate.merged,false);
  assert.equal(report.executionTruth.genuineLocalCliCloseRun,false);
- assert.equal(report.executionTruth.genuineLiveTokenBackedCliCloseRun,false);
+ assert.equal(report.executionTruth.genuineLiveTokenBackedCliCloseRun,true);
+ assert.equal(report.cliProof.status,'completed');
+ assert.equal(report.cliProof.runId,44004065672);
+ assert.equal(report.cliProof.runHead,'b11d0e2e24e0968f73b2c8338585e364000a25b9');
+ assert.equal(report.cliProof.reviewId,5913367526);
+ assert.equal(report.cliProof.verifiedAt,'2026-11-17T02:35:12.473Z');
+ assert.equal(report.cliProof.ledgerGitBlob,'9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff');
+ assert.equal(report.cliProof.providerBacked,true);
+ assert.equal(report.cliProof.noProductionChanges,true);
  assert.equal(report.operatorAcceptance.fourRealHostSamples.blobSha,'0d7705be8260faaf353dfa4ee4220b583a6c518f');
  assert.equal(report.operatorAcceptance.publicIssuePreview.blobSha,'51a9a6a54d574172b8d6347926cd2edb54b71b3c');
  assert.equal(report.permissions.netlifyInvoked,false);
