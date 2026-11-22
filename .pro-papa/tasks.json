@@ -1715,18 +1715,14 @@
     },
     {
       "id": "PP-0012",
-      "title": "Revalidate original cross-domain benchmark and baseline outcomes",
-      "objective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+      "title": "Evaluate practical operator acceptance and preserve optional comparative research",
+      "objective": "Establish bounded practical usefulness of Pro-Papa for its operator from authorized real-world experience and existing verified evidence; retain the original comparative benchmark as optional research without claiming measured superiority, changing security obligations, or treating receipts as proof of reasoning or quality.",
       "profile": "general",
       "acceptance": [
-        "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
-        "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
-        "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
-        "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness",
-        "Reproduce the seven frozen canonical case objectives (quick Q&A, sourced research, software, document, calculation/data, planning/operations, novel/fallback) in authorized user-facing sessions, checking actual submitted prompts, tool access, artifacts and representative outcomes.",
-        "For every original task inspect corresponding genuine final outputs and task/tool permission/persistence/receipt provenance, report fail-closed negative controls, and protect original private artifacts and credentials.",
-        "Report comparable direct-assistant and Project outcome quality and completion, observed human correction turns, recorded latency/tool calls and provider tokens if truly available. Record noncomparable or unavailable values as null; never pool the distinct historical Node and website populations.",
-        "Publish reproducible original fixture/provider pointers, exact-head CI and genuinely independent grading/review; do not claim a controlled or statistically validated superiority result without a separately run and qualified study."
+        "Record the operator's authorized sustained real-world-use acceptance in a private, metadata-only, commit-pinned record and verify its exact saved identity and permitted scope. Treat reported better performance as subjective experience, not a measured comparative result.",
+        "Reconcile existing source-pinned outcomes across the seven original case categories, distinguishing actual bounded host execution, historical operator-reported website outcomes, independently reviewed evidence, unavailable originals and untested behaviors. Retain permission, persistence, receipt and substantive validation distinctions, including previously exercised negative controls for unauthorized operations, unavailable tools and inaccurate receipts; leave unproved claims explicit.",
+        "Preserve all eight original PP-0012 acceptance clauses, the seven frozen cases, the 42-slot prospective website protocol and its grading, measurement and privacy rules as optional, unexecuted comparative research. Report unknown or noncomparable quantities as null, never pool historical populations, and do not assert general or statistical superiority, native ChatGPT equivalence or production readiness.",
+        "Obtain independent authenticated exact-head approval of the scope change and the actual scoped acceptance evidence, pass trusted exact-head CI, register artifact, validation and independent review evidence under the general profile, pin an authenticated review target, and run the unchanged formal CLI close gate before any separately authorized milestone closure. Preserve PP-0013 in full; no merge or deployment authority follows from practical acceptance."
       ],
       "dependsOn": [
         "PP-0007",
@@ -1758,5 +1754,5 @@
       "evidence": []
     }
   ],
-  "revision": 93
+  "revision": 94
 }
