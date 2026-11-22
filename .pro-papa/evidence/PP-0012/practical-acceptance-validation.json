@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0012",
+  "evidenceKind": "validation",
+  "result": "pass",
+  "scope": "Reviewed source integrity, existing bounded negative controls and revision-94 post-merge CI, not live production security or comparative testing.",
+  "sourceCommit": "7204332be55fd7bf02fbbdc62e1902d0ae4aad82",
+  "sourceLedgerBlob": "906ec8c106af421c51a0e8d99d5e81d849d98209",
+  "scopeProposalBlob": "f47fd94358e6f6a45bfc2a1dd4839a8bff9fce79",
+  "verifiedPins": [
+    {
+      "path": "fixtures/pp0007-paired-trial-collection-template.json",
+      "gitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4"
+    },
+    {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/provider-observation-current.json",
+      "gitBlobSha": "07989be9f7567f46710f0e3da6c8ddf63c7f6952"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/structured-local-observation.json",
+      "gitBlobSha": "348df937b056b66366d5f787ca7295627be99f43"
+    },
+    {
+      "path": "docs/PP0007-EXISTING-BASELINE-REUSE-AUDIT.md",
+      "gitBlobSha": "4b200b7915284818b9d2b8d8ccd90877d541177a"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/route-b-final-independent-review-2026-10-27.json",
+      "gitBlobSha": "a7a84a01a46fe3a6b6f4d3236f28f460544748c3"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json",
+      "gitBlobSha": "b4425085e734956c34485917e4bae3d4f9d58a45"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/host-validation-2026-11-15.json",
+      "gitBlobSha": "438c06b15fcab5a2d2c013d1ad7765d15e592e70"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/independent-scope-reviews-2026-11-15.json",
+      "gitBlobSha": "9b261702f82b55e376eb64201cda4f01f2f18e19"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/scoped-closure-candidate-2026-11-15.json",
+      "gitBlobSha": "c475d7931648ac205dc9f2575b46aaa6300ede56"
+    }
+  ],
+  "privateAcceptanceReadback": {
+    "commit": "316534df4f9d5d8c38d2b9bf10ce70ff7fbef1c0",
+    "gitBlobSha": "f1c677e98af262615e309c80b990836d6cb50787",
+    "private": true
+  },
+  "postMergeCI": {
+    "runId": 44973776735,
+    "jobId": 137059019761,
+    "head": "7204332be55fd7bf02fbbdc62e1902d0ae4aad82",
+    "checkName": "check",
+    "trustedIntegrationId": 15368,
+    "node22": "356/356",
+    "node26": "356/356",
+    "failed": 0,
+    "projectValidation": true,
+    "taskCount": 13
+  },
+  "historicalNegatives": {
+    "unauthorizedIssueCreation": "denied; no provider write",
+    "unavailableSoftware": "unsupported",
+    "unallowlistedRepository": "provider_unavailable; no outbound call in original control",
+    "pp0011MissingGrant": "denied; no released execution",
+    "receiptIntegrity": "synthetic malformed and tampered provider response regressions only",
+    "sources": [
+      ".pro-papa/evidence/PP-0007/live-read-only-github.json",
+      "tests/usage-receipts.test.mjs",
+      ".pro-papa/evidence/PP-0011/host-validation-2026-11-15.json"
+    ]
+  },
+  "persistence": {
+    "historicalTemporaryDurableMathTask": true,
+    "duplicateExecutionRejected": true,
+    "perPilotReceipts": false,
+    "productionWrites": false
+  },
+  "limits": {
+    "newComparativeTrials": 0,
+    "productionSecurityTested": false,
+    "formalClosureExecuted": false,
+    "pp0013Changed": false,
+    "providerTokens": null,
+    "comparableLatencyMs": null
+  }
+}

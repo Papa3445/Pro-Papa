@@ -1,0 +1,54 @@
+name: PP-0012 isolated evidence registration proof
+on:
+  push:
+    branches:
+      - feature/pp0012-practical-acceptance-evidence
+    paths:
+      - '.github/workflows/pp0012-evidence-registration-proof.yml'
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Genuine CLI next, handoff, start, evidence registration and authenticated review status
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object .pro-papa/tasks.json)" = "906ec8c106af421c51a0e8d99d5e81d849d98209"
+          node bin/pro-papa.mjs next --root . > "$RUNNER_TEMP/pp12-next.json"
+          node -e 'const n=require(process.argv[1]);if(n.id!=="PP-0012"||n.status!=="pending")throw Error("wrong next task")' "$RUNNER_TEMP/pp12-next.json"
+          node bin/pro-papa.mjs handoff --id PP-0012 --root .
+          node bin/pro-papa.mjs start --id PP-0012 --actor chatgpt-implementation --root .
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          const path='.pro-papa/tasks.json',s=JSON.parse(readFileSync(path,'utf8')),t=s.tasks.find(t=>t.id==='PP-0012');
+          if(s.revision!==95||t.status!=='in_progress'||t.evidence.length!==0)throw Error('invalid started state');
+          t.requiresTrustedReview=true;
+          t.reviewTarget={repository:'Papa3445/Pro-Papa',pullRequest:77,baseRef:'main',baseSha:'8fc9d709f4bd412a8ac40654185dac5c3bb28287'};
+          writeFileSync(path,JSON.stringify(s,null,2)+'\n');
+          NODE
+          node bin/pro-papa.mjs validate --root .
+          node bin/pro-papa.mjs proof --id PP-0012 --kind artifact --file .pro-papa/evidence/PP-0012/practical-acceptance-artifact.json --actor chatgpt-implementation --note 'Authorized subjective operator acceptance and reviewed source-pinned reconciliation' --root .
+          node bin/pro-papa.mjs proof --id PP-0012 --kind validation --file .pro-papa/evidence/PP-0012/practical-acceptance-validation.json --actor chatgpt-implementation --note 'Protected baseline evidence identities, reviewed historical limits and actual post-merge CI' --root .
+          node bin/pro-papa.mjs proof --id PP-0012 --kind review --file .pro-papa/evidence/PP-0012/practical-acceptance-review.json --actor papa4568 --note 'Authenticated independent PR 77 approval of revised scope and bounded acceptance' --root .
+          node bin/pro-papa.mjs review-status --id PP-0012 --root . > "$RUNNER_TEMP/pp12-review.json"
+          node bin/pro-papa.mjs validate --root .
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const state=JSON.parse(readFileSync('.pro-papa/tasks.json','utf8')),t=state.tasks.find(t=>t.id==='PP-0012');
+          const review=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/pp12-review.json','utf8'));
+          if(state.revision!==98||t.status!=='in_progress'||t.evidence.length!==3||review.verdict!=='PASS'||!review.approvedReviewers.some(r=>r.login==='papa4568')||review.candidateSha!=='9efa40438443b73ee166b824233f1718b1b32af5'||state.tasks.find(x=>x.id==='PP-0013').status!=='pending')throw Error('registration invariant failed');
+          console.log('PP0012_ACTUAL_CLI_REGISTRATION '+JSON.stringify({revision:state.revision,ledgerBlob:execFileSync('git',['hash-object','.pro-papa/tasks.json'],{encoding:'utf8'}).trim(),task:t,review,closed:false,productionChanges:false}));
+          NODE
