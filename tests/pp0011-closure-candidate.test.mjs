@@ -5,11 +5,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {validateProject,selectNext} from '../src/core.mjs';
-import {pp0011ClosureSnapshot,pp0011RegistrationSnapshot,pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0011ClosureSnapshot,pp0011RegistrationSnapshot,pp0007LedgerSnapshot,pp0012ScopeSnapshot} from './pp0008-historical-pin-helper.mjs';
 
 const root=new URL('../',import.meta.url);
 const read=x=>readFileSync(new URL(x,root));
-const raw=read('.pro-papa/tasks.json');
+const raw=Buffer.from(JSON.stringify(pp0012ScopeSnapshot(JSON.parse(read('.pro-papa/tasks.json'))),null,2)+'\n');
 const state=JSON.parse(raw);
 const before=pp0011ClosureSnapshot(state);
 const report=JSON.parse(read('.pro-papa/evidence/PP-0011/scoped-closure-candidate-2026-11-15.json'));

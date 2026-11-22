@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "kind": "owner_authorized_scope_revision_candidate",
+  "taskId": "PP-0012",
+  "status": "proposed_not_applied_to_protected_main",
+  "baseline": {
+    "commit": "8fc9d709f4bd412a8ac40654185dac5c3bb28287",
+    "revision": 93,
+    "ledgerGitBlob": "9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff"
+  },
+  "candidate": {
+    "revision": 94,
+    "ledgerGitBlob": "906ec8c106af421c51a0e8d99d5e81d849d98209",
+    "onlyChangedTaskFields": [
+      "title",
+      "objective",
+      "acceptance"
+    ],
+    "taskStatus": "pending",
+    "evidenceRegistered": false
+  },
+  "originalTask": {
+    "id": "PP-0012",
+    "title": "Revalidate original cross-domain benchmark and baseline outcomes",
+    "objective": "Prove the implemented gateway/host improves real user tasks across domains with verified evidence and measured cost, without treating receipt creation as proof of reasoning or answer quality.",
+    "profile": "general",
+    "acceptance": [
+      "Run reproducible end-to-end requests across at least six representative categories: quick Q&A, sourced research, software, document creation, calculation/data analysis, and planning or operations, including a novel/fallback request",
+      "For each pilot distinguish executed tools, persisted task/evidence where relevant, real audit receipts and substantive output validation; include deliberate negative cases for unauthorized operations, unavailable tools and inaccurate receipts",
+      "Report outcome quality, task completion rate, corrective interactions, latency/tool-call or token overhead where measurable, and limitations compared with a simple direct-assistant baseline",
+      "Publish reproducible test fixtures and results, pass exact-head CI, and obtain genuine independent review before task closure or assertions of readiness",
+      "Reproduce the seven frozen canonical case objectives (quick Q&A, sourced research, software, document, calculation/data, planning/operations, novel/fallback) in authorized user-facing sessions, checking actual submitted prompts, tool access, artifacts and representative outcomes.",
+      "For every original task inspect corresponding genuine final outputs and task/tool permission/persistence/receipt provenance, report fail-closed negative controls, and protect original private artifacts and credentials.",
+      "Report comparable direct-assistant and Project outcome quality and completion, observed human correction turns, recorded latency/tool calls and provider tokens if truly available. Record noncomparable or unavailable values as null; never pool the distinct historical Node and website populations.",
+      "Publish reproducible original fixture/provider pointers, exact-head CI and genuinely independent grading/review; do not claim a controlled or statistically validated superiority result without a separately run and qualified study."
+    ],
+    "dependsOn": [
+      "PP-0007",
+      "PP-0011"
+    ],
+    "status": "pending",
+    "owner": null,
+    "blockedReason": null,
+    "evidence": []
+  },
+  "revisedTask": {
+    "id": "PP-0012",
+    "title": "Evaluate practical operator acceptance and preserve optional comparative research",
+    "objective": "Establish bounded practical usefulness of Pro-Papa for its operator from authorized real-world experience and existing verified evidence; retain the original comparative benchmark as optional research without claiming measured superiority, changing security obligations, or treating receipts as proof of reasoning or quality.",
+    "profile": "general",
+    "acceptance": [
+      "Record the operator's authorized sustained real-world-use acceptance in a private, metadata-only, commit-pinned record and verify its exact saved identity and permitted scope. Treat reported better performance as subjective experience, not a measured comparative result.",
+      "Reconcile existing source-pinned outcomes across the seven original case categories, distinguishing actual bounded host execution, historical operator-reported website outcomes, independently reviewed evidence, unavailable originals and untested behaviors. Retain permission, persistence, receipt and substantive validation distinctions, including previously exercised negative controls for unauthorized operations, unavailable tools and inaccurate receipts; leave unproved claims explicit.",
+      "Preserve all eight original PP-0012 acceptance clauses, the seven frozen cases, the 42-slot prospective website protocol and its grading, measurement and privacy rules as optional, unexecuted comparative research. Report unknown or noncomparable quantities as null, never pool historical populations, and do not assert general or statistical superiority, native ChatGPT equivalence or production readiness.",
+      "Obtain independent authenticated exact-head approval of the scope change and the actual scoped acceptance evidence, pass trusted exact-head CI, register artifact, validation and independent review evidence under the general profile, pin an authenticated review target, and run the unchanged formal CLI close gate before any separately authorized milestone closure. Preserve PP-0013 in full; no merge or deployment authority follows from practical acceptance."
+    ],
+    "dependsOn": [
+      "PP-0007",
+      "PP-0011"
+    ],
+    "status": "pending",
+    "owner": null,
+    "blockedReason": null,
+    "evidence": []
+  },
+  "operatorAcceptance": {
+    "repository": "Papa3445/Pro-Papa-Audit",
+    "path": "operator-acceptance/PP-0012/2026-11-22-practical-use.json",
+    "commit": "316534df4f9d5d8c38d2b9bf10ce70ff7fbef1c0",
+    "gitBlobSha": "f1c677e98af262615e309c80b990836d6cb50787",
+    "kind": "subjective_practical_usefulness",
+    "independentComparativeMeasurement": false
+  },
+  "optionalResearch": {
+    "requiredForRevisedMilestone": false,
+    "status": "not_collected",
+    "originalSevenCaseFixture": {
+      "path": "fixtures/pp0007-paired-trial-collection-template.json",
+      "gitBlobSha": "aa07d8296ab8c4ad492ec02863bd4203bb90ead4"
+    },
+    "prospectiveWebsiteContract": {
+      "path": "fixtures/pp0007-ui-v2-contract.json",
+      "gitBlobSha": "610ad35c145944b0f41ceb8f4f07a363046d3272",
+      "plannedObservations": 42,
+      "collectedObservations": 0,
+      "status": "predeclared_not_executed"
+    },
+    "protocol": "docs/PP0007-PAIRED-TRIAL-PROTOCOL.md",
+    "collector": "bin/pp0007-ui-v2-collector.mjs",
+    "preregisteredGradingUnchanged": true,
+    "originalAcceptancePreservedIn": "originalTask.acceptance",
+    "newTrialCount": 0
+  },
+  "reusedEvidence": [
+    {
+      "path": ".pro-papa/evidence/PP-0007/provider-observation-current.json",
+      "gitBlobSha": "07989be9f7567f46710f0e3da6c8ddf63c7f6952",
+      "scope": "historical native host observations only"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/structured-local-observation.json",
+      "gitBlobSha": "348df937b056b66366d5f787ca7295627be99f43",
+      "scope": "separate four structured local pilots and five negative controls; not original seven-case outcomes"
+    },
+    {
+      "path": "docs/PP0007-EXISTING-BASELINE-REUSE-AUDIT.md",
+      "gitBlobSha": "4b200b7915284818b9d2b8d8ccd90877d541177a",
+      "scope": "retrospective website report; original full transcripts and symmetric software artifacts not recovered here"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0007/route-b-final-independent-review-2026-10-27.json",
+      "gitBlobSha": "a7a84a01a46fe3a6b6f4d3236f28f460544748c3",
+      "scope": "bounded engineering scope, not comparative quality or production security assurance"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/host-domain-outcomes-2026-11-15.json",
+      "gitBlobSha": "b4425085e734956c34485917e4bae3d4f9d58a45",
+      "scope": "four actual bounded samples and public issue opening preview"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/host-validation-2026-11-15.json",
+      "gitBlobSha": "438c06b15fcab5a2d2c013d1ad7765d15e592e70",
+      "scope": "bounded negative, local recovery and release constraints"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/independent-scope-reviews-2026-11-15.json",
+      "gitBlobSha": "9b261702f82b55e376eb64201cda4f01f2f18e19",
+      "scope": "historical component review provenance only"
+    },
+    {
+      "path": ".pro-papa/evidence/PP-0011/scoped-closure-candidate-2026-11-15.json",
+      "gitBlobSha": "c475d7931648ac205dc9f2575b46aaa6300ede56",
+      "scope": "actual historical CLI closure and scoped review, finalized by merged PR #76"
+    }
+  ],
+  "unmeasured": {
+    "currentMatchedCompletionRate": null,
+    "qualityDifference": null,
+    "correctiveInteractions": null,
+    "comparableLatencyMs": null,
+    "toolCallOverhead": null,
+    "providerTokens": null,
+    "cost": null,
+    "statisticalSuperiority": null
+  },
+  "boundaries": {
+    "scopeRevisionOnly": true,
+    "independentScopeApproval": "pending",
+    "milestoneClosureAuthorized": false,
+    "mergeAuthorized": false,
+    "deployAuthorized": false,
+    "pp0013Changed": false,
+    "productionSecurityAssurance": false,
+    "netlifyInvoked": false
+  }
+}

@@ -24,7 +24,29 @@ const PP0011_ACTIVE_BLOB='37a35059c4a426ae7f0d23997bae40b961df08aa';
 // Exact authenticated CLI-produced PP-0011 closure candidate on the PR branch only. Do not treat
 // this pin, a fixture or an earlier component approval as approval to merge.
 const PP0011_CLOSURE_CANDIDATE_BLOB='9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff';
+// PP-0012 owner-authorized scope-only successor: require both exact new
+// ledger and exact original/revised task fixture; restore the whole rev93 blob.
+// This is not approval of the PR or evidence of task execution.
+export function pp0012ScopeSnapshot(ledger){
+  if(ledger.revision!==94)return ledger;
+  if(sha(JSON.stringify(ledger,null,2)+'\n')!=='906ec8c106af421c51a0e8d99d5e81d849d98209')
+    throw Error('Unknown ledger mutation: PP-0012 scope candidate');
+  const bytes=readFileSync(new URL('../fixtures/pp0012-practical-acceptance-scope-proposal.json',import.meta.url),'utf8');
+  if(sha(bytes)!=='f47fd94358e6f6a45bfc2a1dd4839a8bff9fce79')
+    throw Error('Unknown PP-0012 scope proposal fixture');
+  const spec=JSON.parse(bytes);
+  const prior=structuredClone(ledger);
+  const i=prior.tasks.findIndex(t=>t.id==='PP-0012');
+  if(i<0||JSON.stringify(prior.tasks[i])!==JSON.stringify(spec.revisedTask))
+    throw Error('Unknown PP-0012 revised task');
+  prior.tasks[i]=structuredClone(spec.originalTask);
+  prior.revision=93;
+  if(sha(JSON.stringify(prior,null,2)+'\n')!==PP0011_CLOSURE_CANDIDATE_BLOB)
+    throw Error('PP-0012 scope revision changed historical protected ledger');
+  return prior;
+}
 export function pp0011ClosureSnapshot(ledger){
+  if(ledger.revision===94)ledger=pp0012ScopeSnapshot(ledger);
   if(ledger.revision!==93)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0011_CLOSURE_CANDIDATE_BLOB)
     throw Error('Unknown PP-0011 closure candidate transition');
@@ -45,7 +67,7 @@ export function pp0011ClosureSnapshot(ledger){
   return prior;
 }
 export function pp0011RegistrationSnapshot(ledger){
-  if(ledger.revision===93)ledger=pp0011ClosureSnapshot(ledger);
+  if([93,94].includes(ledger.revision))ledger=pp0011ClosureSnapshot(ledger);
   if(ledger.revision!==92)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0011_ACTIVE_BLOB)
     throw Error('Unknown PP-0011 evidence intake transition');
@@ -77,7 +99,7 @@ export function pp0011RegistrationSnapshot(ledger){
   return prior;
 }
 export function pp0010RegistrationSnapshot(ledger){
-  if([92,93].includes(ledger.revision))ledger=pp0011RegistrationSnapshot(ledger);
+  if([92,93,94].includes(ledger.revision))ledger=pp0011RegistrationSnapshot(ledger);
   if(ledger.revision!==91)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0010_CLOSED_BLOB)
     throw Error('Unknown PP-0010 closure transition');
@@ -117,6 +139,7 @@ export function pp0009RegistrationSnapshot(ledger){
   return prior;
 }
 export function pp0007LedgerSnapshot(ledger){
+  if(ledger.revision===94)return pp0007LedgerSnapshot(pp0012ScopeSnapshot(ledger));
   if(ledger.revision===93)return pp0007LedgerSnapshot(pp0011ClosureSnapshot(ledger));
   if(ledger.revision===92)return pp0007LedgerSnapshot(pp0011RegistrationSnapshot(ledger));
   if(ledger.revision===91)return pp0007LedgerSnapshot(pp0010RegistrationSnapshot(ledger));
