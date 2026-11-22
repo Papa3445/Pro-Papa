@@ -27,7 +27,27 @@ const PP0011_CLOSURE_CANDIDATE_BLOB='9b1e4dba9d37fc0b440d23d5ae46c1ccaab95eff';
 // PP-0012 owner-authorized scope-only successor: require both exact new
 // ledger and exact original/revised task fixture; restore the whole rev93 blob.
 // This is not approval of the PR or evidence of task execution.
+// Exact CLI-produced PP-0012 rev98 evidence registration, not milestone closure.
+export function pp0012RegistrationSnapshot(ledger){
+  if(ledger.revision!==98)return ledger;
+  if(sha(JSON.stringify(ledger,null,2)+'\n')!=='efcc1755c99a52dabcd993c304d170d2a70c57f8')
+    throw Error('Unknown ledger mutation: PP-0012 evidence registration');
+  const prior=structuredClone(ledger);
+  const task=prior.tasks.find(t=>t.id==='PP-0012');
+  if(task?.status!=='in_progress'||task.owner!=='chatgpt-implementation'||task.evidence.length!==3||
+     task.requiresTrustedReview!==true||task.reviewTarget?.repository!=='Papa3445/Pro-Papa'||
+     task.reviewTarget?.pullRequest!==77||task.reviewTarget?.baseRef!=='main'||
+     task.reviewTarget?.baseSha!=='8fc9d709f4bd412a8ac40654185dac5c3bb28287')
+    throw Error('Unknown PP-0012 registration fields');
+  task.status='pending';task.owner=null;task.evidence=[];
+  delete task.requiresTrustedReview;delete task.reviewTarget;
+  prior.revision=94;
+  if(sha(JSON.stringify(prior,null,2)+'\n')!=='906ec8c106af421c51a0e8d99d5e81d849d98209')
+    throw Error('PP-0012 evidence registration changed protected scope revision');
+  return prior;
+}
 export function pp0012ScopeSnapshot(ledger){
+  if(ledger.revision===98)ledger=pp0012RegistrationSnapshot(ledger);
   if(ledger.revision!==94)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!=='906ec8c106af421c51a0e8d99d5e81d849d98209')
     throw Error('Unknown ledger mutation: PP-0012 scope candidate');
@@ -46,7 +66,7 @@ export function pp0012ScopeSnapshot(ledger){
   return prior;
 }
 export function pp0011ClosureSnapshot(ledger){
-  if(ledger.revision===94)ledger=pp0012ScopeSnapshot(ledger);
+  if([94,98].includes(ledger.revision))ledger=pp0012ScopeSnapshot(ledger);
   if(ledger.revision!==93)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0011_CLOSURE_CANDIDATE_BLOB)
     throw Error('Unknown PP-0011 closure candidate transition');
@@ -67,7 +87,7 @@ export function pp0011ClosureSnapshot(ledger){
   return prior;
 }
 export function pp0011RegistrationSnapshot(ledger){
-  if([93,94].includes(ledger.revision))ledger=pp0011ClosureSnapshot(ledger);
+  if([93,94,98].includes(ledger.revision))ledger=pp0011ClosureSnapshot(ledger);
   if(ledger.revision!==92)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0011_ACTIVE_BLOB)
     throw Error('Unknown PP-0011 evidence intake transition');
@@ -99,7 +119,7 @@ export function pp0011RegistrationSnapshot(ledger){
   return prior;
 }
 export function pp0010RegistrationSnapshot(ledger){
-  if([92,93,94].includes(ledger.revision))ledger=pp0011RegistrationSnapshot(ledger);
+  if([92,93,94,98].includes(ledger.revision))ledger=pp0011RegistrationSnapshot(ledger);
   if(ledger.revision!==91)return ledger;
   if(sha(JSON.stringify(ledger,null,2)+'\n')!==PP0010_CLOSED_BLOB)
     throw Error('Unknown PP-0010 closure transition');
@@ -139,6 +159,7 @@ export function pp0009RegistrationSnapshot(ledger){
   return prior;
 }
 export function pp0007LedgerSnapshot(ledger){
+  if(ledger.revision===98)return pp0007LedgerSnapshot(pp0012RegistrationSnapshot(ledger));
   if(ledger.revision===94)return pp0007LedgerSnapshot(pp0012ScopeSnapshot(ledger));
   if(ledger.revision===93)return pp0007LedgerSnapshot(pp0011ClosureSnapshot(ledger));
   if(ledger.revision===92)return pp0007LedgerSnapshot(pp0011RegistrationSnapshot(ledger));
