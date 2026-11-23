@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0012",
+  "kind": "actual_cli_registration_provenance",
+  "source": {
+    "repository": "Papa3445/Pro-Papa",
+    "baseCommit": "7204332be55fd7bf02fbbdc62e1902d0ae4aad82",
+    "baseRevision": 94,
+    "baseLedgerBlob": "906ec8c106af421c51a0e8d99d5e81d849d98209",
+    "runCommit": "49c92272070bf097e20ebdf959ae5f66ec9d75f5",
+    "runId": 44973990408,
+    "jobId": 137059684319,
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/44973990408",
+    "workflowPath": ".github/workflows/pp0012-evidence-registration-proof.yml",
+    "workflowGitBlob": "5abc2b5c5b00cfb7855d537281c05bd64ba0d924",
+    "permissions": "contents: read; pull-requests: read; persist-credentials: false"
+  },
+  "actualRegistration": {
+    "revision": 98,
+    "ledgerGitBlob": "efcc1755c99a52dabcd993c304d170d2a70c57f8",
+    "taskStatus": "in_progress",
+    "owner": "chatgpt-implementation",
+    "proofs": [
+      {
+        "kind": "artifact",
+        "result": "pass",
+        "actor": "chatgpt-implementation",
+        "note": "Authorized subjective operator acceptance and reviewed source-pinned reconciliation",
+        "path": ".pro-papa/evidence/PP-0012/practical-acceptance-artifact.json",
+        "sha256": "82c8bbe9d9d4e25f00497f1eb6902d03b2eacb1498a7c327d46e48b9c5468ce8",
+        "recordedAt": "2026-11-22T01:59:56.630Z"
+      },
+      {
+        "kind": "validation",
+        "result": "pass",
+        "actor": "chatgpt-implementation",
+        "note": "Protected baseline evidence identities, reviewed historical limits and actual post-merge CI",
+        "path": ".pro-papa/evidence/PP-0012/practical-acceptance-validation.json",
+        "sha256": "1b3139989929a3aa55bdfc4f49e404b394780e6aa54c1997faec6af214e7f6d9",
+        "recordedAt": "2026-11-22T01:59:56.680Z"
+      },
+      {
+        "kind": "review",
+        "result": "pass",
+        "actor": "papa4568",
+        "note": "Authenticated independent PR 77 approval of revised scope and bounded acceptance",
+        "path": ".pro-papa/evidence/PP-0012/practical-acceptance-review.json",
+        "sha256": "a30b74a39b48a1c6321cc6df0fdcb585a6d1b1823c62acc35c5fcd9d48260cd1",
+        "recordedAt": "2026-11-22T01:59:56.727Z"
+      }
+    ],
+    "reviewTarget": {
+      "repository": "Papa3445/Pro-Papa",
+      "pullRequest": 77,
+      "baseRef": "main",
+      "baseSha": "8fc9d709f4bd412a8ac40654185dac5c3bb28287"
+    },
+    "authenticatedReview": {
+      "provider": "github",
+      "repository": "Papa3445/Pro-Papa",
+      "pullRequest": 77,
+      "candidateSha": "9efa40438443b73ee166b824233f1718b1b32af5",
+      "baseRef": "main",
+      "baseSha": "8fc9d709f4bd412a8ac40654185dac5c3bb28287",
+      "verdict": "PASS",
+      "reason": "Latest independent GitHub review approved exact current head",
+      "reviewer": {
+        "login": "papa4568",
+        "id": 196889071
+      },
+      "reviewId": 6009529716,
+      "submittedAt": "2026-11-22T01:52:02Z",
+      "approvedReviewers": [
+        {
+          "login": "papa4568",
+          "id": 196889071,
+          "reviewId": 6009529716,
+          "submittedAt": "2026-11-22T01:52:02Z"
+        }
+      ]
+    },
+    "commands": [
+      "next",
+      "handoff",
+      "start",
+      "validate",
+      "proof artifact",
+      "proof validation",
+      "proof review",
+      "review-status",
+      "validate"
+    ],
+    "trustedPinConfiguredInEphemeralCheckout": true
+  },
+  "boundaries": {
+    "actualCliRegistration": true,
+    "actualAuthenticatedReviewStatus": true,
+    "formalCloseExecuted": false,
+    "protectedMainChanged": false,
+    "deploy": false,
+    "netlifyInvoked": false,
+    "pp0013Changed": false,
+    "intakeReviewPending": true
+  },
+  "limits": [
+    "Proof commands registered scoped evidence files; this is not a new benchmark or a production validation result.",
+    "Prior independent scope review is authentic; this new evidence-intake diff still requires independent approval.",
+    "Manual trusted review target pin was configured after genuine CLI start and before proof registration; no CLI close ran."
+  ]
+}
