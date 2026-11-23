@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "taskId": "PP-0012",
+  "kind": "genuine_isolated_cli_closure_candidate",
+  "status": "proposed_not_merged_or_deployed",
+  "source": {
+    "repository": "Papa3445/Pro-Papa",
+    "protectedMainCommit": "9027ec0b826c34e0d7b7d32c91841e88d6b1445d",
+    "protectedRevision": 98,
+    "protectedLedgerBlob": "efcc1755c99a52dabcd993c304d170d2a70c57f8",
+    "isolatedRunnerCommit": "977ad4ffeafa48dcb3f0c985842d0ed8d53e16ad",
+    "isolatedWorkflowBlob": "3661a7c057aeada68dad4280f895522d18fc07b4",
+    "workflowPath": ".github/workflows/pp0012-isolated-cli-closure.yml",
+    "runId": 45198411586,
+    "jobId": 137774977860,
+    "runUrl": "https://github.com/Papa3445/Pro-Papa/actions/runs/45198411586",
+    "result": "success",
+    "workflowPermissions": "contents: read; pull-requests: read; checkout persist-credentials: false"
+  },
+  "actual": {
+    "command": "node bin/pro-papa.mjs close --id PP-0012 --root .",
+    "unalteredCliSource": true,
+    "revision": 99,
+    "ledgerGitBlob": "eb1fbf445241161dae39c35681bca97bf8f9ed63",
+    "verifiedAt": "2026-11-23T14:50:04.588Z",
+    "taskStatus": "verified",
+    "onlyChangedTaskFields": [
+      "status",
+      "verifiedAt"
+    ],
+    "evidenceUnchanged": true,
+    "otherTasksUnchanged": true,
+    "closureResult": {
+      "required": [
+        "artifact",
+        "validation",
+        "review"
+      ],
+      "verifiedFiles": [
+        ".pro-papa/evidence/PP-0012/practical-acceptance-artifact.json",
+        ".pro-papa/evidence/PP-0012/practical-acceptance-validation.json",
+        ".pro-papa/evidence/PP-0012/practical-acceptance-review.json"
+      ],
+      "trustedReview": {
+        "provider": "github",
+        "repository": "Papa3445/Pro-Papa",
+        "pullRequest": 77,
+        "candidateSha": "9efa40438443b73ee166b824233f1718b1b32af5",
+        "baseRef": "main",
+        "baseSha": "8fc9d709f4bd412a8ac40654185dac5c3bb28287",
+        "verdict": "PASS",
+        "reason": "Latest independent GitHub review approved exact current head",
+        "reviewer": {
+          "login": "papa4568",
+          "id": 196889071
+        },
+        "reviewId": 6009529716,
+        "submittedAt": "2026-11-22T01:52:02Z",
+        "approvedReviewers": [
+          {
+            "login": "papa4568",
+            "id": 196889071,
+            "reviewId": 6009529716,
+            "submittedAt": "2026-11-22T01:52:02Z"
+          }
+        ]
+      }
+    }
+  },
+  "scope": {
+    "subjectiveOperatorAcceptance": true,
+    "originalResearchOptionalAndUnexecuted": true,
+    "generalOrStatisticalSuperiorityClaim": false,
+    "productionReadinessClaim": false,
+    "pp0013Changed": false
+  },
+  "boundaries": {
+    "protectedMainTaskStillInProgress": true,
+    "independentReviewOfClosureCandidatePending": true,
+    "mergeAuthorization": false,
+    "deploymentAuthorization": false,
+    "netlifyInvoked": false,
+    "productionChanges": false,
+    "issue37StillOpen": true
+  },
+  "limits": [
+    "Only the isolated GitHub Actions checkout has executed formal CLI close.",
+    "Historical independently reviewed scope and evidence are retained; closure candidate has no transferable independent approval.",
+    "The CLI validated file hashes, required evidence and live provider-authenticated reviewer; it did not independently measure semantic quality or production security."
+  ]
+}
