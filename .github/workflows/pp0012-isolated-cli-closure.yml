@@ -1,0 +1,61 @@
+name: PP-0012 exact protected-ledger isolated CLI closure proof
+on:
+  push:
+    branches:
+      - feature/pp0012-isolated-cli-closure-20261123
+    paths:
+      - '.github/workflows/pp0012-isolated-cli-closure.yml'
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  exact-cli-closure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify protected source then run original authenticated CLI close on isolated checkout
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git hash-object .pro-papa/tasks.json)" = "efcc1755c99a52dabcd993c304d170d2a70c57f8"
+          node bin/pro-papa.mjs validate --root .
+          node bin/pro-papa.mjs review-status --id PP-0012 --root . > "$RUNNER_TEMP/pp0012-prior-review.json"
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const r=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/pp0012-prior-review.json','utf8'));
+          if(r.verdict!=='PASS'||r.reviewId!==6009529716||r.candidateSha!=='9efa40438443b73ee166b824233f1718b1b32af5'||!r.approvedReviewers.some(x=>x.login==='papa4568'))throw Error('authenticated reviewed source gate failed');
+          NODE
+          # Exact original CLI. No injected implementation, no mocks, no bypass.
+          node bin/pro-papa.mjs close --id PP-0012 --root . > "$RUNNER_TEMP/pp0012-close-report.json"
+          node bin/pro-papa.mjs validate --root .
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const state=JSON.parse(readFileSync('.pro-papa/tasks.json','utf8'));
+          const original=JSON.parse(execFileSync('git',['show','HEAD:.pro-papa/tasks.json'],{encoding:'utf8'}));
+          const report=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/pp0012-close-report.json','utf8'));
+          const task=state.tasks.find(x=>x.id==='PP-0012'),prior=original.tasks.find(x=>x.id==='PP-0012');
+          if(state.revision!==99||original.revision!==98||state.tasks.length!==13||
+             state.tasks.filter(x=>x.status==='verified').length!==12||
+             task?.status!=='verified'||task.owner!=='chatgpt-implementation'||task.evidence.length!==3||
+             typeof task.verifiedAt!=='string'||new Date(task.verifiedAt).toISOString()!==task.verifiedAt||
+             prior?.status!=='in_progress'||prior.verifiedAt!==undefined||
+             JSON.stringify(task.evidence)!==JSON.stringify(prior.evidence)||
+             JSON.stringify(task.acceptance)!==JSON.stringify(prior.acceptance)||
+             JSON.stringify(task.reviewTarget)!==JSON.stringify(prior.reviewTarget)||
+             JSON.stringify(state.tasks.filter(x=>x.id!=='PP-0012'))!==JSON.stringify(original.tasks.filter(x=>x.id!=='PP-0012'))||
+             state.tasks.find(x=>x.id==='PP-0013')?.status!=='pending'||
+             report?.trustedReview?.verdict!=='PASS'||
+             report?.trustedReview?.reviewId!==6009529716||
+             !report.trustedReview.approvedReviewers.some(x=>x.login==='papa4568')||
+             JSON.stringify(report.required)!==JSON.stringify(['artifact','validation','review']))throw Error('CLI closure result did not satisfy exact invariants');
+          console.log('PP0012_ACTUAL_CLI_CLOSE '+JSON.stringify({sourceCommit:'9027ec0b826c34e0d7b7d32c91841e88d6b1445d',sourceRevision:98,revision:state.revision,ledgerBlob:execFileSync('git',['hash-object','.pro-papa/tasks.json'],{encoding:'utf8'}).trim(),task,closeReport:report,otherTasksUnchanged:true,productionChanges:false,protectedMainMerged:false}));
+          NODE
