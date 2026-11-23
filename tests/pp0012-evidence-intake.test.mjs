@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {validateProject,selectNext} from '../src/core.mjs';
-import {pp0012RegistrationSnapshot,pp0012ScopeSnapshot,pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
+import {pp0012ClosureSnapshot,pp0012RegistrationSnapshot,pp0012ScopeSnapshot,pp0007LedgerSnapshot} from './pp0008-historical-pin-helper.mjs';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root));
 const json=p=>JSON.parse(read(p));
 const blob=b=>createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');
-const raw=read('.pro-papa/tasks.json'), state=JSON.parse(raw), prior=pp0012RegistrationSnapshot(state);
+const raw=Buffer.from(JSON.stringify(pp0012ClosureSnapshot(JSON.parse(read('.pro-papa/tasks.json'))),null,2)+'\n'), state=JSON.parse(raw), prior=pp0012RegistrationSnapshot(state);
 const get=(l,id)=>l.tasks.find(t=>t.id===id);
 const work=get(state,'PP-0012');
 const report=json('.pro-papa/evidence/PP-0012/cli-registration-provenance.json');
@@ -63,5 +63,5 @@ test('PP-0012 evidence registration rejects tampering, unauthorized closure, rev
   x=>{get(x,'PP-0013').acceptance.pop();},
   x=>{get(x,'PP-0011').verifiedAt='2020-01-01T00:00:00.000Z';},
  ]){const t=structuredClone(state);mutate(t);assert.throws(()=>pp0012RegistrationSnapshot(t),/Unknown ledger mutation: PP-0012 evidence registration/);assert.throws(()=>pp0007LedgerSnapshot(t),/Unknown ledger mutation: PP-0012 evidence registration/);}
- const bad=structuredClone(state);bad.revision=99;assert.throws(()=>pp0007LedgerSnapshot(bad),/Unknown ledger mutation/);
+ const bad=structuredClone(state);bad.revision=99;assert.throws(()=>pp0007LedgerSnapshot(bad),/Unknown PP-0012 closure candidate/);
 });
